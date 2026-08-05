@@ -1,0 +1,50 @@
+url: https://statmodels7.github.io/numericals7
+
+template:
+  bootstrap: 5
+  bslib:
+    primary: "#0F2A3F"
+    base_font: {google: "Inter"}
+    heading_font: {google: "Inter"}
+    code_font: {google: "JetBrains Mono"}
+
+home:
+  title: Numerical kernels for statistical modeling
+  description: >
+    The numerical layer of the statmodels7 toolkit, written once: jets that
+    carry exact derivatives to fourth order through ordinary R expressions,
+    and the combinatorial enumerations a higher-order chain rule rests on.
+
+navbar:
+  structure:
+    left:  [reference]
+    right: [search, book, statmodels7, github]
+  components:
+    book:
+      text: book
+      href: https://statmodels7.github.io/book/
+    statmodels7:
+      text: statmodels7
+      href: https://statmodels7.github.io
+
+reference:
+- title: Jets
+  desc: >
+    A jet is a value carried together with every partial derivative up to
+    fourth order. Seed the variables, write the map in ordinary R, and the
+    arithmetic operators and mathematical functions propagate every
+    derivative exactly: no chain rule is transcribed and none can be
+    mistranscribed.
+  contents:
+  - jet_layout
+  - jet_var
+  - jet_const
+
+- title: Enumerations
+  desc: >
+    The combinatorial objects a higher-order chain rule sums over, each in
+    one copy so that an enumeration cannot disagree with itself.
+  contents:
+  - tuple_indices
+  - set_partitions
+  - compositions

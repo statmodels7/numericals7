@@ -1,0 +1,36 @@
+Package: numericals7
+Title: Numerical Kernels for Statistical Modeling
+Version: 0.1.0
+Authors@R:
+    person("Giovanni", "Tinervia", , "giovannitinervia9@gmail.com", role = c("aut", "cre"))
+Description: The numerical layer of a statistical modeling toolkit, written
+    once and consumed by the packages above it. Jets carry a value together
+    with every partial derivative to fourth order, propagate exactly through
+    sums, products and a vocabulary of smooth functions, and dispatch on the
+    ordinary arithmetic operators, so a map written in plain R differentiates
+    itself. The combinatorial enumerations a higher-order chain rule rests on
+    -- index tuples, set partitions, weak compositions -- live beside them,
+    in one copy.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+URL: https://statmodels7.github.io/numericals7/,
+    https://github.com/statmodels7/numericals7
+BugReports: https://github.com/statmodels7/numericals7/issues
+Depends:
+    R (>= 4.1.0)
+Imports:
+    utils
+Suggests:
+    numDeriv,
+    pkgdown,
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown
+Config/testthat/edition: 3
+Config/roxygen2/version: 8.0.0
+RoxygenNote: 7.3.3
+Collate: 
+    'enumerate.R'
+    'jet.R'
+    'numericals7-package.R'
