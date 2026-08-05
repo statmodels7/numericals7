@@ -20,7 +20,6 @@ BugReports: https://github.com/statmodels7/numericals7/issues
 Depends:
     R (>= 4.1.0)
 Imports:
-    stats,
     utils
 Suggests:
     numDeriv,
