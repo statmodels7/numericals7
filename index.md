@@ -1,0 +1,95 @@
+# numericals7
+
+Every package of the [statmodels7](https://statmodels7.github.io)
+toolkit needs the same numerical machinery – higher-order derivatives of
+maps, finite-difference stencils, quadrature, the combinatorics behind a
+chain rule – and before this package existed each had quietly grown its
+own copy: the same set-partition enumeration was written twice, finite
+differences three times.
+[numericals7](https://statmodels7.github.io/numericals7/) is that
+machinery written once, at the bottom of the toolkit, where everything
+above can consume it.
+
+## Installation
+
+``` r
+
+# install.packages("pak")
+pak::pak("statmodels7/numericals7")
+```
+
+## Jets: a map written in ordinary R differentiates itself
+
+A **jet** is a value carried together with every partial derivative up
+to fourth order. Arithmetic on jets propagates those derivatives
+exactly, so an expression that says nothing about derivatives carries
+all of them:
+
+``` r
+
+lay <- jet_layout(2)
+mu    <- jet_var(1, list(4.0, 1, 0, 0, 0), lay)
+sigma <- jet_var(2, list(1.7, 1, 0, 0, 0), lay)
+
+# the map from a Weibull's mean to its scale, as a reader would write it
+scale <- mu / gamma(1 + 1 / sigma)
+scale
+#> <jet> value 4.483076, derivatives to order 4 in 2 variables
+#>   gradient: 1.12077  0.17979
+```
+
+The gradient, and every mixed derivative to fourth order, is exact to
+machine precision – there is no chain rule to transcribe and none to get
+wrong. Comparisons and non-smooth functions are refused rather than
+approximated: a branch taken on a jet would keep one side’s derivatives
+and report them as the whole expression’s.
+
+``` r
+
+# d scale / d sigma, by hand: mu * digamma(1 + 1/sigma) / (sigma^2 * gamma(...))
+scale$d[[1]][2]
+#> [1] 0.1797873
+4.0 * digamma(1 + 1 / 1.7) / (1.7^2 * gamma(1 + 1 / 1.7))
+#> [1] 0.1797873
+```
+
+## The enumerations behind a chain rule
+
+A derivative of order four over several variables is a sum over
+combinatorial objects, and an enumeration that exists in one copy cannot
+disagree with itself:
+
+``` r
+
+# the multi-indexes that key a derivative list (diagonal first at order 2)
+tuple_indices(2, 2)
+#> [[1]]
+#> [1] 1 1
+#> 
+#> [[2]]
+#> [1] 2 2
+#> 
+#> [[3]]
+#> [1] 1 2
+
+# the set partitions a Faa di Bruno formula sums over: 1, 2, 5, 15
+lengths(lapply(1:4, set_partitions))
+#> [1]  1  2  5 15
+
+# the weak compositions of n into k parts -- the support of a multinomial
+compositions(3, 2)
+#>      [,1] [,2]
+#> [1,]    0    3
+#> [2,]    1    2
+#> [3,]    2    1
+#> [4,]    3    0
+```
+
+## What arrives next
+
+The plan (`piano_numericals7.txt` in the toolkit repository) adds the
+single stencil library the toolkit currently carries in three versions,
+and quadrature and series **vectorized over the parameters**: one matrix
+evaluation for a thousand parameter values instead of a thousand calls,
+which is what regression models – where parameters vary by observation –
+need.
