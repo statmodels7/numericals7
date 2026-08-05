@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,10 @@
       <small>Source: <a href="https://github.com/statmodels7/numericals7/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.4.0" id="numericals7-040">numericals7 0.4.0<a class="anchor" aria-label="anchor" href="#numericals7-040"></a></h2>
+<ul><li>Special functions, each carrying the overflow discipline learned on it: <code><a href="../reference/mills_ratio.html">mills_ratio()</a></code> on the log scale, finite where density and distribution function both underflow; <code><a href="../reference/owen_t.html">owen_t()</a></code> through one batched <code><a href="../reference/quad_vec.html">quad_vec()</a></code> call, with the closed identities at <code>a = 0</code> and <code>a = Inf</code>; <code><a href="../reference/bessel_i_ratio.html">bessel_i_ratio()</a></code> through the exponentially scaled Bessel functions, with its four derivatives from the recurrence (<code><a href="../reference/bessel_i_ratio_derivs.html">bessel_i_ratio_derivs()</a></code>) and its inverse by root finding with the inverse-function-rule derivatives (<code><a href="../reference/bessel_i_ratio_inverse.html">bessel_i_ratio_inverse()</a></code>).</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.0" id="numericals7-030">numericals7 0.3.0<a class="anchor" aria-label="anchor" href="#numericals7-030"></a></h2>
 <ul><li><p>Quadrature and series vectorized over the parameters. <code><a href="../reference/quad_vec.html">quad_vec()</a></code> integrates one function at many parameter values by matrix evaluation – the nodes of every panel of every row go into the integrand in a single call per refinement pass – with the Gauss-Kronrod 7-15 pair supplying an error estimate from the same function values, adaptivity batched by row so that one hard row cannot serialize the others, rational maps for infinite endpoints, and refusal over plausibility: a row that cannot reach the requested accuracy returns NA with a warning naming it. <code><a href="../reference/series_vec.html">series_vec()</a></code> does the same for series, in blocks with a per-row convergence mask and a tail guard that sees past a block straddling the mode of a hump-shaped term. <code><a href="../reference/gauss_kronrod15.html">gauss_kronrod15()</a></code> exposes the rule, pinned in the tests by its defining property: degree-13 exactness for the embedded Gauss rule, degree-22 for the Kronrod extension, and a weight corrupted by 5% fails both the moment conditions and the gamma normalization.</p></li>

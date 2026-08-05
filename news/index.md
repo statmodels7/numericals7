@@ -1,5 +1,24 @@
 # Changelog
 
+## numericals7 0.4.0
+
+- Special functions, each carrying the overflow discipline learned on
+  it:
+  [`mills_ratio()`](https://statmodels7.github.io/numericals7/reference/mills_ratio.md)
+  on the log scale, finite where density and distribution function both
+  underflow;
+  [`owen_t()`](https://statmodels7.github.io/numericals7/reference/owen_t.md)
+  through one batched
+  [`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)
+  call, with the closed identities at `a = 0` and `a = Inf`;
+  [`bessel_i_ratio()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio.md)
+  through the exponentially scaled Bessel functions, with its four
+  derivatives from the recurrence
+  ([`bessel_i_ratio_derivs()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_derivs.md))
+  and its inverse by root finding with the inverse-function-rule
+  derivatives
+  ([`bessel_i_ratio_inverse()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_inverse.md)).
+
 ## numericals7 0.3.0
 
 - Quadrature and series vectorized over the parameters.

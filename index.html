@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -139,9 +139,18 @@
 <span><span class="co">#&gt; [1] 1 1 1</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="what-arrives-next">What arrives next<a class="anchor" aria-label="anchor" href="#what-arrives-next"></a>
+<h2 id="special-functions-with-their-overflow-discipline">Special functions, with their overflow discipline<a class="anchor" aria-label="anchor" href="#special-functions-with-their-overflow-discipline"></a>
 </h2>
-<p>The plan (<code>piano_numericals7.txt</code> in the toolkit repository) adds the special functions the distributions carry with an overflow discipline attached – Owen’s T, the log-scale Mills ratio, the Bessel ratio and its inverse – and then the consumers above migrate package by package, the old implementations serving as the independent reference until the comparison passes.</p>
+<p>Each of these was born inside a distribution and carries the numerical lesson learned there: the Mills ratio is formed on the log scale, where the direct quotient is 0/0 from <code>t = -38</code> on; Owen’s T batches every element into one <code><a href="reference/quad_vec.html">quad_vec()</a></code> call; the Bessel ratio goes through the exponentially scaled Bessel functions, so it is finite at any argument, and its inverse comes with the four derivatives the inverse function rule provides.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/mills_ratio.html">mills_ratio</a></span><span class="op">(</span><span class="op">-</span><span class="fl">40</span><span class="op">)</span><span class="op">$</span><span class="va">r</span>        <span class="co"># finite, close to 40</span></span>
+<span><span class="co">#&gt; [1] 40.02497</span></span>
+<span><span class="fu"><a href="reference/owen_t.html">owen_t</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span>     <span class="co"># atan(1) = pi/4</span></span>
+<span><span class="co">#&gt; [1] 0.7853982</span></span>
+<span><span class="fu"><a href="reference/bessel_i_ratio.html">bessel_i_ratio</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span>      <span class="co"># the unscaled ratio overflows past 700</span></span>
+<span><span class="co">#&gt; [1] 0.9994999</span></span>
+<span><span class="fu"><a href="reference/bessel_i_ratio.html">bessel_i_ratio</a></span><span class="op">(</span><span class="fu"><a href="reference/bessel_i_ratio_inverse.html">bessel_i_ratio_inverse</a></span><span class="op">(</span><span class="fl">0.7</span><span class="op">)</span><span class="op">$</span><span class="va">kappa</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 0.7</span></span></code></pre></div>
 </div>
 </div>
 

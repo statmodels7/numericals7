@@ -54,3 +54,16 @@ named row where the requested accuracy cannot be reached.
   : Sum One Series at Many Parameter Values
 - [`gauss_kronrod15()`](https://statmodels7.github.io/numericals7/reference/gauss_kronrod15.md)
   : The Gauss-Kronrod 7-15 Pair
+
+## Special functions
+
+- [`mills_ratio()`](https://statmodels7.github.io/numericals7/reference/mills_ratio.md)
+  : The Mills Ratio and Its Derivative
+- [`owen_t()`](https://statmodels7.github.io/numericals7/reference/owen_t.md)
+  : Owen's T Function
+- [`bessel_i_ratio()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio.md)
+  : The Ratio of Modified Bessel Functions
+- [`bessel_i_ratio_derivs()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_derivs.md)
+  : Derivatives of the Bessel Ratio
+- [`bessel_i_ratio_inverse()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_inverse.md)
+  : The Inverse of the Bessel Ratio

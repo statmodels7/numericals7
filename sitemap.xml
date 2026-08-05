@@ -7,6 +7,9 @@
 <url><loc>https://statmodels7.github.io/numericals7/news/index.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/Math.jet.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/Ops.jet.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/bessel_i_ratio.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_derivs.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_inverse.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/compositions.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/fd_derivative.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/fd_offsets.html</loc></url>
@@ -31,7 +34,9 @@
 <url><loc>https://statmodels7.github.io/numericals7/reference/jet_sqrt.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/jet_trigamma.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/jet_var.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/mills_ratio.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/numericals7-package.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/owen_t.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/print.jet.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/quad_vec.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/series_vec.html</loc></url>

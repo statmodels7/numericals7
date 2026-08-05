@@ -133,11 +133,25 @@ series_vec(function(k, i) dpois(k, lam[i]), n = 3)   # masses sum to one
 #> [1] 1 1 1
 ```
 
-## What arrives next
+## Special functions, with their overflow discipline
 
-The plan (`piano_numericals7.txt` in the toolkit repository) adds the
-special functions the distributions carry with an overflow discipline
-attached – Owen’s T, the log-scale Mills ratio, the Bessel ratio and its
-inverse – and then the consumers above migrate package by package, the
-old implementations serving as the independent reference until the
-comparison passes.
+Each of these was born inside a distribution and carries the numerical
+lesson learned there: the Mills ratio is formed on the log scale, where
+the direct quotient is 0/0 from `t = -38` on; Owen’s T batches every
+element into one
+[`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)
+call; the Bessel ratio goes through the exponentially scaled Bessel
+functions, so it is finite at any argument, and its inverse comes with
+the four derivatives the inverse function rule provides.
+
+``` r
+
+mills_ratio(-40)$r        # finite, close to 40
+#> [1] 40.02497
+owen_t(0, 1) * 2 * pi     # atan(1) = pi/4
+#> [1] 0.7853982
+bessel_i_ratio(1000)      # the unscaled ratio overflows past 700
+#> [1] 0.9994999
+bessel_i_ratio(bessel_i_ratio_inverse(0.7)$kappa)
+#> [1] 0.7
+```
