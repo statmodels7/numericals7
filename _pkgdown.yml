@@ -69,3 +69,11 @@ reference:
   - quad_vec
   - series_vec
   - gauss_kronrod15
+
+- title: Special functions
+  contents:
+  - mills_ratio
+  - owen_t
+  - bessel_i_ratio
+  - bessel_i_ratio_derivs
+  - bessel_i_ratio_inverse

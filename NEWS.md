@@ -1,3 +1,14 @@
+# numericals7 0.4.0
+
+* Special functions, each carrying the overflow discipline learned on it:
+  `mills_ratio()` on the log scale, finite where density and distribution
+  function both underflow; `owen_t()` through one batched `quad_vec()` call,
+  with the closed identities at `a = 0` and `a = Inf`; `bessel_i_ratio()`
+  through the exponentially scaled Bessel functions, with its four
+  derivatives from the recurrence (`bessel_i_ratio_derivs()`) and its
+  inverse by root finding with the inverse-function-rule derivatives
+  (`bessel_i_ratio_inverse()`).
+
 # numericals7 0.3.0
 
 * Quadrature and series vectorized over the parameters. `quad_vec()`
