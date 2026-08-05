@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,12 +34,17 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.2.0" id="numericals7-020">numericals7 0.2.0<a class="anchor" aria-label="anchor" href="#numericals7-020"></a></h2>
+<ul><li>The stencil library, unifying the three finite-difference implementations the toolkit carried: <code><a href="../reference/fd_weights.html">fd_weights()</a></code> solves the Vandermonde system for any offsets and order (the construction basis7 had), <code><a href="../reference/fd_offsets.html">fd_offsets()</a></code> sizes a stencil from the order and the accuracy asked of it, <code><a href="../reference/fd_step.html">fd_step()</a></code> balances truncation against rounding and keeps every node inside a bounded domain, and <code><a href="../reference/fd_derivative.html">fd_derivative()</a></code> applies one stencil – never a composition of lower-order differences, since each numerical differentiation multiplies the error of the one before it. At the default accuracy these reproduce linkfunctions7’s four central stencils and basis7’s shapes exactly; at accuracy four they reproduce distributions7’s five-point <code>fd5_first</code> and <code>fd5_second</code>. The policy around a stencil – which order to fall back from, what a trustworthy reference is – deliberately stays with the callers.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="numericals7-010">numericals7 0.1.0<a class="anchor" aria-label="anchor" href="#numericals7-010"></a></h2>
 <ul><li><p>First release: the numerical layer of the statmodels7 toolkit, collecting what its packages had been rewriting privately. The census that motivated it found <code><a href="../reference/set_partitions.html">set_partitions()</a></code> written twice (distributions7 and parameters7, independently) and finite-difference machinery written three times.</p></li>
 <li><p>Jets, moved here from parameters7. A jet carries a value together with every partial derivative to fourth order and propagates them exactly through sums, products and a vocabulary of smooth functions (<code>exp</code>, <code>log</code>, <code>log1p</code>, <code>expm1</code>, an arbitrary power, <code>sqrt</code>, <code>gamma</code>, <code>lgamma</code>, <code>digamma</code>, <code>trigamma</code>, <code>sin</code>, <code>cos</code>). <code>Ops</code> and <code>Math</code> dispatch on the class, so a map written as <code>mu / gamma(1 + 1 / sigma)</code> differentiates itself. Comparison operators and the non-smooth functions are refused: a branch taken on a jet would keep one side’s derivatives and report them as the whole expression’s.</p></li>
 <li><p>The enumerations a higher-order chain rule rests on, in one copy each: <code><a href="../reference/tuple_indices.html">tuple_indices()</a></code> (the multi-indexes of a derivative, diagonal-first at order two because that ordering is a contract), <code><a href="../reference/set_partitions.html">set_partitions()</a></code> (the Bell recursion, blocks indexing positions so that a repeated variable carries its multiplicity), and <code><a href="../reference/compositions.html">compositions()</a></code> (the weak compositions, which are the support of a multinomial).</p></li>
 </ul></div>
-  </main></div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

@@ -123,3 +123,18 @@ one copy so that an enumeration cannot disagree with itself.
 - [`compositions()`](https://statmodels7.github.io/numericals7/reference/compositions.md)
   : Every Way to Write an Integer as an Ordered Sum
 
+## Finite differences
+
+One stencil library: weights from the Vandermonde system, offsets sized
+from order and accuracy, a balanced step, and an applicator that never
+composes lower-order differences.
+
+- [`fd_weights()`](https://statmodels7.github.io/numericals7/reference/fd_weights.md)
+  : Finite-Difference Weights for Any Stencil
+- [`fd_offsets()`](https://statmodels7.github.io/numericals7/reference/fd_offsets.md)
+  : Stencil Offsets for a Derivative Order
+- [`fd_step()`](https://statmodels7.github.io/numericals7/reference/fd_step.md)
+  : A Step Size for One Stencil
+- [`fd_derivative()`](https://statmodels7.github.io/numericals7/reference/fd_derivative.md)
+  : One Stencil, Applied
+
