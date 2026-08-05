@@ -94,11 +94,50 @@ compositions(3, 2)
 #> [4,]    3    0
 ```
 
+## One stencil library
+
+`fd_weights()` builds the finite-difference weights for any derivative
+order at any offsets from one Vandermonde system, `fd_offsets()` chooses
+the offsets, `fd_step()` the step, and `fd_derivative()` assembles the
+three. The toolkit’s policy – one stencil applied to the highest
+analytic order, never a chain of first differences – stays with the
+packages that enforce it; this is the stencil itself, written once.
+
+``` r
+# the classical five-point first-derivative weights, and a derivative
+fd_weights(-2:2, 1L) * 12
+#> [1]  1 -8  0  8 -1
+fd_derivative(exp, 1, order = 3L, accuracy = 4L) - exp(1)
+#> [1] 3.076484e-09
+```
+
+## Quadrature and series, vectorized over the parameters
+
+A regression model gives every observation its own parameter value, so
+the integrals a fit needs come in families: the same integrand at
+hundreds of parameter rows. `quad_vec()` integrates all of them in one
+adaptive pass – the integrand receives a matrix of points and a row
+index, so a thousand parameter values cost matrix evaluations rather
+than a thousand adaptive runs – and `series_vec()` does the same for
+infinite sums. A row that cannot reach the requested accuracy returns
+`NA` with a warning naming it.
+
+``` r
+shp <- c(0.5, 2, 5, 50)
+f <- function(x, i) x * dgamma(x, shape = shp[i], rate = 1)
+quad_vec(f, 0, rep(Inf, 4))          # the means, one call
+#> [1]  0.5  2.0  5.0 50.0
+
+lam <- c(0.5, 4, 300)
+series_vec(function(k, i) dpois(k, lam[i]), n = 3)   # masses sum to one
+#> [1] 1 1 1
+```
+
 ## What arrives next
 
 The plan (`piano_numericals7.txt` in the toolkit repository) adds the
-single stencil library the toolkit currently carries in three versions,
-and quadrature and series **vectorized over the parameters**: one matrix
-evaluation for a thousand parameter values instead of a thousand calls,
-which is what regression models – where parameters vary by observation –
-need.
+special functions the distributions carry with an overflow discipline
+attached – Owen’s T, the log-scale Mills ratio, the Bessel ratio and its
+inverse – and then the consumers above migrate package by package, the
+old implementations serving as the independent reference until the
+comparison passes.

@@ -1,6 +1,6 @@
 Package: numericals7
 Title: Numerical Kernels for Statistical Modeling
-Version: 0.2.0
+Version: 0.3.0
 Authors@R:
     person("Giovanni", "Tinervia", , "giovannitinervia9@gmail.com", role = c("aut", "cre"))
 Description: The numerical layer of a statistical modeling toolkit, written
@@ -20,6 +20,7 @@ BugReports: https://github.com/statmodels7/numericals7/issues
 Depends:
     R (>= 4.1.0)
 Imports:
+    stats,
     utils
 Suggests:
     numDeriv,
@@ -35,3 +36,5 @@ Collate:
     'jet.R'
     'numericals7-package.R'
     'stencil.R'
+    'quadrature.R'
+    'series.R'

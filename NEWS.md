@@ -1,3 +1,25 @@
+# numericals7 0.3.0
+
+* Quadrature and series vectorized over the parameters. `quad_vec()`
+  integrates one function at many parameter values by matrix evaluation --
+  the nodes of every panel of every row go into the integrand in a single
+  call per refinement pass -- with the Gauss-Kronrod 7-15 pair supplying an
+  error estimate from the same function values, adaptivity batched by row so
+  that one hard row cannot serialize the others, rational maps for infinite
+  endpoints, and refusal over plausibility: a row that cannot reach the
+  requested accuracy returns NA with a warning naming it. `series_vec()`
+  does the same for series, in blocks with a per-row convergence mask and a
+  tail guard that sees past a block straddling the mode of a hump-shaped
+  term. `gauss_kronrod15()` exposes the rule, pinned in the tests by its
+  defining property: degree-13 exactness for the embedded Gauss rule,
+  degree-22 for the Kronrod extension, and a weight corrupted by 5% fails
+  both the moment conditions and the gamma normalization.
+
+* Measured motivation: the von Mises variance through the per-theta fallback
+  costs 25 ms per parameter value and scales linearly. One matrix pass over
+  hundreds of rows is what regression models, where parameters vary by
+  observation, need.
+
 # numericals7 0.2.0
 
 * The stencil library, unifying the three finite-difference implementations

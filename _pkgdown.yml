@@ -59,3 +59,13 @@ reference:
   - fd_offsets
   - fd_step
   - fd_derivative
+
+- title: Quadrature and series
+  desc: >
+    Integrals and sums vectorized over the parameters: one matrix evaluation
+    for many parameter values, adaptivity batched by row, and NA with a named
+    row where the requested accuracy cannot be reached.
+  contents:
+  - quad_vec
+  - series_vec
+  - gauss_kronrod15
