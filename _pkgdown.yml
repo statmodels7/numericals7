@@ -48,3 +48,14 @@ reference:
   - tuple_indices
   - set_partitions
   - compositions
+
+- title: Finite differences
+  desc: >
+    One stencil library: weights from the Vandermonde system, offsets sized
+    from order and accuracy, a balanced step, and an applicator that never
+    composes lower-order differences.
+  contents:
+  - fd_weights
+  - fd_offsets
+  - fd_step
+  - fd_derivative

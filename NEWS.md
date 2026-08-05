@@ -1,3 +1,18 @@
+# numericals7 0.2.0
+
+* The stencil library, unifying the three finite-difference implementations
+  the toolkit carried: `fd_weights()` solves the Vandermonde system for any
+  offsets and order (the construction basis7 had), `fd_offsets()` sizes a
+  stencil from the order and the accuracy asked of it, `fd_step()` balances
+  truncation against rounding and keeps every node inside a bounded domain,
+  and `fd_derivative()` applies one stencil -- never a composition of
+  lower-order differences, since each numerical differentiation multiplies
+  the error of the one before it. At the default accuracy these reproduce
+  linkfunctions7's four central stencils and basis7's shapes exactly; at
+  accuracy four they reproduce distributions7's five-point `fd5_first` and
+  `fd5_second`. The policy around a stencil -- which order to fall back from,
+  what a trustworthy reference is -- deliberately stays with the callers.
+
 # numericals7 0.1.0
 
 * First release: the numerical layer of the statmodels7 toolkit, collecting
