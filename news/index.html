@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,6 +32,10 @@
       <small>Source: <a href="https://github.com/statmodels7/numericals7/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.0" id="numericals7-050">numericals7 0.5.0<a class="anchor" aria-label="anchor" href="#numericals7-050"></a></h2>
+<ul><li>The logarithm of the modified Bessel functions, after Plesner, Sorensen and Hauberg (ICS 2024, arXiv:2409.08729): <code><a href="../reference/log_bessel_i.html">log_bessel_i()</a></code> and <code><a href="../reference/log_bessel_k.html">log_bessel_k()</a></code> carry every intermediate quantity on the log scale – the power series through the log-sum-exp anchored at its largest term, the large-argument and large-order asymptotic expansions selected by the paper’s input-range table – and are finite and accurate wherever the logarithm itself is representable, where the unscaled functions overflow from x = 700 and the scaled ones underflow past 1e5 or lose the order. Two switching guards are tightened relative to the paper, measured on the Wronskian identity. <code><a href="../reference/log_bessel_i_derivs.html">log_bessel_i_derivs()</a></code> and <code><a href="../reference/log_bessel_k_derivs.html">log_bessel_k_derivs()</a></code> add the first four derivatives in the argument from the ratio identity and the Bessel equation. Measured against an Rcpp transcription of the same algorithm: the compiled version buys 0.9x to 2.7x, so the package stays pure R.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.0" id="numericals7-040">numericals7 0.4.0<a class="anchor" aria-label="anchor" href="#numericals7-040"></a></h2>
 <ul><li>Special functions, each carrying the overflow discipline learned on it: <code><a href="../reference/mills_ratio.html">mills_ratio()</a></code> on the log scale, finite where density and distribution function both underflow; <code><a href="../reference/owen_t.html">owen_t()</a></code> through one batched <code><a href="../reference/quad_vec.html">quad_vec()</a></code> call, with the closed identities at <code>a = 0</code> and <code>a = Inf</code>; <code><a href="../reference/bessel_i_ratio.html">bessel_i_ratio()</a></code> through the exponentially scaled Bessel functions, with its four derivatives from the recurrence (<code><a href="../reference/bessel_i_ratio_derivs.html">bessel_i_ratio_derivs()</a></code>) and its inverse by root finding with the inverse-function-rule derivatives (<code><a href="../reference/bessel_i_ratio_inverse.html">bessel_i_ratio_inverse()</a></code>).</li>

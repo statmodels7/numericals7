@@ -11,6 +11,7 @@
 <url><loc>https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_derivs.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_inverse.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/compositions.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/dot-bessel_uk.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/fd_derivative.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/fd_offsets.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/fd_step.html</loc></url>
@@ -34,6 +35,10 @@
 <url><loc>https://statmodels7.github.io/numericals7/reference/jet_sqrt.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/jet_trigamma.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/jet_var.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/log_bessel_i.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/log_bessel_i_derivs.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/log_bessel_k.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/log_bessel_k_derivs.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/mills_ratio.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/numericals7-package.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/owen_t.html</loc></url>

@@ -1,5 +1,28 @@
 # Changelog
 
+## numericals7 0.5.0
+
+- The logarithm of the modified Bessel functions, after Plesner,
+  Sorensen and Hauberg (ICS 2024, arXiv:2409.08729):
+  [`log_bessel_i()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i.md)
+  and
+  [`log_bessel_k()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md)
+  carry every intermediate quantity on the log scale – the power series
+  through the log-sum-exp anchored at its largest term, the
+  large-argument and large-order asymptotic expansions selected by the
+  paper’s input-range table – and are finite and accurate wherever the
+  logarithm itself is representable, where the unscaled functions
+  overflow from x = 700 and the scaled ones underflow past 1e5 or lose
+  the order. Two switching guards are tightened relative to the paper,
+  measured on the Wronskian identity.
+  [`log_bessel_i_derivs()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i_derivs.md)
+  and
+  [`log_bessel_k_derivs()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k_derivs.md)
+  add the first four derivatives in the argument from the ratio identity
+  and the Bessel equation. Measured against an Rcpp transcription of the
+  same algorithm: the compiled version buys 0.9x to 2.7x, so the package
+  stays pure R.
+
 ## numericals7 0.4.0
 
 - Special functions, each carrying the overflow discipline learned on

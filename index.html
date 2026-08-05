@@ -32,7 +32,7 @@
 
     <a class="navbar-brand me-2" href="index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -147,10 +147,22 @@
 <span><span class="co">#&gt; [1] 1 1 1</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="the-logarithm-of-the-modified-bessel-functions">The logarithm of the modified Bessel functions<a class="anchor" aria-label="anchor" href="#the-logarithm-of-the-modified-bessel-functions"></a>
+</h2>
+<p>Bessel functions recur across distributions – the von Mises carries <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>I</mi><mn>0</mn></msub><annotation encoding="application/x-tex">I_0</annotation></semantics></math>, the Poisson-inverse Gaussian carries <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>K</mi><mrow><mi>y</mi><mo>−</mo><mn>1</mn><mi>/</mi><mn>2</mn></mrow></msub><annotation encoding="application/x-tex">K_{y-1/2}</annotation></semantics></math> – and both overflow from <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>700</mn></mrow><annotation encoding="application/x-tex">x = 700</annotation></semantics></math> while their exponentially scaled forms underflow past <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>10</mn><mn>5</mn></msup><annotation encoding="application/x-tex">10^5</annotation></semantics></math> or lose large orders entirely. Following Plesner, Sørensen and Hauberg (ICS 2024, arXiv:2409.08729), <code><a href="reference/log_bessel_i.html">log_bessel_i()</a></code> and <code><a href="reference/log_bessel_k.html">log_bessel_k()</a></code> carry every intermediate quantity on the log scale, so the result is finite and accurate wherever <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><msub><mi>I</mi><mi>ν</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\log I_\nu(x)</annotation></semantics></math> itself is representable; the <code>_derivs</code> variants add four derivatives in the argument from the ratio identity and the Bessel equation, at the cost of one more log-Bessel evaluation.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/log_bessel_i.html">log_bessel_i</a></span><span class="op">(</span><span class="fl">1e7</span>, <span class="fl">2</span><span class="op">)</span>              <span class="co"># I overflows at 700; the log is just a number</span></span>
+<span><span class="co">#&gt; [1] 9999991</span></span>
+<span><span class="fu"><a href="reference/log_bessel_i.html">log_bessel_i</a></span><span class="op">(</span><span class="fl">0.001</span>, <span class="fl">5000</span><span class="op">)</span>         <span class="co"># the scaled form loses this order entirely</span></span>
+<span><span class="co">#&gt; [1] -75595.66</span></span>
+<span><span class="fu"><a href="reference/log_bessel_k_derivs.html">log_bessel_k_derivs</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">0.5</span><span class="op">)</span><span class="op">$</span><span class="va">d1</span>    <span class="co"># exactly -1/(2x) - 1 at nu = 1/2</span></span>
+<span><span class="co">#&gt; [1] -1.25</span></span></code></pre></div>
+</div>
+<div class="section level2">
 <h2 id="special-functions-with-their-overflow-discipline">Special functions, with their overflow discipline<a class="anchor" aria-label="anchor" href="#special-functions-with-their-overflow-discipline"></a>
 </h2>
 <p>Each of these was born inside a distribution and carries the numerical lesson learned there: the Mills ratio is formed on the log scale, where the direct quotient is 0/0 from <code>t = -38</code> on; Owen’s T batches every element into one <code><a href="reference/quad_vec.html">quad_vec()</a></code> call; the Bessel ratio goes through the exponentially scaled Bessel functions, so it is finite at any argument, and its inverse comes with the four derivatives the inverse function rule provides.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/mills_ratio.html">mills_ratio</a></span><span class="op">(</span><span class="op">-</span><span class="fl">40</span><span class="op">)</span><span class="op">$</span><span class="va">r</span>        <span class="co"># finite, close to 40</span></span>
 <span><span class="co">#&gt; [1] 40.02497</span></span>
 <span><span class="fu"><a href="reference/owen_t.html">owen_t</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span>     <span class="co"># atan(1) = pi/4</span></span>

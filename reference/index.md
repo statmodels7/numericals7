@@ -57,6 +57,14 @@ named row where the requested accuracy cannot be reached.
 
 ## Special functions
 
+- [`log_bessel_i()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i.md)
+  : Logarithm of the Modified Bessel Function of the First Kind
+- [`log_bessel_k()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md)
+  : Logarithm of the Modified Bessel Function of the Second Kind
+- [`log_bessel_i_derivs()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i_derivs.md)
+  : Derivatives of the Logarithm of the Modified Bessel Function I
+- [`log_bessel_k_derivs()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k_derivs.md)
+  : Derivatives of the Logarithm of the Modified Bessel Function K
 - [`mills_ratio()`](https://statmodels7.github.io/numericals7/reference/mills_ratio.md)
   : The Mills Ratio and Its Derivative
 - [`owen_t()`](https://statmodels7.github.io/numericals7/reference/owen_t.md)
