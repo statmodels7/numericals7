@@ -247,7 +247,7 @@ test_that("a map written in ordinary R differentiates itself", {
 
 
 test_that("the Weibull mean map differentiates itself", {
-  # The map that reparametrising a Weibull to its mean needs, written as a
+  # The map that reparametrizing a Weibull to its mean needs, written as a
   # reader would write it. Its first derivative in sigma is checked against the
   # formula, which involves digamma through the gamma function.
   s <- jet_seed(c(4, 1.7))
