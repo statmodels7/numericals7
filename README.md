@@ -13,7 +13,7 @@ coverage](https://codecov.io/gh/statmodels7/numericals7/graph/badge.svg)](https:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 <!-- badges: end -->
 
-# numericals7
+# numericals7 <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
 Every package of the [statmodels7](https://statmodels7.github.io)
 toolkit needs the same numerical machinery – higher-order derivatives of

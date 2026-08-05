@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 library(numericals7)
 ```
 
-# numericals7
+# numericals7 <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
 Every package of the [statmodels7](https://statmodels7.github.io) toolkit
 needs the same numerical machinery -- higher-order derivatives of maps,
