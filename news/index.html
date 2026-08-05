@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,11 @@
       <small>Source: <a href="https://github.com/statmodels7/numericals7/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.3.0" id="numericals7-030">numericals7 0.3.0<a class="anchor" aria-label="anchor" href="#numericals7-030"></a></h2>
+<ul><li><p>Quadrature and series vectorized over the parameters. <code><a href="../reference/quad_vec.html">quad_vec()</a></code> integrates one function at many parameter values by matrix evaluation – the nodes of every panel of every row go into the integrand in a single call per refinement pass – with the Gauss-Kronrod 7-15 pair supplying an error estimate from the same function values, adaptivity batched by row so that one hard row cannot serialize the others, rational maps for infinite endpoints, and refusal over plausibility: a row that cannot reach the requested accuracy returns NA with a warning naming it. <code><a href="../reference/series_vec.html">series_vec()</a></code> does the same for series, in blocks with a per-row convergence mask and a tail guard that sees past a block straddling the mode of a hump-shaped term. <code><a href="../reference/gauss_kronrod15.html">gauss_kronrod15()</a></code> exposes the rule, pinned in the tests by its defining property: degree-13 exactness for the embedded Gauss rule, degree-22 for the Kronrod extension, and a weight corrupted by 5% fails both the moment conditions and the gamma normalization.</p></li>
+<li><p>Measured motivation: the von Mises variance through the per-theta fallback costs 25 ms per parameter value and scales linearly. One matrix pass over hundreds of rows is what regression models, where parameters vary by observation, need.</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="numericals7-020">numericals7 0.2.0<a class="anchor" aria-label="anchor" href="#numericals7-020"></a></h2>
 <ul><li>The stencil library, unifying the three finite-difference implementations the toolkit carried: <code><a href="../reference/fd_weights.html">fd_weights()</a></code> solves the Vandermonde system for any offsets and order (the construction basis7 had), <code><a href="../reference/fd_offsets.html">fd_offsets()</a></code> sizes a stencil from the order and the accuracy asked of it, <code><a href="../reference/fd_step.html">fd_step()</a></code> balances truncation against rounding and keeps every node inside a bounded domain, and <code><a href="../reference/fd_derivative.html">fd_derivative()</a></code> applies one stencil – never a composition of lower-order differences, since each numerical differentiation multiplies the error of the one before it. At the default accuracy these reproduce linkfunctions7’s four central stencils and basis7’s shapes exactly; at accuracy four they reproduce distributions7’s five-point <code>fd5_first</code> and <code>fd5_second</code>. The policy around a stencil – which order to fall back from, what a trustworthy reference is – deliberately stays with the callers.</li>

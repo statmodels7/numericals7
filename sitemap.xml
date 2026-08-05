@@ -12,6 +12,7 @@
 <url><loc>https://statmodels7.github.io/numericals7/reference/fd_offsets.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/fd_step.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/fd_weights.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/gauss_kronrod15.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/index.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/jet_add.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/jet_cmul.html</loc></url>
@@ -32,6 +33,8 @@
 <url><loc>https://statmodels7.github.io/numericals7/reference/jet_var.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/numericals7-package.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/print.jet.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/quad_vec.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/series_vec.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/set_partitions.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/tuple_indices.html</loc></url>
 </urlset>

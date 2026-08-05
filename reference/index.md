@@ -41,3 +41,16 @@ composes lower-order differences.
   : A Step Size for One Stencil
 - [`fd_derivative()`](https://statmodels7.github.io/numericals7/reference/fd_derivative.md)
   : One Stencil, Applied
+
+## Quadrature and series
+
+Integrals and sums vectorized over the parameters: one matrix evaluation
+for many parameter values, adaptivity batched by row, and NA with a
+named row where the requested accuracy cannot be reached.
+
+- [`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)
+  : Integrate One Function at Many Parameter Values
+- [`series_vec()`](https://statmodels7.github.io/numericals7/reference/series_vec.md)
+  : Sum One Series at Many Parameter Values
+- [`gauss_kronrod15()`](https://statmodels7.github.io/numericals7/reference/gauss_kronrod15.md)
+  : The Gauss-Kronrod 7-15 Pair
