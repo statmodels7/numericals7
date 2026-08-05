@@ -72,6 +72,10 @@ reference:
 
 - title: Special functions
   contents:
+  - log_bessel_i
+  - log_bessel_k
+  - log_bessel_i_derivs
+  - log_bessel_k_derivs
   - mills_ratio
   - owen_t
   - bessel_i_ratio

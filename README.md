@@ -133,6 +133,28 @@ series_vec(function(k, i) dpois(k, lam[i]), n = 3)   # masses sum to one
 #> [1] 1 1 1
 ```
 
+## The logarithm of the modified Bessel functions
+
+Bessel functions recur across distributions – the von Mises carries
+$I_0$, the Poisson-inverse Gaussian carries $K_{y-1/2}$ – and both
+overflow from $x = 700$ while their exponentially scaled forms underflow
+past $10^5$ or lose large orders entirely. Following Plesner, Sørensen
+and Hauberg (ICS 2024, arXiv:2409.08729), `log_bessel_i()` and
+`log_bessel_k()` carry every intermediate quantity on the log scale, so
+the result is finite and accurate wherever $\log I_\nu(x)$ itself is
+representable; the `_derivs` variants add four derivatives in the
+argument from the ratio identity and the Bessel equation, at the cost of
+one more log-Bessel evaluation.
+
+``` r
+log_bessel_i(1e7, 2)              # I overflows at 700; the log is just a number
+#> [1] 9999991
+log_bessel_i(0.001, 5000)         # the scaled form loses this order entirely
+#> [1] -75595.66
+log_bessel_k_derivs(2, 0.5)$d1    # exactly -1/(2x) - 1 at nu = 1/2
+#> [1] -1.25
+```
+
 ## Special functions, with their overflow discipline
 
 Each of these was born inside a distribution and carries the numerical
