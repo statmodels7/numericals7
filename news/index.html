@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,6 +32,10 @@
       <small>Source: <a href="https://github.com/statmodels7/numericals7/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.0" id="numericals7-070">numericals7 0.7.0<a class="anchor" aria-label="anchor" href="#numericals7-070"></a></h2>
+<ul><li>The log-Bessel kernels are compiled. <code><a href="../reference/log_bessel_i.html">log_bessel_i()</a></code> and <code><a href="../reference/log_bessel_k.html">log_bessel_k()</a></code> now run scalar C++ loops over the same branches and formulas; the vectorized R implementations stay as internal twins (<code>.log_bessel_i_r</code>, <code>.log_bessel_k_r</code>) that a test compares against the compiled route on every branch. Measured on a mixed workload of one million points: log K 2.9x faster, log I 1.1x. The u_k polynomial table is injected into the kernels once at load, so the two routes share the table and nothing else.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.0" id="numericals7-060">numericals7 0.6.0<a class="anchor" aria-label="anchor" href="#numericals7-060"></a></h2>
 <ul><li>The jets are removed. Every production consumer now carries its derivatives as written closed forms: the reparametrized families of distributions7 declare their map partials explicitly, and parameters7’s autoregressive family propagates its derivative arrays through the Levinson-Durbin recursion in compiled code, the product rule written out per order. Measured on the Poisson-inverse Gaussian kernels, the jet route’s fixed composition overhead was 2x to 36x the cost of the written forms.</li>
