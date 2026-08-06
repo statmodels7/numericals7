@@ -18,9 +18,9 @@
 <link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Numerical kernels for statistical modeling">
-<meta name="description" content="The numerical layer of the statmodels7 toolkit, written once: jets that carry exact derivatives to fourth order through ordinary R expressions, and the combinatorial enumerations a higher-order chain rule rests on.
+<meta name="description" content="The numerical layer of the statmodels7 toolkit, written once: the combinatorial enumerations a higher-order chain rule rests on, one stencil library, batched quadrature and series, and special functions.
 ">
-<meta property="og:description" content="The numerical layer of the statmodels7 toolkit, written once: jets that carry exact derivatives to fourth order through ordinary R expressions, and the combinatorial enumerations a higher-order chain rule rests on.
+<meta property="og:description" content="The numerical layer of the statmodels7 toolkit, written once: the combinatorial enumerations a higher-order chain rule rests on, one stencil library, batched quadrature and series, and special functions.
 ">
 <meta property="og:image" content="https://statmodels7.github.io/numericals7/logo.png">
 </head>
@@ -32,7 +32,7 @@
 
     <a class="navbar-brand me-2" href="index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,7 +63,7 @@
 <img src="logo.png" class="logo" alt=""><h1 id="numericals7-">numericals7 <a class="anchor" aria-label="anchor" href="#numericals7-"></a>
 </h1>
 </div>
-<p>Every package of the <a href="https://statmodels7.github.io" class="external-link">statmodels7</a> toolkit needs the same numerical machinery – higher-order derivatives of maps, finite-difference stencils, quadrature, the combinatorics behind a chain rule – and before this package existed each had quietly grown its own copy: the same set-partition enumeration was written twice, finite differences three times. <a href="https://statmodels7.github.io/numericals7/">numericals7</a> is that machinery written once, at the bottom of the toolkit, where everything above can consume it.</p>
+<p>Every package of the <a href="https://statmodels7.github.io" class="external-link">statmodels7</a> toolkit needs the same numerical machinery – finite-difference stencils, quadrature, special functions, the combinatorics behind a chain rule – and before this package existed each had quietly grown its own copy: the same set-partition enumeration was written twice, finite differences three times. <a href="https://statmodels7.github.io/numericals7/">numericals7</a> is that machinery written once, at the bottom of the toolkit, where everything above can consume it.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -72,32 +72,10 @@
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"statmodels7/numericals7"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="jets-a-map-written-in-ordinary-r-differentiates-itself">Jets: a map written in ordinary R differentiates itself<a class="anchor" aria-label="anchor" href="#jets-a-map-written-in-ordinary-r-differentiates-itself"></a>
-</h2>
-<p>A <strong>jet</strong> is a value carried together with every partial derivative up to fourth order. Arithmetic on jets propagates those derivatives exactly, so an expression that says nothing about derivatives carries all of them:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">lay</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/jet_layout.html">jet_layout</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
-<span><span class="va">mu</span>    <span class="op">&lt;-</span> <span class="fu"><a href="reference/jet_var.html">jet_var</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">4.0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>, <span class="va">lay</span><span class="op">)</span></span>
-<span><span class="va">sigma</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/jet_var.html">jet_var</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1.7</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>, <span class="va">lay</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># the map from a Weibull's mean to its scale, as a reader would write it</span></span>
-<span><span class="va">scale</span> <span class="op">&lt;-</span> <span class="va">mu</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">gamma</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="fl">1</span> <span class="op">/</span> <span class="va">sigma</span><span class="op">)</span></span>
-<span><span class="va">scale</span></span>
-<span><span class="co">#&gt; &lt;jet&gt; value 4.483076, derivatives to order 4 in 2 variables</span></span>
-<span><span class="co">#&gt;   gradient: 1.12077  0.17979</span></span></code></pre></div>
-<p>The gradient, and every mixed derivative to fourth order, is exact to machine precision – there is no chain rule to transcribe and none to get wrong. Comparisons and non-smooth functions are refused rather than approximated: a branch taken on a jet would keep one side’s derivatives and report them as the whole expression’s.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># d scale / d sigma, by hand: mu * digamma(1 + 1/sigma) / (sigma^2 * gamma(...))</span></span>
-<span><span class="va">scale</span><span class="op">$</span><span class="va">d</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span>
-<span><span class="co">#&gt; [1] 0.1797873</span></span>
-<span><span class="fl">4.0</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">digamma</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="fl">1</span> <span class="op">/</span> <span class="fl">1.7</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">1.7</span><span class="op">^</span><span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">gamma</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="fl">1</span> <span class="op">/</span> <span class="fl">1.7</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 0.1797873</span></span></code></pre></div>
-</div>
-<div class="section level2">
 <h2 id="the-enumerations-behind-a-chain-rule">The enumerations behind a chain rule<a class="anchor" aria-label="anchor" href="#the-enumerations-behind-a-chain-rule"></a>
 </h2>
 <p>A derivative of order four over several variables is a sum over combinatorial objects, and an enumeration that exists in one copy cannot disagree with itself:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># the multi-indexes that key a derivative list (diagonal first at order 2)</span></span>
 <span><span class="fu"><a href="reference/tuple_indices.html">tuple_indices</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [[1]]</span></span>
@@ -125,7 +103,7 @@
 <h2 id="one-stencil-library">One stencil library<a class="anchor" aria-label="anchor" href="#one-stencil-library"></a>
 </h2>
 <p><code><a href="reference/fd_weights.html">fd_weights()</a></code> builds the finite-difference weights for any derivative order at any offsets from one Vandermonde system, <code><a href="reference/fd_offsets.html">fd_offsets()</a></code> chooses the offsets, <code><a href="reference/fd_step.html">fd_step()</a></code> the step, and <code><a href="reference/fd_derivative.html">fd_derivative()</a></code> assembles the three. The toolkit’s policy – one stencil applied to the highest analytic order, never a chain of first differences – stays with the packages that enforce it; this is the stencil itself, written once.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># the classical five-point first-derivative weights, and a derivative</span></span>
 <span><span class="fu"><a href="reference/fd_weights.html">fd_weights</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1L</span><span class="op">)</span> <span class="op">*</span> <span class="fl">12</span></span>
 <span><span class="co">#&gt; [1]  1 -8  0  8 -1</span></span>
@@ -136,7 +114,7 @@
 <h2 id="quadrature-and-series-vectorized-over-the-parameters">Quadrature and series, vectorized over the parameters<a class="anchor" aria-label="anchor" href="#quadrature-and-series-vectorized-over-the-parameters"></a>
 </h2>
 <p>A regression model gives every observation its own parameter value, so the integrals a fit needs come in families: the same integrand at hundreds of parameter rows. <code><a href="reference/quad_vec.html">quad_vec()</a></code> integrates all of them in one adaptive pass – the integrand receives a matrix of points and a row index, so a thousand parameter values cost matrix evaluations rather than a thousand adaptive runs – and <code><a href="reference/series_vec.html">series_vec()</a></code> does the same for infinite sums. A row that cannot reach the requested accuracy returns <code>NA</code> with a warning naming it.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">shp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">2</span>, <span class="fl">5</span>, <span class="fl">50</span><span class="op">)</span></span>
 <span><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="va">x</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/GammaDist.html" class="external-link">dgamma</a></span><span class="op">(</span><span class="va">x</span>, shape <span class="op">=</span> <span class="va">shp</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, rate <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/quad_vec.html">quad_vec</a></span><span class="op">(</span><span class="va">f</span>, <span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">Inf</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>          <span class="co"># the means, one call</span></span>
@@ -150,7 +128,7 @@
 <h2 id="the-logarithm-of-the-modified-bessel-functions">The logarithm of the modified Bessel functions<a class="anchor" aria-label="anchor" href="#the-logarithm-of-the-modified-bessel-functions"></a>
 </h2>
 <p>Bessel functions recur across distributions – the von Mises carries <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>I</mi><mn>0</mn></msub><annotation encoding="application/x-tex">I_0</annotation></semantics></math>, the Poisson-inverse Gaussian carries <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>K</mi><mrow><mi>y</mi><mo>−</mo><mn>1</mn><mi>/</mi><mn>2</mn></mrow></msub><annotation encoding="application/x-tex">K_{y-1/2}</annotation></semantics></math> – and both overflow from <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>x</mi><mo>=</mo><mn>700</mn></mrow><annotation encoding="application/x-tex">x = 700</annotation></semantics></math> while their exponentially scaled forms underflow past <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>10</mn><mn>5</mn></msup><annotation encoding="application/x-tex">10^5</annotation></semantics></math> or lose large orders entirely. Following Plesner, Sørensen and Hauberg (ICS 2024, arXiv:2409.08729), <code><a href="reference/log_bessel_i.html">log_bessel_i()</a></code> and <code><a href="reference/log_bessel_k.html">log_bessel_k()</a></code> carry every intermediate quantity on the log scale, so the result is finite and accurate wherever <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">log</mi><mo>⁡</mo></mrow><msub><mi>I</mi><mi>ν</mi></msub><mo stretchy="false" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\log I_\nu(x)</annotation></semantics></math> itself is representable; the <code>_derivs</code> variants add four derivatives in the argument from the ratio identity and the Bessel equation, at the cost of one more log-Bessel evaluation.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/log_bessel_i.html">log_bessel_i</a></span><span class="op">(</span><span class="fl">1e7</span>, <span class="fl">2</span><span class="op">)</span>              <span class="co"># I overflows at 700; the log is just a number</span></span>
 <span><span class="co">#&gt; [1] 9999991</span></span>
 <span><span class="fu"><a href="reference/log_bessel_i.html">log_bessel_i</a></span><span class="op">(</span><span class="fl">0.001</span>, <span class="fl">5000</span><span class="op">)</span>         <span class="co"># the scaled form loses this order entirely</span></span>
@@ -162,7 +140,7 @@
 <h2 id="special-functions-with-their-overflow-discipline">Special functions, with their overflow discipline<a class="anchor" aria-label="anchor" href="#special-functions-with-their-overflow-discipline"></a>
 </h2>
 <p>Each of these was born inside a distribution and carries the numerical lesson learned there: the Mills ratio is formed on the log scale, where the direct quotient is 0/0 from <code>t = -38</code> on; Owen’s T batches every element into one <code><a href="reference/quad_vec.html">quad_vec()</a></code> call; the Bessel ratio goes through the exponentially scaled Bessel functions, so it is finite at any argument, and its inverse comes with the four derivatives the inverse function rule provides.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/mills_ratio.html">mills_ratio</a></span><span class="op">(</span><span class="op">-</span><span class="fl">40</span><span class="op">)</span><span class="op">$</span><span class="va">r</span>        <span class="co"># finite, close to 40</span></span>
 <span><span class="co">#&gt; [1] 40.02497</span></span>
 <span><span class="fu"><a href="reference/owen_t.html">owen_t</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span>     <span class="co"># atan(1) = pi/4</span></span>

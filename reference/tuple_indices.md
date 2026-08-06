@@ -30,13 +30,12 @@ The ordering is part of the contract. At order two the diagonal comes
 first and the off-diagonal pairs follow, because that is the order a
 Hessian consumer indexes by; at orders three and four the enumeration is
 the lexicographic one over non-decreasing tuples. Anything that holds
-derivatives over \\d\\ variables – a jet, a constrained parameter – keys
+derivatives over \\d\\ variables – a constrained parameter, say – keys
 its components by this enumeration, so nothing has to be reordered when
 they meet.
 
 ## See also
 
-[`jet_layout`](https://statmodels7.github.io/numericals7/reference/jet_layout.md),
 [`set_partitions`](https://statmodels7.github.io/numericals7/reference/set_partitions.md)
 
 ## Examples

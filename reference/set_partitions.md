@@ -28,13 +28,11 @@ and then into a block of its own. There are 1, 2, 5 and 15 of them for
 
 The blocks index **positions** rather than variables, which is what
 makes a repeated variable count with the right multiplicity without any
-bookkeeping of its own – the same device
-[`jet_mul`](https://statmodels7.github.io/numericals7/reference/jet_mul.md)
-uses with subsets of positions.
+bookkeeping of its own – the same subset-of-positions device with
+subsets of positions.
 
 ## See also
 
-[`jet_compose`](https://statmodels7.github.io/numericals7/reference/jet_compose.md),
 [`tuple_indices`](https://statmodels7.github.io/numericals7/reference/tuple_indices.md)
 
 ## Examples
