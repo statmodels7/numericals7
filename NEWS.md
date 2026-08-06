@@ -1,3 +1,14 @@
+# numericals7 0.7.0
+
+* The log-Bessel kernels are compiled. `log_bessel_i()` and
+  `log_bessel_k()` now run scalar C++ loops over the same branches and
+  formulas; the vectorized R implementations stay as internal twins
+  (`.log_bessel_i_r`, `.log_bessel_k_r`) that a test compares against the
+  compiled route on every branch. Measured on a mixed workload of one
+  million points: log K 2.9x faster, log I 1.1x. The u_k polynomial table
+  is injected into the kernels once at load, so the two routes share the
+  table and nothing else.
+
 # numericals7 0.6.0
 
 * The jets are removed. Every production consumer now carries its

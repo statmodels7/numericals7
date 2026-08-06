@@ -1,6 +1,6 @@
 Package: numericals7
 Title: Numerical Kernels for Statistical Modeling
-Version: 0.6.0
+Version: 0.7.0
 Authors@R:
     person("Giovanni", "Tinervia", , "giovannitinervia9@gmail.com", role = c("aut", "cre"))
 Description: The numerical layer of a statistical modeling toolkit, written
@@ -16,8 +16,11 @@ BugReports: https://github.com/statmodels7/numericals7/issues
 Depends:
     R (>= 4.1.0)
 Imports:
+    Rcpp,
     stats,
     utils
+LinkingTo:
+    Rcpp
 Suggests:
     numDeriv,
     pkgdown,
@@ -28,6 +31,7 @@ Config/testthat/edition: 3
 Config/roxygen2/version: 8.0.0
 RoxygenNote: 7.3.3
 Collate: 
+    'RcppExports.R'
     'bessel_uk_table.R'
     'enumerate.R'
     'stencil.R'
@@ -36,3 +40,4 @@ Collate:
     'numericals7-package.R'
     'series.R'
     'special.R'
+    'zzz.R'
