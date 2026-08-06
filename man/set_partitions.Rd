@@ -24,7 +24,7 @@ for \eqn{n = 1, \dots, 4}, the Bell numbers.
 
 The blocks index \strong{positions} rather than variables, which is what
 makes a repeated variable count with the right multiplicity without any
-bookkeeping of its own -- the same device \code{\link{jet_mul}} uses with
+bookkeeping of its own -- the same subset-of-positions device with
 subsets of positions.
 }
 \examples{
@@ -33,5 +33,5 @@ lengths(lapply(1:4, set_partitions))
 
 }
 \seealso{
-\code{\link{jet_compose}}, \code{\link{tuple_indices}}
+\code{\link{tuple_indices}}
 }

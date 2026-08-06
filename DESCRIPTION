@@ -1,14 +1,10 @@
 Package: numericals7
 Title: Numerical Kernels for Statistical Modeling
-Version: 0.5.0
+Version: 0.6.0
 Authors@R:
     person("Giovanni", "Tinervia", , "giovannitinervia9@gmail.com", role = c("aut", "cre"))
 Description: The numerical layer of a statistical modeling toolkit, written
-    once and consumed by the packages above it. Jets carry a value together
-    with every partial derivative to fourth order, propagate exactly through
-    sums, products and a vocabulary of smooth functions, and dispatch on the
-    ordinary arithmetic operators, so a map written in plain R differentiates
-    itself. The combinatorial enumerations a higher-order chain rule rests on
+    once and consumed by the packages above it. The combinatorial enumerations a higher-order chain rule rests on
     -- index tuples, set partitions, weak compositions -- live beside them,
     in one copy.
 License: MIT + file LICENSE
@@ -34,7 +30,6 @@ RoxygenNote: 7.3.3
 Collate: 
     'bessel_uk_table.R'
     'enumerate.R'
-    'jet.R'
     'stencil.R'
     'quadrature.R'
     'log_bessel.R'

@@ -24,7 +24,7 @@ The ordering is part of the contract. At order two the diagonal comes
 first and the off-diagonal pairs follow, because that is the order a
 Hessian consumer indexes by; at orders three and four the enumeration is
 the lexicographic one over non-decreasing tuples. Anything that holds
-derivatives over \eqn{d} variables -- a jet, a constrained parameter --
+derivatives over \eqn{d} variables -- a constrained parameter, say --
 keys its components by this enumeration, so nothing has to be reordered
 when they meet.
 }
@@ -36,5 +36,5 @@ length(tuple_indices(3, 4)) == choose(3 + 4 - 1, 4)
 
 }
 \seealso{
-\code{\link{jet_layout}}, \code{\link{set_partitions}}
+\code{\link{set_partitions}}
 }

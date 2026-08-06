@@ -1,3 +1,14 @@
+# numericals7 0.6.0
+
+* The jets are removed. Every production consumer now carries its
+  derivatives as written closed forms: the reparametrized families of
+  distributions7 declare their map partials explicitly, and parameters7's
+  autoregressive family propagates its derivative arrays through the
+  Levinson-Durbin recursion in compiled code, the product rule written out
+  per order. Measured on the Poisson-inverse Gaussian kernels, the jet
+  route's fixed composition overhead was 2x to 36x the cost of the written
+  forms.
+
 # numericals7 0.5.0
 
 * The logarithm of the modified Bessel functions, after Plesner, Sorensen

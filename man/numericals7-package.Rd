@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-The numerical layer of a statistical modeling toolkit, written once and consumed by the packages above it. Jets carry a value together with every partial derivative to fourth order, propagate exactly through sums, products and a vocabulary of smooth functions, and dispatch on the ordinary arithmetic operators, so a map written in plain R differentiates itself. The combinatorial enumerations a higher-order chain rule rests on -- index tuples, set partitions, weak compositions -- live beside them, in one copy.
+The numerical layer of a statistical modeling toolkit, written once and consumed by the packages above it. The combinatorial enumerations a higher-order chain rule rests on -- index tuples, set partitions, weak compositions -- live beside them, in one copy.
 }
 \seealso{
 Useful links:

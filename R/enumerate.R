@@ -15,7 +15,7 @@
 #' first and the off-diagonal pairs follow, because that is the order a
 #' Hessian consumer indexes by; at orders three and four the enumeration is
 #' the lexicographic one over non-decreasing tuples. Anything that holds
-#' derivatives over \eqn{d} variables -- a jet, a constrained parameter --
+#' derivatives over \eqn{d} variables -- a constrained parameter, say --
 #' keys its components by this enumeration, so nothing has to be reordered
 #' when they meet.
 #'
@@ -24,7 +24,7 @@
 #'
 #' @return A list of integer vectors of length \code{order}.
 #'
-#' @seealso \code{\link{jet_layout}}, \code{\link{set_partitions}}
+#' @seealso \code{\link{set_partitions}}
 #'
 #' @examples
 #' tuple_indices(2, 2)
@@ -69,14 +69,14 @@ tuple_indices <- function(d, order = 2L) {
 #'
 #' The blocks index \strong{positions} rather than variables, which is what
 #' makes a repeated variable count with the right multiplicity without any
-#' bookkeeping of its own -- the same device \code{\link{jet_mul}} uses with
+#' bookkeeping of its own -- the same subset-of-positions device with
 #' subsets of positions.
 #'
 #' @param n A positive integer, at most four here.
 #'
 #' @return A list of partitions, each a list of integer vectors.
 #'
-#' @seealso \code{\link{jet_compose}}, \code{\link{tuple_indices}}
+#' @seealso \code{\link{tuple_indices}}
 #'
 #' @examples
 #' set_partitions(3)
