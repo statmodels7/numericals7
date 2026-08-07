@@ -56,7 +56,7 @@
   call per refinement pass -- with the Gauss-Kronrod 7-15 pair supplying an
   error estimate from the same function values, adaptivity batched by row so
   that one hard row cannot serialize the others, rational maps for infinite
-  endpoints, and refusal over plausibility: a row that cannot reach the
+  endpoints, and rejection over plausibility: a row that cannot reach the
   requested accuracy returns NA with a warning naming it. `series_vec()`
   does the same for series, in blocks with a per-row convergence mask and a
   tail guard that sees past a block straddling the mode of a hump-shaped
@@ -98,7 +98,7 @@
   `log1p`, `expm1`, an arbitrary power, `sqrt`, `gamma`, `lgamma`, `digamma`,
   `trigamma`, `sin`, `cos`). `Ops` and `Math` dispatch on the class, so a map
   written as `mu / gamma(1 + 1 / sigma)` differentiates itself. Comparison
-  operators and the non-smooth functions are refused: a branch taken on a jet
+  operators and the non-smooth functions are rejected: a branch taken on a jet
   would keep one side's derivatives and report them as the whole
   expression's.
 
