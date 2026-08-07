@@ -54,7 +54,7 @@ lies beyond it; that its terms are rising is what says the block came
 before the mode rather than after it. The terms are assumed eventually
 decreasing in magnitude, which every series in the toolkit satisfies.
 
-\strong{Refusal over plausibility.} A row not converged after
+\strong{Rejection over plausibility.} A row not converged after
 \code{max_terms} terms returns \code{NA} with a warning naming it.
 }
 \examples{

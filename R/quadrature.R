@@ -89,7 +89,7 @@ gauss_kronrod15 <- function() {
 #' \eqn{x = t/(1-t^2)}, whose Jacobians multiply the integrand; rows of
 #' different kinds may share a call.
 #'
-#' \strong{Refusal over plausibility.} A row whose panels still exceed their
+#' \strong{Rejection over plausibility.} A row whose panels still exceed their
 #' budget at \code{max_depth} returns \code{NA} with a warning naming it. An
 #' \code{NA} names a failure; a plausible number would hide one.
 #'
@@ -99,7 +99,7 @@ gauss_kronrod15 <- function() {
 #' @param atol,rtol The absolute and relative error budgets per row.
 #' @param max_depth The maximum number of bisections a panel may undergo.
 #'   The default reaches the integrable endpoint singularities of the mild
-#'   kind a density with shape below one has; a harsher one is refused.
+#'   kind a density with shape below one has; a harsher one is rejected.
 #' @param rule The embedded quadrature pair, by default
 #'   \code{\link{gauss_kronrod15}()}.
 #'
