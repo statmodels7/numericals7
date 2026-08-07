@@ -50,7 +50,7 @@ fd_weights(c(-1, 0, 1), 1)             # the central first difference
 fd_weights(c(-1, 0, 1), 2)             # 1, -2, 1
 #> [1]  1 -2  1
 fd_weights(-2:2, 1) * 12               # the five-point first derivative
-#> [1]  1.000000e+00 -8.000000e+00 -2.854859e-15  8.000000e+00 -1.000000e+00
+#> [1]  1 -8  0  8 -1
 fd_weights(0:2, 1)                     # one-sided, for a boundary
 #> [1] -1.5  2.0 -0.5
 ```
