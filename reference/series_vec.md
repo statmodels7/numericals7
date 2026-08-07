@@ -67,7 +67,7 @@ is what says the block came before the mode rather than after it. The
 terms are assumed eventually decreasing in magnitude, which every series
 in the toolkit satisfies.
 
-**Refusal over plausibility.** A row not converged after `max_terms`
+**Rejection over plausibility.** A row not converged after `max_terms`
 terms returns `NA` with a warning naming it.
 
 ## See also

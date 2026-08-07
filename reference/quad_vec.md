@@ -37,7 +37,7 @@ quad_vec(
 
   The maximum number of bisections a panel may undergo. The default
   reaches the integrable endpoint singularities of the mild kind a
-  density with shape below one has; a harsher one is refused.
+  density with shape below one has; a harsher one is rejected.
 
 - rule:
 
@@ -81,7 +81,7 @@ transforms \\x = a + t/(1-t)\\, \\x = b - t/(1-t)\\ and \\x =
 t/(1-t^2)\\, whose Jacobians multiply the integrand; rows of different
 kinds may share a call.
 
-**Refusal over plausibility.** A row whose panels still exceed their
+**Rejection over plausibility.** A row whose panels still exceed their
 budget at `max_depth` returns `NA` with a warning naming it. An `NA`
 names a failure; a plausible number would hide one.
 
