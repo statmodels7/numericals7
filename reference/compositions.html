@@ -63,7 +63,13 @@ k non-negative integers summing to n, one per row."><meta property="og:image" co
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Built by recursion on the number of parts, which is what keeps the result
+    <p>The set enumerated is</p>
+<p>$$\mathcal{C}(n, k) = \Bigl\{(c_1, \dots, c_k) \in \mathbb{N}_0^{k} :
+  \textstyle\sum_{j=1}^{k} c_j = n\Bigr\},
+  \qquad \lvert\mathcal{C}(n, k)\rvert = \binom{n + k - 1}{k - 1},$$</p>
+<p>the count being the number of ways to place \(k - 1\) dividers among
+\(n\) units.</p>
+<p>Built by recursion on the number of parts, which is what keeps the result
 in a fixed order and avoids generating and filtering a full grid. There
 are <code>choose(n + k - 1, k - 1)</code> of them, so the enumeration is only
 practical for a moderate size: at <code>n = 20</code> and <code>k = 5</code> it is
