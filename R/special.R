@@ -27,6 +27,7 @@ NULL
 #' @examples
 #' mills_ratio(c(-40, 0, 3))$r
 #'
+#' @seealso \code{\link{owen_t}}, \code{\link{bessel_i_ratio}}, \code{\link{log_bessel_i}}, \code{\link{log_bessel_k}}
 #' @export
 mills_ratio <- function(t) {
   r <- exp(stats::dnorm(t, log = TRUE) - stats::pnorm(t, log.p = TRUE))
@@ -59,6 +60,7 @@ mills_ratio <- function(t) {
 #' @examples
 #' owen_t(0, 1) - atan(1) / (2 * pi)
 #'
+#' @seealso \code{\link{mills_ratio}}, \code{\link{bessel_i_ratio}}, \code{\link{log_bessel_i}}, \code{\link{log_bessel_k}}
 #' @export
 owen_t <- function(h, a) {
   n <- max(length(h), length(a))

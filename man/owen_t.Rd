@@ -34,3 +34,6 @@ owen_t(0, 1) - atan(1) / (2 * pi)
 Owen, D. B. (1956). Tables for computing bivariate normal probabilities.
 \emph{Annals of Mathematical Statistics} 27, 1075-1090.
 }
+\seealso{
+\code{\link{mills_ratio}}, \code{\link{bessel_i_ratio}}, \code{\link{log_bessel_i}}, \code{\link{log_bessel_k}}
+}
