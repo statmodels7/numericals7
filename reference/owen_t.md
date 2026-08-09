@@ -39,6 +39,13 @@ quadrature-bound: \\T(h, a) = -T(h, -a)\\, and \\T(h, \infty) =
 Owen, D. B. (1956). Tables for computing bivariate normal probabilities.
 *Annals of Mathematical Statistics* 27, 1075-1090.
 
+## See also
+
+[`mills_ratio`](https://statmodels7.github.io/numericals7/reference/mills_ratio.md),
+[`bessel_i_ratio`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio.md),
+[`log_bessel_i`](https://statmodels7.github.io/numericals7/reference/log_bessel_i.md),
+[`log_bessel_k`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md)
+
 ## Examples
 
 ``` r

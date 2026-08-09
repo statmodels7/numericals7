@@ -28,6 +28,13 @@ function underflow, while the ratio itself is finite there and close to
 \\-t\\. The identity for \\R'\\ follows from differentiating the
 quotient and using \\\phi'(t) = -t\phi(t)\\.
 
+## See also
+
+[`owen_t`](https://statmodels7.github.io/numericals7/reference/owen_t.md),
+[`bessel_i_ratio`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio.md),
+[`log_bessel_i`](https://statmodels7.github.io/numericals7/reference/log_bessel_i.md),
+[`log_bessel_k`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md)
+
 ## Examples
 
 ``` r
