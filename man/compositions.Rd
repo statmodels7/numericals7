@@ -19,6 +19,15 @@ The weak compositions of \code{n} into \code{k} parts: every vector of
 \code{k} non-negative integers summing to \code{n}, one per row.
 }
 \details{
+The set enumerated is
+
+\deqn{\mathcal{C}(n, k) = \Bigl\{(c_1, \dots, c_k) \in \mathbb{N}_0^{k} :
+  \textstyle\sum_{j=1}^{k} c_j = n\Bigr\},
+  \qquad \lvert\mathcal{C}(n, k)\rvert = \binom{n + k - 1}{k - 1},}
+
+the count being the number of ways to place \eqn{k - 1} dividers among
+\eqn{n} units.
+
 Built by recursion on the number of parts, which is what keeps the result
 in a fixed order and avoids generating and filtering a full grid. There
 are \code{choose(n + k - 1, k - 1)} of them, so the enumeration is only
