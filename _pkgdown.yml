@@ -58,6 +58,17 @@ reference:
   - series_vec
   - gauss_kronrod15
 
+- title: Threads
+  desc: >
+    The thread policy of the toolkit, one object passed as an argument from
+    the fit entry points down to the compiled kernels. The result does not
+    depend on the count, bit for bit.
+  contents:
+  - n_threads
+  - thread_count
+  - worker_count
+  - local_threads
+
 - title: Special functions
   contents:
   - log_bessel_i
