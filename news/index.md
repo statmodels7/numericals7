@@ -1,5 +1,34 @@
 # Changelog
 
+## numericals7 0.9.0
+
+- [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
+  gains `workers`, the number of R processes the independent fits of a
+  cross-validation’s folds may use, read by
+  [`worker_count()`](https://statmodels7.github.io/numericals7/reference/worker_count.md).
+  The same object carries both levels of the toolkit’s parallelism,
+  which is what the one-argument constructor existed for; the two do not
+  nest (a fit inside a worker is sequential by construction), and the
+  result does not depend on either count, bit for bit.
+
+## numericals7 0.8.0
+
+- The thread policy of the toolkit lives here, at the root, being the
+  one package below every compiled kernel. `n_threads(threads = 1)`
+  constructs it,
+  [`thread_count()`](https://statmodels7.github.io/numericals7/reference/thread_count.md)
+  reads the count off it, and
+  [`local_threads()`](https://statmodels7.github.io/numericals7/reference/local_threads.md)
+  applies it to RcppParallel’s process-level setting for one calling
+  frame and restores the previous state on exit. The object is passed as
+  an argument from the fit entry points
+  (`statmodels7::statmod(threads =)`,
+  `distributions7::fit_distrib(threads =)`) down to the kernels: no
+  global state, and no package reads a setting that lives in another.
+  The result of a fit does not depend on the count, bit for bit, because
+  every parallel region in the toolkit decomposes its work over the
+  elements of its output and never splits a reduction.
+
 ## numericals7 0.7.0
 
 - The log-Bessel kernels are compiled.

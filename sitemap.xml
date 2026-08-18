@@ -18,16 +18,20 @@
 <url><loc>https://statmodels7.github.io/numericals7/reference/fd_weights.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/gauss_kronrod15.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/index.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/local_threads.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/log_bessel_i.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/log_bessel_i_derivs.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/log_bessel_k.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/log_bessel_k_derivs.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/mills_ratio.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/n_threads.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/numericals7-package.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/owen_t.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/quad_vec.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/series_vec.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/set_partitions.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/thread_count.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/tuple_indices.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/worker_count.html</loc></url>
 </urlset>
 

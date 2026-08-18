@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,6 +32,15 @@
       <small>Source: <a href="https://github.com/statmodels7/numericals7/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.0" id="numericals7-090">numericals7 0.9.0<a class="anchor" aria-label="anchor" href="#numericals7-090"></a></h2>
+<ul><li>
+<code><a href="../reference/n_threads.html">n_threads()</a></code> gains <code>workers</code>, the number of R processes the independent fits of a cross-validation’s folds may use, read by <code><a href="../reference/worker_count.html">worker_count()</a></code>. The same object carries both levels of the toolkit’s parallelism, which is what the one-argument constructor existed for; the two do not nest (a fit inside a worker is sequential by construction), and the result does not depend on either count, bit for bit.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.0" id="numericals7-080">numericals7 0.8.0<a class="anchor" aria-label="anchor" href="#numericals7-080"></a></h2>
+<ul><li>The thread policy of the toolkit lives here, at the root, being the one package below every compiled kernel. <code>n_threads(threads = 1)</code> constructs it, <code><a href="../reference/thread_count.html">thread_count()</a></code> reads the count off it, and <code><a href="../reference/local_threads.html">local_threads()</a></code> applies it to RcppParallel’s process-level setting for one calling frame and restores the previous state on exit. The object is passed as an argument from the fit entry points (<code>statmodels7::statmod(threads =)</code>, <code>distributions7::fit_distrib(threads =)</code>) down to the kernels: no global state, and no package reads a setting that lives in another. The result of a fit does not depend on the count, bit for bit, because every parallel region in the toolkit decomposes its work over the elements of its output and never splits a reduction.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.7.0" id="numericals7-070">numericals7 0.7.0<a class="anchor" aria-label="anchor" href="#numericals7-070"></a></h2>
 <ul><li>The log-Bessel kernels are compiled. <code><a href="../reference/log_bessel_i.html">log_bessel_i()</a></code> and <code><a href="../reference/log_bessel_k.html">log_bessel_k()</a></code> now run scalar C++ loops over the same branches and formulas; the vectorized R implementations stay as internal twins (<code>.log_bessel_i_r</code>, <code>.log_bessel_k_r</code>) that a test compares against the compiled route on every branch. Measured on a mixed workload of one million points: log K 2.9x faster, log I 1.1x. The u_k polynomial table is injected into the kernels once at load, so the two routes share the table and nothing else.</li>

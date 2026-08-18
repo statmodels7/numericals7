@@ -188,6 +188,22 @@ named row where the requested accuracy cannot be reached.
 - [`gauss_kronrod15()`](https://statmodels7.github.io/numericals7/reference/gauss_kronrod15.md)
   : The Gauss-Kronrod 7-15 Pair
 
+## Threads
+
+The thread policy of the toolkit, one object passed as an argument from
+the fit entry points down to the compiled kernels. The result does not
+depend on the count, bit for bit.
+
+- [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
+  [`print(`*`<n_threads>`*`)`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
+  : How Many Threads and Worker Processes a Fit May Use
+- [`thread_count()`](https://statmodels7.github.io/numericals7/reference/thread_count.md)
+  : Read the Count Off a Thread Policy
+- [`worker_count()`](https://statmodels7.github.io/numericals7/reference/worker_count.md)
+  : Read the Worker Count Off a Thread Policy
+- [`local_threads()`](https://statmodels7.github.io/numericals7/reference/local_threads.md)
+  : Apply a Thread Policy for the Duration of One Fit
+
 ## Special functions
 
 - [`log_bessel_i()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i.md)
