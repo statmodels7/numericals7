@@ -1,5 +1,15 @@
 # Changelog
 
+## numericals7 0.9.1
+
+- The
+  [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
+  page qualifies its guarantee where a threaded kernel replaces a BLAS
+  expression: the count never changes what a kernel computes, and the
+  replacement itself is bit-exact against the reference BLAS R ships and
+  within the rounding of one dot product against an optimized one, whose
+  accumulation order is its own.
+
 ## numericals7 0.9.0
 
 - [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
