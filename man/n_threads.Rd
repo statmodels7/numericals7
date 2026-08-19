@@ -35,13 +35,19 @@ independent fits of a cross-validation's folds out over separate R
 processes.
 }
 \details{
-The result does not depend on \code{threads} or on \code{workers}, bit
-for bit, at any count. Every parallel region in the toolkit decomposes
-its work over the elements of its output, so each accumulated value is
-summed in full by one thread and no reduction is ever split across
-threads; and a fold's fit is a complete, independent computation whose
-results are collected in fold order whatever the number of processes.
-The guarantee is also a design constraint on any kernel added later.
+The count never changes what a kernel computes: every parallel region in
+the toolkit decomposes its work over the elements of its output, so each
+accumulated value is summed in full by one thread and no reduction is
+ever split across threads -- a kernel's result is bit for bit the same at
+any count -- and a fold's fit is a complete, independent computation
+whose results are collected in fold order whatever the number of
+processes. One qualification: where raising the count first ENGAGES a
+threaded kernel in place of a BLAS expression (the dense assembly
+products of \pkg{statmodels7}), the replacement is a second
+implementation of the same sum, bit-exact against the reference BLAS R
+ships and within the rounding of one dot product against an optimized
+one (OpenBLAS, Accelerate), whose accumulation order is its own. The
+guarantee is also a design constraint on any kernel added later.
 
 At \code{threads = 1} nothing parallel is entered and no process-level
 thread setting is touched: the code taken is the sequential path, not a
