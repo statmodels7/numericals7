@@ -1,3 +1,12 @@
+# numericals7 0.9.2
+
+* A second qualification on the `n_threads()` page: a kernel that calls
+  into the platform's own math routines per element inherits that
+  runtime's per-thread behavior in the last bit (one runtime was measured
+  returning one-ulp differences between the main thread and a worker,
+  deterministically), so bit-identity across counts is promised for the
+  arithmetic a kernel computes itself.
+
 # numericals7 0.9.1
 
 * The `n_threads()` page qualifies its guarantee where a threaded kernel

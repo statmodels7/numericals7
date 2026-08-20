@@ -41,13 +41,19 @@ accumulated value is summed in full by one thread and no reduction is
 ever split across threads -- a kernel's result is bit for bit the same at
 any count -- and a fold's fit is a complete, independent computation
 whose results are collected in fold order whatever the number of
-processes. One qualification: where raising the count first ENGAGES a
+processes. Two qualifications. Where raising the count first ENGAGES a
 threaded kernel in place of a BLAS expression (the dense assembly
 products of \pkg{statmodels7}), the replacement is a second
 implementation of the same sum, bit-exact against the reference BLAS R
 ships and within the rounding of one dot product against an optimized
-one (OpenBLAS, Accelerate), whose accumulation order is its own. The
-guarantee is also a design constraint on any kernel added later.
+one (OpenBLAS, Accelerate), whose accumulation order is its own. And a
+kernel that calls into the platform's own math routines per element
+(the polygamma family of \pkg{distributions7}) inherits that runtime's
+per-thread behavior in the last bit: one runtime was measured returning
+one-ulp differences between the main thread and a worker,
+deterministically, so bit-identity across counts is promised for the
+arithmetic a kernel computes itself. The guarantee is also a design
+constraint on any kernel added later.
 
 At \code{threads = 1} nothing parallel is entered and no process-level
 thread setting is touched: the code taken is the sequential path, not a
