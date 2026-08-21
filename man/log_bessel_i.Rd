@@ -4,13 +4,23 @@
 \alias{log_bessel_i}
 \title{Logarithm of the Modified Bessel Function of the First Kind}
 \usage{
-log_bessel_i(x, nu)
+log_bessel_i(x, nu, threads = 1L)
 }
 \arguments{
 \item{x}{A numeric vector of non-negative arguments, recycled against
 \code{nu}.}
 
 \item{nu}{A numeric vector of non-negative orders.}
+
+\item{threads}{How many threads the kernel may use, a plain integer, as
+\code{\link{thread_count}} reads it off an \code{\link{n_threads}}
+policy. Every branch of the kernel is this package's own arithmetic, so
+element \eqn{i} is computed and written by one thread and the result is
+bit-identical at any count; below an internal threshold the sequential
+path is taken whatever the count says. \code{\link{log_bessel_k}} takes
+no such argument: its hybrid branch calls R's own scaled \code{besselK},
+which can raise a warning, and a warning from a worker thread ends the
+session.}
 }
 \value{
 A numeric vector of \eqn{\log I_\nu(x)} values; \code{-Inf} at

@@ -3,6 +3,7 @@
 // per element. The u_k polynomial coefficients are injected once from the
 // R table at load, so the two routes share the table and nothing else.
 #include <Rcpp.h>
+#include "n7_par.h"
 #include <cmath>
 using namespace Rcpp;
 
@@ -148,18 +149,34 @@ static double lbk_one(double x, double v) {
   }
 }
 
+// Every branch of lbi_one() is this file's own arithmetic -- a series or a
+// uniform asymptotic expansion -- with no call into Rmath, which is what
+// makes the body admissible inside a worker. Its dearest branch is several
+// microseconds an element (measured 167 ms over 20000 points at small
+// argument), so the region pays from a very small count.
 // [[Rcpp::export]]
-NumericVector log_bessel_i_cpp(NumericVector x, NumericVector nu) {
+NumericVector log_bessel_i_cpp(NumericVector x, NumericVector nu,
+                               int threads = 1) {
   R_xlen_t n = std::max(x.size(), nu.size());
   NumericVector out(n);
-  for (R_xlen_t i = 0; i < n; ++i) {
-    double xi = x[i % x.size()], vi = nu[i % nu.size()];
-    out[i] = (ISNAN(xi) || ISNAN(vi) || xi < 0 || vi < 0)
+  const R_xlen_t nx = x.size(), nv = nu.size();
+  const double* xp = x.begin();
+  const double* vp = nu.begin();
+  double* op = out.begin();
+  n7::par_for((std::size_t) n, threads, n7::kMinCostly, [&](std::size_t i) {
+    double xi = xp[i % nx], vi = vp[i % nv];
+    op[i] = (ISNAN(xi) || ISNAN(vi) || xi < 0 || vi < 0)
       ? NA_REAL : lbi_one(xi, vi);
-  }
+  });
   return out;
 }
 
+// This one is NOT threaded and takes no count: lbk_one()'s hybrid branch
+// calls R::bessel_k, which can raise a warning, and a warning from a worker
+// thread kills the process (n7_par.h). It is also the cheap one of the pair
+// -- 8 to 10 ms over 20000 points against log I's 167 -- so what the
+// restriction costs is small and stating it is better than an argument that
+// would be read by nobody.
 // [[Rcpp::export]]
 NumericVector log_bessel_k_cpp(NumericVector x, NumericVector nu) {
   R_xlen_t n = std::max(x.size(), nu.size());

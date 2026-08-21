@@ -1,6 +1,6 @@
 Package: numericals7
 Title: Numerical Kernels for Statistical Modeling
-Version: 0.9.2
+Version: 0.10.0
 Authors@R:
     person("Giovanni", "Tinervia", , "giovannitinervia9@gmail.com", role = c("aut", "cre"))
 Description: The numerical layer of a statistical modeling toolkit, written
@@ -21,7 +21,9 @@ Imports:
     stats,
     utils
 LinkingTo:
-    Rcpp
+    Rcpp,
+    RcppParallel
+SystemRequirements: GNU make
 Suggests:
     numDeriv,
     pkgdown,

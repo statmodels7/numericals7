@@ -23,19 +23,21 @@
 #' ever split across threads -- a kernel's result is bit for bit the same at
 #' any count -- and a fold's fit is a complete, independent computation
 #' whose results are collected in fold order whatever the number of
-#' processes. Two qualifications. Where raising the count first ENGAGES a
-#' threaded kernel in place of a BLAS expression (the dense assembly
-#' products of \pkg{statmodels7}), the replacement is a second
+#' processes. Two things make that hold rather than merely be intended, and
+#' both are properties of the drivers rather than of the kernels: a worker
+#' installs the calling thread's floating-point environment before running
+#' its chunk, without which some of the platform's own math routines return
+#' per-thread last bits (R's \code{psigamma} at higher orders,
+#' \code{bessel_k}, and \code{pgamma} and \code{pbeta} on the log scale
+#' were each measured doing so), and the sequential branch runs through the
+#' same compiled function the parallel one does, so the two cannot be
+#' optimized apart. One qualification remains: where raising the count first
+#' ENGAGES a threaded kernel in place of a BLAS expression (the dense
+#' assembly products of \pkg{statmodels7}), the replacement is a second
 #' implementation of the same sum, bit-exact against the reference BLAS R
-#' ships and within the rounding of one dot product against an optimized
-#' one (OpenBLAS, Accelerate), whose accumulation order is its own. And a
-#' kernel that calls into the platform's own math routines per element
-#' (the polygamma family of \pkg{distributions7}) inherits that runtime's
-#' per-thread behavior in the last bit: one runtime was measured returning
-#' one-ulp differences between the main thread and a worker,
-#' deterministically, so bit-identity across counts is promised for the
-#' arithmetic a kernel computes itself. The guarantee is also a design
-#' constraint on any kernel added later.
+#' ships and within the rounding of one dot product against an optimized one
+#' (OpenBLAS, Accelerate), whose accumulation order is its own. The
+#' guarantee is also a design constraint on any kernel added later.
 #'
 #' At \code{threads = 1} nothing parallel is entered and no process-level
 #' thread setting is touched: the code taken is the sequential path, not a
@@ -54,7 +56,8 @@
 #' less than that.
 #'
 #' @param threads A single whole number, at least 1. \code{1}, the default,
-#'   is sequential.
+#'   is sequential. The count is what the kernels are given and what they
+#'   run on, not an upper bound they may exceed.
 #' @param workers A single whole number, at least 1: how many R processes
 #'   the independent fits of a cross-validation's folds may use. \code{1},
 #'   the default, runs them in this process.

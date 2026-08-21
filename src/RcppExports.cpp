@@ -21,14 +21,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // log_bessel_i_cpp
-NumericVector log_bessel_i_cpp(NumericVector x, NumericVector nu);
-RcppExport SEXP _numericals7_log_bessel_i_cpp(SEXP xSEXP, SEXP nuSEXP) {
+NumericVector log_bessel_i_cpp(NumericVector x, NumericVector nu, int threads);
+RcppExport SEXP _numericals7_log_bessel_i_cpp(SEXP xSEXP, SEXP nuSEXP, SEXP threadsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
     Rcpp::traits::input_parameter< NumericVector >::type nu(nuSEXP);
-    rcpp_result_gen = Rcpp::wrap(log_bessel_i_cpp(x, nu));
+    Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(log_bessel_i_cpp(x, nu, threads));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -47,7 +48,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_numericals7_lb_set_uk_cpp", (DL_FUNC) &_numericals7_lb_set_uk_cpp, 1},
-    {"_numericals7_log_bessel_i_cpp", (DL_FUNC) &_numericals7_log_bessel_i_cpp, 2},
+    {"_numericals7_log_bessel_i_cpp", (DL_FUNC) &_numericals7_log_bessel_i_cpp, 3},
     {"_numericals7_log_bessel_k_cpp", (DL_FUNC) &_numericals7_log_bessel_k_cpp, 2},
     {NULL, NULL, 0}
 };

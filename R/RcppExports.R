@@ -5,8 +5,8 @@ lb_set_uk_cpp <- function(uk) {
     invisible(.Call(`_numericals7_lb_set_uk_cpp`, uk))
 }
 
-log_bessel_i_cpp <- function(x, nu) {
-    .Call(`_numericals7_log_bessel_i_cpp`, x, nu)
+log_bessel_i_cpp <- function(x, nu, threads = 1L) {
+    .Call(`_numericals7_log_bessel_i_cpp`, x, nu, threads)
 }
 
 log_bessel_k_cpp <- function(x, nu) {

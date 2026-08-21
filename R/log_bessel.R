@@ -169,6 +169,15 @@ NULL
 #' @param x A numeric vector of non-negative arguments, recycled against
 #'   \code{nu}.
 #' @param nu A numeric vector of non-negative orders.
+#' @param threads How many threads the kernel may use, a plain integer, as
+#'   \code{\link{thread_count}} reads it off an \code{\link{n_threads}}
+#'   policy. Every branch of the kernel is this package's own arithmetic, so
+#'   element \eqn{i} is computed and written by one thread and the result is
+#'   bit-identical at any count; below an internal threshold the sequential
+#'   path is taken whatever the count says. \code{\link{log_bessel_k}} takes
+#'   no such argument: its hybrid branch calls R's own scaled \code{besselK},
+#'   which can raise a warning, and a warning from a worker thread ends the
+#'   session.
 #'
 #' @return A numeric vector of \eqn{\log I_\nu(x)} values; \code{-Inf} at
 #'   \eqn{x = 0} with \eqn{\nu > 0}, \code{0} at \eqn{x = 0} with
@@ -191,8 +200,8 @@ NULL
 #' log_bessel_i(0.001, 500)             # far past the scaled underflow
 #'
 #' @export
-log_bessel_i <- function(x, nu) {
-  log_bessel_i_cpp(as.numeric(x), as.numeric(nu))
+log_bessel_i <- function(x, nu, threads = 1L) {
+  log_bessel_i_cpp(as.numeric(x), as.numeric(nu), as.integer(threads))
 }
 
 #' The R Twin of the Compiled log I Kernel
