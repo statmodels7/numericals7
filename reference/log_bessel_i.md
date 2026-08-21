@@ -11,7 +11,7 @@ and where the exponentially scaled one underflows or loses its precision
 ## Usage
 
 ``` r
-log_bessel_i(x, nu)
+log_bessel_i(x, nu, threads = 1L)
 ```
 
 ## Arguments
@@ -23,6 +23,21 @@ log_bessel_i(x, nu)
 - nu:
 
   A numeric vector of non-negative orders.
+
+- threads:
+
+  How many threads the kernel may use, a plain integer, as
+  [`thread_count`](https://statmodels7.github.io/numericals7/reference/thread_count.md)
+  reads it off an
+  [`n_threads`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
+  policy. Every branch of the kernel is this package's own arithmetic,
+  so element \\i\\ is computed and written by one thread and the result
+  is bit-identical at any count; below an internal threshold the
+  sequential path is taken whatever the count says.
+  [`log_bessel_k`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md)
+  takes no such argument: its hybrid branch calls R's own scaled
+  `besselK`, which can raise a warning, and a warning from a worker
+  thread ends the session.
 
 ## Value
 

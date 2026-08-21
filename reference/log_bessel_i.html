@@ -17,7 +17,7 @@ order with a small argument, and arguments beyond about \(10^5\))."><meta proper
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,7 +54,7 @@ order with a small argument, and arguments beyond about \(10^5\)).</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">log_bessel_i</span><span class="op">(</span><span class="va">x</span>, <span class="va">nu</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">log_bessel_i</span><span class="op">(</span><span class="va">x</span>, <span class="va">nu</span>, threads <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -68,6 +68,18 @@ order with a small argument, and arguments beyond about \(10^5\)).</p>
 
 <dt id="arg-nu">nu<a class="anchor" aria-label="anchor" href="#arg-nu"></a></dt>
 <dd><p>A numeric vector of non-negative orders.</p></dd>
+
+
+<dt id="arg-threads">threads<a class="anchor" aria-label="anchor" href="#arg-threads"></a></dt>
+<dd><p>How many threads the kernel may use, a plain integer, as
+<code><a href="thread_count.html">thread_count</a></code> reads it off an <code><a href="n_threads.html">n_threads</a></code>
+policy. Every branch of the kernel is this package's own arithmetic, so
+element \(i\) is computed and written by one thread and the result is
+bit-identical at any count; below an internal threshold the sequential
+path is taken whatever the count says. <code><a href="log_bessel_k.html">log_bessel_k</a></code> takes
+no such argument: its hybrid branch calls R's own scaled <code>besselK</code>,
+which can raise a warning, and a warning from a worker thread ends the
+session.</p></dd>
 
 </dl></div>
     <div class="section level2">

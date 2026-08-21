@@ -1,5 +1,47 @@
 # Changelog
 
+## numericals7 0.10.0
+
+- [`log_bessel_i()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i.md)
+  takes a `threads` count and runs its elementwise loop over that many.
+  Every branch of the kernel is this package’s own arithmetic – a series
+  or a uniform asymptotic expansion, with no call into Rmath – so
+  element `i` is computed and written by one thread and the result is
+  bit-identical at any count. Measured at 20000 points: 167 ms
+  sequential against 52 at eight threads in the dearest branch (small
+  argument), 3.6x, and 5.9x where the asymptotic branch runs. It is the
+  package’s first parallel kernel; until now nothing here was threaded
+  although the policy object lives here.
+
+- [`log_bessel_k()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md)
+  deliberately takes no count: its hybrid branch calls R’s own scaled
+  `besselK`, which can raise a warning, and a warning from a worker
+  thread ends the session. It is also the cheap one of the pair, 8 to 10
+  ms over the same 20000 points, so what the restriction costs is small.
+  An argument that would be read by nobody is worse than one that is
+  absent.
+
+- `src/n7_par.h` carries the driver, in the shape the toolkit’s other
+  two have: the worker’s loop is noinline, the sequential branch runs
+  through the worker, the calling thread’s floating-point environment is
+  installed before the chunk, and the count is passed to `parallelFor()`
+  rather than left to `RCPP_PARALLEL_NUM_THREADS`. `LinkingTo` gains
+  RcppParallel and the namespace imports it, without which the package’s
+  own DLL does not find TBB at load.
+
+## numericals7 0.9.3
+
+- The guarantee on the
+  [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
+  page states what now holds rather than what was true of the drivers at
+  0.9.2. The qualification for a kernel reading the platform’s math
+  routines is gone: those differences were measured again on 2026-08-21
+  and were neither deterministic nor unbindable, and a worker that
+  installs the calling thread’s floating-point environment reproduces
+  the sequential value exactly. What remains qualified is the one case
+  where a thread count changes which implementation runs – a threaded
+  kernel in place of a BLAS call.
+
 ## numericals7 0.9.2
 
 - A second qualification on the

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,6 +32,16 @@
       <small>Source: <a href="https://github.com/statmodels7/numericals7/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.10.0" id="numericals7-0100">numericals7 0.10.0<a class="anchor" aria-label="anchor" href="#numericals7-0100"></a></h2>
+<ul><li><p><code><a href="../reference/log_bessel_i.html">log_bessel_i()</a></code> takes a <code>threads</code> count and runs its elementwise loop over that many. Every branch of the kernel is this package’s own arithmetic – a series or a uniform asymptotic expansion, with no call into Rmath – so element <code>i</code> is computed and written by one thread and the result is bit-identical at any count. Measured at 20000 points: 167 ms sequential against 52 at eight threads in the dearest branch (small argument), 3.6x, and 5.9x where the asymptotic branch runs. It is the package’s first parallel kernel; until now nothing here was threaded although the policy object lives here.</p></li>
+<li><p><code><a href="../reference/log_bessel_k.html">log_bessel_k()</a></code> deliberately takes no count: its hybrid branch calls R’s own scaled <code>besselK</code>, which can raise a warning, and a warning from a worker thread ends the session. It is also the cheap one of the pair, 8 to 10 ms over the same 20000 points, so what the restriction costs is small. An argument that would be read by nobody is worse than one that is absent.</p></li>
+<li><p><code>src/n7_par.h</code> carries the driver, in the shape the toolkit’s other two have: the worker’s loop is noinline, the sequential branch runs through the worker, the calling thread’s floating-point environment is installed before the chunk, and the count is passed to <code>parallelFor()</code> rather than left to <code>RCPP_PARALLEL_NUM_THREADS</code>. <code>LinkingTo</code> gains RcppParallel and the namespace imports it, without which the package’s own DLL does not find TBB at load.</p></li>
+</ul></div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.3" id="numericals7-093">numericals7 0.9.3<a class="anchor" aria-label="anchor" href="#numericals7-093"></a></h2>
+<ul><li>The guarantee on the <code><a href="../reference/n_threads.html">n_threads()</a></code> page states what now holds rather than what was true of the drivers at 0.9.2. The qualification for a kernel reading the platform’s math routines is gone: those differences were measured again on 2026-08-21 and were neither deterministic nor unbindable, and a worker that installs the calling thread’s floating-point environment reproduces the sequential value exactly. What remains qualified is the one case where a thread count changes which implementation runs – a threaded kernel in place of a BLAS call.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.2" id="numericals7-092">numericals7 0.9.2<a class="anchor" aria-label="anchor" href="#numericals7-092"></a></h2>
 <ul><li>A second qualification on the <code><a href="../reference/n_threads.html">n_threads()</a></code> page: a kernel that calls into the platform’s own math routines per element inherits that runtime’s per-thread behavior in the last bit (one runtime was measured returning one-ulp differences between the main thread and a worker, deterministically), so bit-identity across counts is promised for the arithmetic a kernel computes itself.</li>
