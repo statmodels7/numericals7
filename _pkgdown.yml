@@ -78,5 +78,6 @@ reference:
   - mills_ratio
   - owen_t
   - bessel_i_ratio
+  - bessel_i_ratios
   - bessel_i_ratio_derivs
   - bessel_i_ratio_inverse

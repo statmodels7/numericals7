@@ -133,6 +133,78 @@ bessel_i_ratio <- function(kappa) {
   out
 }
 
+
+#' The Sequence of Modified Bessel Ratios
+#'
+#' @description
+#' \eqn{I_j(\kappa)/I_0(\kappa)} for \eqn{j = 1, \dots, m}, by the backward
+#' recurrence, vectorized over \eqn{\kappa}.
+#'
+#' @details
+#' The three-term recurrence \eqn{I_{j-1} - I_{j+1} = (2j/\kappa) I_j} is
+#' unstable run upwards -- the recessive solution it should follow is
+#' swamped by the dominant one -- and stable run downwards, which is Miller's
+#' algorithm. The ratios \eqn{r_j = I_j/I_{j-1}} satisfy
+#' \eqn{r_j = 1/(2j/\kappa + r_{j+1})}, started from \eqn{r_{n_0+1} = 0} at
+#' an index far enough above both \eqn{m} and \eqn{\kappa}; the answer is
+#' their running product, and the normalization by \eqn{I_0} is free because
+#' the product starts there.
+#'
+#' The loop runs over the series index and not over the data, so a vector of
+#' \eqn{\kappa} costs the same number of vectorized steps as a single value.
+#' That is what makes a series over these ratios cheaper than a quadrature
+#' per observation.
+#'
+#' \code{\link{bessel_i_ratio}} is the first of them, \eqn{I_1/I_0}, and
+#' carries an asymptotic branch for an argument past \eqn{10^4} where the
+#' scaled Bessel functions underflow. There is no such branch here: the
+#' recurrence needs a starting index above \eqn{\kappa}, so the cost grows
+#' with it, and a caller working at a concentration that large is past the
+#' point where a series over these ratios converges in any useful number of
+#' terms.
+#'
+#' @param kappa A positive numeric vector.
+#' @param m How many ratios to return.
+#'
+#' @return A \code{length(kappa)} by \code{m} matrix.
+#'
+#' @seealso \code{\link{bessel_i_ratio}}, \code{\link{log_bessel_i}}
+#'
+#' @examples
+#' r <- bessel_i_ratios(c(1, 5), 4)
+#' r[2L, ]
+#' besselI(5, 1:4, expon.scaled = TRUE) / besselI(5, 0, expon.scaled = TRUE)
+#'
+#' @export
+bessel_i_ratios <- function(kappa, m) {
+  m <- as.integer(m)
+  if (length(m) != 1L || is.na(m) || m < 1L) {
+    stop("'m' must be a single positive integer.", call. = FALSE)
+  }
+  kappa <- as.numeric(kappa)
+  if (!length(kappa)) return(matrix(numeric(0), 0L, m))
+  if (any(!is.na(kappa) & kappa <= 0)) {
+    stop("'kappa' must be positive.", call. = FALSE)
+  }
+  kmax <- suppressWarnings(max(kappa[is.finite(kappa)], 0))
+  # far enough above both the order asked for and the argument: below either
+  # the downward recurrence has not yet forgotten its starting value
+  n0 <- m + max(30L, ceiling(sqrt(40 * m)), ceiling(kmax))
+  r <- numeric(length(kappa))
+  out <- matrix(NA_real_, length(kappa), m)
+  ok <- is.finite(kappa) & kappa > 0
+  k <- kappa[ok]
+  rj <- numeric(length(k))
+  keep <- matrix(0, length(k), m)
+  for (j in seq.int(n0, 1L)) {
+    rj <- 1 / (2 * j / k + rj)
+    if (j <= m) keep[, j] <- rj
+  }
+  if (m > 1L) keep <- t(apply(keep, 1L, cumprod))
+  out[ok, ] <- keep
+  out
+}
+
 #' Derivatives of the Bessel Ratio
 #'
 #' @description

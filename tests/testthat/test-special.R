@@ -122,3 +122,39 @@ test_that("the inverse's higher derivatives match one numerical pass each", {
                  tolerance = 1e-4)
   }
 })
+
+test_that("the Bessel ratios agree with an independent evaluation", {
+  # R's own besselI, which shares no arithmetic with the backward recurrence
+  for (kap in c(0.01, 0.1, 1, 5, 20, 100, 500)) {
+    for (m in c(5L, 40L)) {
+      got <- bessel_i_ratios(kap, m)[1L, ]
+      ref <- besselI(kap, seq_len(m), expon.scaled = TRUE) /
+        besselI(kap, 0, expon.scaled = TRUE)
+      ok <- is.finite(ref) & ref > 0
+      expect_true(any(ok))
+      expect_equal(got[ok], ref[ok], tolerance = 1e-12,
+                   info = sprintf("kappa %g, m %d", kap, m))
+    }
+  }
+  # the first of them is bessel_i_ratio()
+  k <- c(0.3, 2, 40)
+  expect_equal(bessel_i_ratios(k, 1L)[, 1L], bessel_i_ratio(k),
+               tolerance = 1e-12)
+})
+
+test_that("the recurrence's loop runs over the order, not over the data", {
+  # a vector of arguments gives exactly what one at a time does, which is
+  # what says the ratios are not being recomputed per element
+  k <- c(0.5, 3, 17)
+  a <- bessel_i_ratios(k, 30L)
+  b <- do.call(rbind, lapply(k, function(z) bessel_i_ratios(z, 30L)[1L, ]))
+  expect_identical(a, b)
+  expect_identical(dim(a), c(3L, 30L))
+})
+
+test_that("bessel_i_ratios rejects what it cannot answer", {
+  expect_error(bessel_i_ratios(1, 0), "positive integer")
+  expect_error(bessel_i_ratios(-1, 3), "must be positive")
+  expect_identical(dim(bessel_i_ratios(numeric(0), 4L)), c(0L, 4L))
+  expect_true(all(is.na(bessel_i_ratios(NA_real_, 3L))))
+})

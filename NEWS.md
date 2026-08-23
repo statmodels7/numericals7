@@ -1,3 +1,22 @@
+# numericals7 0.11.0
+
+* `bessel_i_ratios(kappa, m)` gives \eqn{I_j(\kappa)/I_0(\kappa)} for
+  \eqn{j = 1, \dots, m} by Miller's backward recurrence, vectorized over
+  the argument: the loop runs over the series index and not over the data, so
+  a vector of concentrations costs the same number of steps as one. That is
+  what makes a series over these ratios cheaper than a quadrature per
+  observation, and it is why `distributions7`'s von Mises distribution
+  function stopped being one. Checked against R's own `besselI` from
+  \eqn{\kappa = 0.01} to 500 and orders to 200, agreeing to 1e-15 wherever
+  the reference itself has not underflowed.
+
+* `bessel_i_ratio()` is the first of them and keeps its asymptotic branch for
+  an argument past \eqn{10^4}, where the scaled Bessel functions underflow.
+  The sequence has none: the recurrence needs a starting index above the
+  argument, so its cost grows with it, and a caller working there is past the
+  point where a series over these ratios converges in any useful number of
+  terms.
+
 # numericals7 0.10.0
 
 * `log_bessel_i()` takes a `threads` count and runs its elementwise loop
