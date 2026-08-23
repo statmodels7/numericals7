@@ -11,35 +11,110 @@ NULL
 #' Finite-Difference Weights for Any Stencil
 #'
 #' @description
-#' The weights that combine function values at the given offsets into an
-#' approximation of the derivative of the given order, obtained by solving
-#' the Vandermonde system that makes the stencil exact on polynomials.
+#' Solves for the weights that combine function values at the given offsets into
+#' an estimate of a derivative. The weights are the unique solution of the
+#' Vandermonde system that makes the stencil exact on polynomials, so a stencil
+#' on `n` nodes reproduces the derivative of every polynomial of degree `n - 1`
+#' or less without error. They are returned for a **unit step**: divide by
+#' `h^order` before using them at spacing `h`, or call [fd_derivative()], which
+#' assembles the whole expression.
 #'
 #' @details
-#' A stencil on \eqn{n} nodes is exact for polynomials up to degree
-#' \eqn{n - 1}, so its error is \eqn{O(h^{n - d})} for the \eqn{d}-th
-#' derivative -- fourth-order accurate for a first derivative on five nodes,
-#' second-order for a fourth derivative on the same five.
+#' # The system solved
 #'
-#' Building the weights this way, rather than composing lower-order
-#' differences, is what keeps a high order usable: each numerical
-#' differentiation multiplies the error of the one before it, so a fourth
-#' derivative reached by four nested first differences is noise. One stencil,
-#' never nested.
+#' Write \eqn{s_1, \dots, s_n} for the offsets and \eqn{d} for the order. The
+#' weights \eqn{w} solve the \eqn{n} moment conditions
 #'
-#' @param offsets A numeric vector of distinct stencil offsets, in units of
-#'   the step.
-#' @param order The derivative order, smaller than \code{length(offsets)}.
+#' \deqn{\sum_{j=1}^{n} w_j\, s_j^{\,m} \;=\; d!\;[\,m = d\,],
+#'       \qquad m = 0, 1, \dots, n-1,}
 #'
-#' @return A numeric vector of weights, the same length as \code{offsets}.
+#' one equation per polynomial degree the stencil must reproduce. The matrix is
+#' Vandermonde in the offsets, so it is nonsingular exactly when they are
+#' distinct and the weights exist and are unique.
 #'
-#' @seealso \code{\link{fd_offsets}}, \code{\link{fd_derivative}}
+#' Two properties of the answer are cheap to check against a returned vector.
+#' The weights sum to zero for every \eqn{d \ge 1}, this being the \eqn{m = 0}
+#' condition. On a symmetric stencil they are antisymmetric for odd \eqn{d} and
+#' symmetric for even \eqn{d}.
+#'
+#' # Applying them
+#'
+#' At a step \eqn{h} the derivative estimate is
+#'
+#' \deqn{f^{(d)}(x) \;\approx\; h^{-d} \sum_{j=1}^{n} w_j\, f(x + s_j h).}
+#'
+#' The factor \eqn{h^{-d}} belongs to the caller. The weights carry no step, so
+#' one solve serves every step size. [fd_step()] supplies a step balanced for
+#' the order and [fd_derivative()] puts the three together.
+#'
+#' # Accuracy
+#'
+#' Because the stencil is exact to degree \eqn{n-1}, the leading error is the
+#' first term it cannot reproduce, giving an estimate accurate to
+#' \eqn{O(h^{\,n-d})} with constant
+#'
+#' \deqn{\frac{1}{n!}\sum_{j=1}^{n} w_j\, s_j^{\,n}.}
+#'
+#' Five nodes therefore give a fourth-order first derivative and a second-order
+#' fourth derivative. [fd_offsets()] sizes a stencil from the order and the
+#' accuracy asked of it.
+#'
+#' # One stencil, never nested
+#'
+#' Reaching a high order by composing low-order differences multiplies the error
+#' of each stage into the next, and a fourth derivative built from four nested
+#' first differences is noise. Every numerical fallback in the toolkit takes one
+#' stencil of the order it wants, and these weights are what it takes.
+#'
+#' @param offsets A numeric vector of distinct offsets, in units of the step.
+#'   They need not be sorted, symmetric, or whole numbers: `0:2` gives a
+#'   one-sided stencil for use at a boundary, and `c(-1, 0, 3)` an uneven one.
+#'   At least `order + 1` of them are needed. Duplicated offsets throw an error,
+#'   the Vandermonde system being singular.
+#' @param order The derivative order, **strictly smaller than
+#'   `length(offsets)`**; an order at or above the node count throws an error
+#'   naming both numbers. Order `0` is legal and returns interpolation weights
+#'   at the origin. A negative or fractional order is not checked and has no
+#'   defined meaning: a negative one warns and returns `NaN`, a fractional one
+#'   returns weights for the truncated order scaled by `factorial(order)`.
+#'
+#' @return A numeric vector of weights for a unit step, one per offset and in
+#'   the order the offsets were given. For `order >= 1` the entries sum to zero.
+#'
+#' @seealso [fd_offsets()] for the offsets to pass in, [fd_step()] for the step
+#'   to divide by, and [fd_derivative()] for all three assembled into a
+#'   derivative.
 #'
 #' @examples
-#' fd_weights(c(-1, 0, 1), 1)             # the central first difference
-#' fd_weights(c(-1, 0, 1), 2)             # 1, -2, 1
-#' fd_weights(-2:2, 1) * 12               # the five-point first derivative
-#' fd_weights(0:2, 1)                     # one-sided, for a boundary
+#' # Three nodes give the classical central differences.
+#' fd_weights(c(-1, 0, 1), 1)                 # -1/2, 0, 1/2
+#' fd_weights(c(-1, 0, 1), 2)                 #    1,  -2,  1
+#'
+#' # Five nodes, first derivative: the familiar (1, -8, 0, 8, -1)/12.
+#' fd_weights(-2:2, 1) * 12
+#'
+#' # The weights are for a unit step, so the caller divides by h^order.
+#' h <- 1e-3
+#' w <- fd_weights(c(-1, 0, 1), 2)
+#' sum(w * exp(1 + c(-1, 0, 1) * h)) / h^2    # exp'' at 1
+#' exp(1)
+#'
+#' # Exactness is what they are solved for. On five nodes a first derivative
+#' # reproduces every polynomial up to degree four and fails at degree five.
+#' s <- -2:2
+#' w <- fd_weights(s, 1)
+#' vapply(0:5, function(m) sum(w * s^m), numeric(1))
+#'
+#' # That first failure is the error constant: -4/5! = -1/30.
+#' sum(w * s^5) / factorial(5)
+#'
+#' # Which predicts the error to three figures at a step of 0.05.
+#' sum(w * sin(0.7 + s * 0.05)) / 0.05 - cos(0.7)
+#' -1 / 30 * 0.05^4 * cos(0.7)
+#'
+#' # Offsets need not straddle the point; this one-sided stencil is what a
+#' # fallback uses where a symmetric one would leave the domain.
+#' fd_weights(0:2, 1)
 #'
 #' @export
 fd_weights <- function(offsets, order) {

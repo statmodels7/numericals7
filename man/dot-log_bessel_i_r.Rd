@@ -7,17 +7,35 @@
 .log_bessel_i_r(x, nu)
 }
 \arguments{
-\item{x}{A non-negative numeric vector.}
+\item{x}{A numeric vector of arguments, non-negative.}
 
-\item{nu}{A non-negative numeric vector.}
+\item{nu}{A numeric vector of orders, non-negative.}
 }
 \value{
-A numeric vector.
+A numeric vector of \eqn{\log I_\nu(x)}, of length
+\code{max(length(x), length(nu))}. \code{NA} where either argument is \code{NA} or
+negative; \code{0} at \verb{x = 0, nu = 0}, since \eqn{I_0(0) = 1}; and \code{-Inf} at
+\code{x = 0} for any \code{nu > 0}. Nothing is thrown for an out-of-domain argument.
 }
 \description{
-The same branches and formulas as the compiled kernel behind
-\code{\link{log_bessel_i}}, in vectorized R. The compiled route measured
-1.1x faster on a mixed workload of one million points; the twin is kept
-as the independent reference the tests compare against.
+Computes \eqn{\log I_\nu(x)} in vectorized R, through the same seven branches
+and the same formulas as the compiled kernel behind \code{\link[=log_bessel_i]{log_bessel_i()}}. It
+exists as the independent reference the tests compare that kernel against, so
+a change to either side that is not a change to both shows up as a
+disagreement. Not called on any production path; \code{\link[=log_bessel_i]{log_bessel_i()}} is.
+}
+\details{
+\code{x} and \code{nu} are recycled against each other to the longer length. Branch
+selection is \code{.lb_branch()}'s: the ascending series for a small argument, the
+large-argument expansion at three truncation depths, and the large-order
+uniform asymptotic expansion at three more, chosen so that every branch is
+used where its own error is smallest.
+
+The compiled route measured 1.1x faster on a mixed workload of one million
+points spanning all seven branches, so the twin costs little to keep.
+}
+\seealso{
+\code{\link[=log_bessel_i]{log_bessel_i()}}, the compiled kernel this mirrors, and
+\code{\link[=log_bessel_k]{log_bessel_k()}} for the second-kind counterpart.
 }
 \keyword{internal}
