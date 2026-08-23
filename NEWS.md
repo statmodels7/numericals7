@@ -1,5 +1,14 @@
 # numericals7 0.11.0
 
+* `fd_weights()` rejects an `order` that is not a single non-negative whole
+  number. A fractional order used to fall through the existing checks and
+  return the weights of the truncated order scaled by `factorial(order)` — a
+  vector shaped like a stencil that satisfies no moment condition, and no
+  warning. A negative one returned all `NaN` behind a warning about `NaN`s.
+  `fd_derivative()` is covered by the same check, always going through
+  `fd_weights()`. The orders that mean something are unaffected, order zero
+  included.
+
 * `bessel_i_ratios(kappa, m)` gives \eqn{I_j(\kappa)/I_0(\kappa)} for
   \eqn{j = 1, \dots, m} by Miller's backward recurrence, vectorized over
   the argument: the loop runs over the series index and not over the data, so

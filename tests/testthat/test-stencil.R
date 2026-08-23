@@ -62,6 +62,26 @@ test_that("fd_offsets sizes the stencil from order and accuracy", {
 })
 
 
+test_that("fd_weights rejects an order that is not a derivative order", {
+  # A fractional order used to return the weights of the truncated order
+  # scaled by factorial(order): a vector that looks like a stencil and solves
+  # no moment condition. It is the silence that mattered, not the value.
+  expect_error(fd_weights(-2:2, 1.5), "non-negative whole number")
+  expect_error(fd_weights(-2:2, -1), "non-negative whole number")
+  expect_error(fd_weights(-2:2, NA), "non-negative whole number")
+  expect_error(fd_weights(-2:2, Inf), "non-negative whole number")
+  expect_error(fd_weights(-2:2, c(1, 2)), "non-negative whole number")
+
+  # fd_derivative always goes through fd_weights, so it is covered too.
+  expect_error(fd_derivative(exp, 1, order = 1.5), "non-negative whole number")
+
+  # The orders that mean something still work, order zero included.
+  expect_identical(fd_weights(c(-1, 0, 1), 0), c(0, 1, 0))
+  expect_equal(fd_weights(c(-1, 0, 1), 1), c(-0.5, 0, 0.5))
+  expect_equal(fd_weights(-2:2, 4L), c(1, -4, 6, -4, 1))
+})
+
+
 test_that("one stencil differentiates exactly what it promises", {
   # exact on polynomials up to the node count: the third derivative of a
   # quadratic is zero THROUGH the stencil, not just in the limit -- the

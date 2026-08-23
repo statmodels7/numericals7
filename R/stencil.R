@@ -71,12 +71,12 @@ NULL
 #'   one-sided stencil for use at a boundary, and `c(-1, 0, 3)` an uneven one.
 #'   At least `order + 1` of them are needed. Duplicated offsets throw an error,
 #'   the Vandermonde system being singular.
-#' @param order The derivative order, **strictly smaller than
-#'   `length(offsets)`**; an order at or above the node count throws an error
-#'   naming both numbers. Order `0` is legal and returns interpolation weights
-#'   at the origin. A negative or fractional order is not checked and has no
-#'   defined meaning: a negative one warns and returns `NaN`, a fractional one
-#'   returns weights for the truncated order scaled by `factorial(order)`.
+#' @param order The derivative order: a single non-negative whole number,
+#'   **strictly smaller than `length(offsets)`**. Order `0` is legal and returns
+#'   interpolation weights at the origin. Anything else throws: an order at or
+#'   above the node count with a message naming both numbers, and a negative,
+#'   fractional, missing or non-scalar order with a message naming the
+#'   requirement.
 #'
 #' @return A numeric vector of weights for a unit step, one per offset and in
 #'   the order the offsets were given. For `order >= 1` the entries sum to zero.
@@ -119,6 +119,15 @@ NULL
 #' @export
 fd_weights <- function(offsets, order) {
   n <- length(offsets)
+  # Checked before the count, because a non-finite order makes the comparison
+  # below NA and the error would come from the `if` rather than from here. A
+  # fractional order used to fall through and return the weights of the
+  # truncated order scaled by factorial(order): a plausible-looking stencil
+  # that solves no moment condition.
+  if (length(order) != 1L || !is.finite(order) ||
+      order < 0 || order != trunc(order)) {
+    stop("'order' must be a single non-negative whole number.", call. = FALSE)
+  }
   if (order >= n) {
     stop(sprintf(
       "A stencil on %d node(s) has no derivative of order %d to offer: the order must be smaller than the number of nodes.",

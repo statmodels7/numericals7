@@ -13,12 +13,12 @@ one-sided stencil for use at a boundary, and \code{c(-1, 0, 3)} an uneven one.
 At least \code{order + 1} of them are needed. Duplicated offsets throw an error,
 the Vandermonde system being singular.}
 
-\item{order}{The derivative order, \strong{strictly smaller than
-\code{length(offsets)}}; an order at or above the node count throws an error
-naming both numbers. Order \code{0} is legal and returns interpolation weights
-at the origin. A negative or fractional order is not checked and has no
-defined meaning: a negative one warns and returns \code{NaN}, a fractional one
-returns weights for the truncated order scaled by \code{factorial(order)}.}
+\item{order}{The derivative order: a single non-negative whole number,
+\strong{strictly smaller than \code{length(offsets)}}. Order \code{0} is legal and returns
+interpolation weights at the origin. Anything else throws: an order at or
+above the node count with a message naming both numbers, and a negative,
+fractional, missing or non-scalar order with a message naming the
+requirement.}
 }
 \value{
 A numeric vector of weights for a unit step, one per offset and in
