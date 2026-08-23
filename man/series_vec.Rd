@@ -15,59 +15,92 @@ series_vec(
 )
 }
 \arguments{
-\item{term}{The term function, as described above.}
+\item{term}{The term function, obeying the contract above.}
 
-\item{n}{The number of parameter rows.}
+\item{n}{The number of parameter rows, a positive whole number. It fixes the
+length of the answer and the range \code{i} takes.}
 
-\item{from}{The first summation index.}
+\item{from}{The first summation index, \code{0} by default. Pass \code{1} for a series
+indexed from one.}
 
-\item{atol, rtol}{The absolute and relative budgets per row.}
+\item{atol, rtol}{The absolute and relative budgets per row, defaulting to
+\code{1e-12} and \code{1e-10}. A row is judged against the larger of the two, so
+\code{atol} governs a sum near zero and \code{rtol} a large one. Both are tighter
+than \code{\link[=quad_vec]{quad_vec()}}'s, a term being cheaper than a panel.}
 
-\item{max_terms}{The largest number of terms a row may consume.}
+\item{max_terms}{The greatest number of terms one row may consume, \code{100000}
+by default.}
 
-\item{block}{How many terms are evaluated per pass.}
+\item{block}{How many terms are evaluated per pass, \code{64} by default. It is
+also the window the tail guard judges growth over, so a very small block
+weakens the guard.}
 }
 \value{
-A numeric vector of sums, one per row, with \code{NA} where the
-series did not converge.
+A numeric vector of sums, one per row, of length \code{n}. \code{NA} in any row
+that did not converge within \code{max_terms}, with a warning naming those rows.
 }
 \description{
-\eqn{\sum_{k \ge k_0} t(k; \theta_i)} for every row \eqn{i} at once, in
-blocks of terms evaluated as one matrix, with rows retiring as they
-converge so that a slow row does not keep the finished ones paying.
+Computes \eqn{\sum_{k \ge k_0} t(k; \theta_i)} for every row \eqn{i} at once.
+Terms are evaluated in blocks as one matrix, and a row retires as soon as it
+converges, so a slow row does not keep the finished ones paying. This is the
+discrete counterpart of \code{\link[=quad_vec]{quad_vec()}} and it exists for the same reason: the
+toolkit's sums are one series at many parameter values.
 }
-\details{
-\strong{The term contract.} \code{term(k, i)} receives two integer
-vectors of equal length and returns the terms elementwise: \code{k} is
-the summation index, \code{i} says which parameter set. A Poisson mass,
-for a rate vector \code{lam}, is
-\code{function(k, i) dpois(k, lam[i])}.
+\section{The term contract}{
+\code{term(k, i)} receives two integer vectors of equal length and returns the
+terms elementwise. \code{k} is the summation index and \code{i} says which parameter
+set each term belongs to. A Poisson mass at a rate vector \code{lam} is
 
-\strong{Convergence, per row.} A row retires when its last block
-contributed less than \eqn{\max(\mathrm{atol},
-\mathrm{rtol}\,\lvert S_i \rvert)}, the final term of the block is itself
-below that budget, \emph{and} the terms are not growing across the block.
-The last two conditions are the tail guard: a hump-shaped term -- a
-Poisson mass at a large rate, say -- can open with a block that sums to
-nearly nothing and ends on a term smaller still, while the whole series
-lies beyond it; that its terms are rising is what says the block came
-before the mode rather than after it. The terms are assumed eventually
-decreasing in magnitude, which every series in the toolkit satisfies.
-
-\strong{Rejection over plausibility.} A row not converged after
-\code{max_terms} terms returns \code{NA} with a warning naming it.
+\if{html}{\out{<div class="sourceCode">}}\preformatted{term <- function(k, i) dpois(k, lam[i])
+}\if{html}{\out{</div>}}
 }
+
+\section{Convergence, row by row}{
+A row retires when three conditions hold together. Its last block
+contributed less than \eqn{\max(\mathrm{atol}, \mathrm{rtol}\,\lvert S_i
+\rvert)}; the final term of that block is itself below the same budget; and
+the terms are not growing across the block.
+
+The last two are the tail guard, and the third is the one that earns its
+place. A hump-shaped term can open with a block that sums to nearly nothing
+and ends on a term smaller still, while the whole series lies beyond it.
+\code{dpois(0:63, 300)} sums to 3.8e-62 and ends at 3.0e-62, and every series
+there is still to come. That the terms are rising is the signal that the
+block sits before the mode.
+
+Terms are assumed eventually decreasing in magnitude, which every series in
+the toolkit satisfies.
+}
+
+\section{A failure is reported as one}{
+A row still unconverged after \code{max_terms} terms returns \code{NA}, and one warning
+names every such row.
+}
+
 \examples{
-# geometric series against the closed form
+# Four geometric series against the closed form.
 r <- c(0.1, 0.5, 0.9, 0.99)
-series_vec(function(k, i) r[i]^k, n = 4)
-1 / (1 - r)
+series_vec(function(k, i) r[i]^k, n = 4) - 1 / (1 - r)
 
-# Poisson masses sum to one for every rate at once
+# Poisson masses sum to one at every rate, in one call.
 lam <- c(0.5, 4, 60)
 series_vec(function(k, i) dpois(k, lam[i]), n = 3)
 
+# The tail guard at work. The first 64 terms of a Poisson at rate 300 sum
+# to almost nothing and are still rising, so the row does not retire there.
+sum(dpois(0:63, 300))
+series_vec(function(k, i) dpois(k, 300), n = 1)
+
+# A series indexed from one, against its closed form. Convergence has to be
+# geometric or better: the terms of sum 1/k^2 decay too slowly to retire a
+# row within max_terms, and that row comes back NA.
+series_vec(function(k, i) 1 / factorial(k), n = 1, from = 1L) - (exp(1) - 1)
+
+# A divergent series is refused, not estimated.
+suppressWarnings(series_vec(function(k, i) 1 / (k + 1), n = 1,
+                            max_terms = 500L))
+
 }
 \seealso{
-\code{\link[=quad_vec]{quad_vec()}}
+\code{\link[=quad_vec]{quad_vec()}}, the continuous counterpart.
 }

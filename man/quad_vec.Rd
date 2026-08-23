@@ -15,74 +15,108 @@ quad_vec(
 )
 }
 \arguments{
-\item{f}{The integrand, as described above.}
+\item{f}{The integrand, obeying the contract above.}
 
-\item{lower, upper}{Numeric vectors of endpoints, recycled to a common
-length; either may be infinite.}
+\item{lower, upper}{Numeric vectors of endpoints, recycled to a common length,
+either of which may be infinite. Every \code{lower} must be strictly below its
+\code{upper}, or the call throws.}
 
-\item{atol, rtol}{The absolute and relative error budgets per row.}
+\item{atol, rtol}{The absolute and relative error budgets per row, defaulting
+to \code{1e-10} and \code{1e-8}. A row is judged against the larger of the two, so
+\code{atol} governs an integral near zero and \code{rtol} a large one.}
 
-\item{max_depth}{The maximum number of bisections a panel may undergo.
-The default reaches the integrable endpoint singularities of the mild
-kind a density with shape below one has; a harsher one is rejected.}
+\item{max_depth}{The greatest number of bisections one panel may undergo,
+\code{48} by default. It is the lever for an endpoint singularity, and the
+measured reach is narrower than "integrable" suggests: at the default a
+gamma density of shape 0.5 converges and one of shape 0.45 does not, while
+\code{max_depth = 200} reaches shape 0.2 and still not 0.1. A row past the
+budget returns \code{NA}.}
 
-\item{rule}{The embedded quadrature pair, by default
-\code{\link[=gauss_kronrod15]{gauss_kronrod15()}}.}
+\item{rule}{The embedded quadrature pair, \code{\link[=gauss_kronrod15]{gauss_kronrod15()}} by default.
+Any list of \code{nodes}, \code{wk} and \code{wg} of equal length serves.}
 }
 \value{
-A numeric vector of integrals, one per row, with \code{NA} where
-the requested accuracy was not reached.
+A numeric vector of integrals, one per row, of the recycled length of
+\code{lower} and \code{upper}. \code{NA} in any row that did not reach the requested
+accuracy, with a warning naming those rows.
 }
 \description{
-\eqn{\int_{a_i}^{b_i} f(x; \theta_i)\,dx} for every row \eqn{i} at once,
-by matrix evaluation: the nodes of every panel of every row go into
-\code{f} in a single call per refinement pass.
+Computes \eqn{\int_{a_i}^{b_i} f(x; \theta_i)\,\mathrm{d}x} for every row
+\eqn{i} at once. The nodes of every panel of every row reach \code{f} in a single
+call per refinement pass, so the parameter index is a matrix dimension and
+not a loop. The toolkit's integrals are almost always this shape, one
+integrand at many parameter values, and a scalar integrator called in a loop
+pays its overhead once per value.
 }
-\details{
-\strong{The integrand contract.} \code{f(x, i)} receives a numeric matrix
-\code{x} of evaluation points and an integer vector \code{i}, one entry
-per row of \code{x}, saying which parameter set that row belongs to. It
-returns the values elementwise, as a matrix like \code{x} or as a vector
-in column-major order. A caller holding parameter vectors of length
-\eqn{n} writes, for a gamma mean,
-\preformatted{
-f <- function(x, i) x * dgamma(x, shape = shp[i], rate = rt[i])
+\section{The integrand contract}{
+\code{f(x, i)} receives a numeric matrix \code{x} of evaluation points and an integer
+vector \code{i} with one entry per row of \code{x}, saying which parameter set that row
+belongs to. It returns the values elementwise, either as a matrix shaped like
+\code{x} or as a vector in column-major order.
+
+Elementwise recycling does the indexing. For a gamma mean at parameter
+vectors of length \eqn{n}:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{f <- function(x, i) x * dgamma(x, shape = shp[i], rate = rt[i])
+}\if{html}{\out{</div>}}
+
+\code{shp[i]} has one entry per row of \code{x} and recycles down each column.
 }
-and the elementwise recycling does the rest: \code{shp[i]} has one entry
-per row and recycles down each column of \code{x}.
 
-\strong{Batched adaptivity.} Each panel carries the error estimate of its
-Gauss-Kronrod pair, and a row converges when the \emph{sum} of its panel
-errors fits the budget
-\eqn{\max(\mathrm{atol}, \mathrm{rtol}\,\lvert I_i \rvert)}. Until then
-the row's worst panels are bisected, and the splits from all rows join
-the next single evaluation, so one hard row refines its own panels
-without serializing the others. Judging the sum, rather than giving each
-panel a share of the budget proportional to its length, is what lets an
-integrable endpoint singularity converge: near such a point the error is
-concentrated however deep the bisection goes, and a per-length share
-would demand of the innermost panel an accuracy no depth can reach.
+\section{Batched adaptivity}{
+Each panel carries the error estimate of its Gauss-Kronrod pair. A row
+converges when the \emph{sum} of its panel errors fits the budget
+\eqn{\max(\mathrm{atol}, \mathrm{rtol}\,\lvert I_i \rvert)}. Until then the
+row's worst panels are bisected, and the splits from every row join the next
+single evaluation, so one hard row refines its own panels without
+serializing the others.
 
-\strong{Infinite endpoints} are mapped to finite ones with the rational
-transforms \eqn{x = a + t/(1-t)}, \eqn{x = b - t/(1-t)} and
-\eqn{x = t/(1-t^2)}, whose Jacobians multiply the integrand; rows of
-different kinds may share a call.
-
-\strong{Rejection over plausibility.} A row whose panels still exceed their
-budget at \code{max_depth} returns \code{NA} with a warning naming it. An
-\code{NA} names a failure; a plausible number would hide one.
+The budget is judged on the sum for a reason worth knowing, because the
+obvious alternative fails. Giving each panel a share proportional to its
+length cannot integrate an endpoint singularity at all: near such a point the
+error stays concentrated in the innermost panel however deep the bisection
+goes, so a per-length share demands of that panel an accuracy no depth
+reaches. Judging the sum lets the smooth panels carry the row.
 }
+
+\section{Infinite endpoints}{
+Mapped to finite ones by the rational transforms \eqn{x = a + t/(1-t)},
+\eqn{x = b - t/(1-t)} and \eqn{x = t/(1-t^2)}, whose Jacobians multiply the
+integrand. Rows of different kinds may share one call, so a vector of
+endpoints mixing finite and infinite costs nothing extra.
+}
+
+\section{A failure is reported as one}{
+A row whose panels still exceed their budget at \code{max_depth} returns \code{NA}, and
+one warning names every such row. An \code{NA} says the accuracy was not reached;
+a plausible number would say nothing and be believed.
+}
+
 \examples{
-# thirty gamma densities integrate to one, in one call
+# Thirty gamma densities integrate to one, in one call rather than thirty.
 shp <- seq(0.5, 15, length.out = 30)
 f <- function(x, i) dgamma(x, shape = shp[i], rate = 1)
-quad_vec(f, lower = 0, upper = rep(Inf, 30))
+range(quad_vec(f, lower = 0, upper = rep(Inf, 30)) - 1)
 
-# and their means, against the closed form
+# Their means, against the closed form.
 g <- function(x, i) x * dgamma(x, shape = shp[i], rate = 1)
 range(quad_vec(g, 0, rep(Inf, 30)) - shp)
 
+# A shape below one puts an integrable singularity at the origin. The
+# sum-judged budget reaches shape 0.5 at the default depth, and a harsher
+# one needs a deeper budget rather than a looser tolerance.
+quad_vec(function(x, i) dgamma(x, shape = 0.5, rate = 1), 0, Inf)
+quad_vec(function(x, i) dgamma(x, shape = 0.2, rate = 1), 0, Inf,
+         max_depth = 200L)
+
+# Endpoints of different kinds share a call.
+quad_vec(function(x, i) dnorm(x), c(-Inf, -1, 0), c(0, 1, Inf))
+
+# A divergent integral is refused, not estimated.
+suppressWarnings(quad_vec(function(x, i) 1 / x, 0, 1))
+
 }
 \seealso{
-\code{\link[=series_vec]{series_vec()}}, \code{\link[=gauss_kronrod15]{gauss_kronrod15()}}
+\code{\link[=series_vec]{series_vec()}} for the discrete counterpart, \code{\link[=gauss_kronrod15]{gauss_kronrod15()}} for
+the default rule.
 }

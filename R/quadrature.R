@@ -11,28 +11,58 @@ NULL
 #' The Gauss-Kronrod 7-15 Pair
 #'
 #' @description
-#' The 15-point Kronrod extension of the 7-point Gauss rule on
-#' \eqn{[-1, 1]}: one set of nodes, two sets of weights, so that a single
-#' evaluation of the integrand yields both an estimate and, from the
-#' difference of the two rules, an error for it.
+#' Returns the nodes and the two sets of weights of the 15-point Kronrod
+#' extension of the 7-point Gauss rule on \eqn{[-1, 1]}. One set of nodes
+#' carries both rules, so a single evaluation of the integrand gives an
+#' estimate and, from the difference of the two rules, an error for it. That is
+#' what makes an adaptive quadrature affordable: the error costs nothing beyond
+#' the estimate.
 #'
 #' @details
-#' The Gauss weights are zero at the eight Kronrod-only nodes, which is what
-#' lets both rules be formed from one matrix of function values. The
-#' constants are the classical ones; the tests pin them by their defining
-#' property rather than by their digits, checking that the 7-point rule
-#' integrates polynomials to degree 13 exactly and the 15-point one to
-#' degree 22.
+#' The eight Kronrod-only nodes carry a Gauss weight of zero, so both rules are
+#' formed from one matrix of function values by two weighted sums.
 #'
-#' @return A list with `nodes`, the Kronrod weights `wk` and the
-#'   embedded Gauss weights `wg`, each of length 15.
+#' The constants are the classical ones. The tests pin them by their defining
+#' property, checking that the 7-point rule integrates polynomials of degree 13
+#' exactly and the 15-point one degree 22, which catches a transcription error
+#' that comparing digits against a table would only catch if the table were
+#' right.
 #'
-#' @seealso [quad_vec()]
+#' @return A list of three numeric vectors, each of length 15:
+#'   \describe{
+#'     \item{`nodes`}{the abscissae on \eqn{[-1, 1]}, ascending and symmetric
+#'       about zero.}
+#'     \item{`wk`}{the Kronrod weights, all positive.}
+#'     \item{`wg`}{the embedded Gauss weights, zero at the eight
+#'       Kronrod-only nodes.}
+#'   }
+#'
+#' @references
+#' Kronrod, A. S. (1965). *Nodes and Weights of Quadrature Formulas*.
+#' Consultants Bureau, New York.
+#'
+#' Piessens, R., de Doncker-Kapenga, E., Überhuber, C. W. and Kahaner, D. K.
+#' (1983). *QUADPACK: A Subroutine Package for Automatic Integration*.
+#' Springer.
+#'
+#' @seealso [quad_vec()], which integrates with this pair by default.
 #'
 #' @examples
 #' r <- gauss_kronrod15()
-#' sum(r$wk)   # weights of a rule on [-1, 1] sum to its length
-#' sum(r$wg)
+#'
+#' # The weights of a rule sum to the length of its interval.
+#' c(kronrod = sum(r$wk), gauss = sum(r$wg))
+#'
+#' # The Gauss rule lives on eight of the fifteen nodes, so both rules come
+#' # from one set of function values.
+#' sum(r$wg == 0)
+#'
+#' # Its defining property: exact on polynomials to degree 13.
+#' p <- function(x, d) x^d
+#' vapply(c(13, 14), function(d) {
+#'   exact <- if (d %% 2 == 0) 2 / (d + 1) else 0
+#'   sum(r$wg * p(r$nodes, d)) - exact
+#' }, numeric(1))
 #'
 #' @export
 gauss_kronrod15 <- function() {
@@ -55,68 +85,104 @@ gauss_kronrod15 <- function() {
 #' Integrate One Function at Many Parameter Values
 #'
 #' @description
-#' \eqn{\int_{a_i}^{b_i} f(x; \theta_i)\,dx} for every row \eqn{i} at once,
-#' by matrix evaluation: the nodes of every panel of every row go into
-#' `f` in a single call per refinement pass.
+#' Computes \eqn{\int_{a_i}^{b_i} f(x; \theta_i)\,\mathrm{d}x} for every row
+#' \eqn{i} at once. The nodes of every panel of every row reach `f` in a single
+#' call per refinement pass, so the parameter index is a matrix dimension and
+#' not a loop. The toolkit's integrals are almost always this shape, one
+#' integrand at many parameter values, and a scalar integrator called in a loop
+#' pays its overhead once per value.
 #'
 #' @details
-#' **The integrand contract.** `f(x, i)` receives a numeric matrix
-#' `x` of evaluation points and an integer vector `i`, one entry
-#' per row of `x`, saying which parameter set that row belongs to. It
-#' returns the values elementwise, as a matrix like `x` or as a vector
-#' in column-major order. A caller holding parameter vectors of length
-#' \eqn{n} writes, for a gamma mean,
-#' \preformatted{
+#' # The integrand contract
+#'
+#' `f(x, i)` receives a numeric matrix `x` of evaluation points and an integer
+#' vector `i` with one entry per row of `x`, saying which parameter set that row
+#' belongs to. It returns the values elementwise, either as a matrix shaped like
+#' `x` or as a vector in column-major order.
+#'
+#' Elementwise recycling does the indexing. For a gamma mean at parameter
+#' vectors of length \eqn{n}:
+#'
+#' ```
 #' f <- function(x, i) x * dgamma(x, shape = shp[i], rate = rt[i])
-#' }
-#' and the elementwise recycling does the rest: `shp[i]` has one entry
-#' per row and recycles down each column of `x`.
+#' ```
 #'
-#' **Batched adaptivity.** Each panel carries the error estimate of its
-#' Gauss-Kronrod pair, and a row converges when the *sum* of its panel
-#' errors fits the budget
-#' \eqn{\max(\mathrm{atol}, \mathrm{rtol}\,\lvert I_i \rvert)}. Until then
-#' the row's worst panels are bisected, and the splits from all rows join
-#' the next single evaluation, so one hard row refines its own panels
-#' without serializing the others. Judging the sum, rather than giving each
-#' panel a share of the budget proportional to its length, is what lets an
-#' integrable endpoint singularity converge: near such a point the error is
-#' concentrated however deep the bisection goes, and a per-length share
-#' would demand of the innermost panel an accuracy no depth can reach.
+#' `shp[i]` has one entry per row of `x` and recycles down each column.
 #'
-#' **Infinite endpoints** are mapped to finite ones with the rational
-#' transforms \eqn{x = a + t/(1-t)}, \eqn{x = b - t/(1-t)} and
-#' \eqn{x = t/(1-t^2)}, whose Jacobians multiply the integrand; rows of
-#' different kinds may share a call.
+#' # Batched adaptivity
 #'
-#' **Rejection over plausibility.** A row whose panels still exceed their
-#' budget at `max_depth` returns `NA` with a warning naming it. An
-#' `NA` names a failure; a plausible number would hide one.
+#' Each panel carries the error estimate of its Gauss-Kronrod pair. A row
+#' converges when the *sum* of its panel errors fits the budget
+#' \eqn{\max(\mathrm{atol}, \mathrm{rtol}\,\lvert I_i \rvert)}. Until then the
+#' row's worst panels are bisected, and the splits from every row join the next
+#' single evaluation, so one hard row refines its own panels without
+#' serializing the others.
 #'
-#' @param f The integrand, as described above.
-#' @param lower,upper Numeric vectors of endpoints, recycled to a common
-#'   length; either may be infinite.
-#' @param atol,rtol The absolute and relative error budgets per row.
-#' @param max_depth The maximum number of bisections a panel may undergo.
-#'   The default reaches the integrable endpoint singularities of the mild
-#'   kind a density with shape below one has; a harsher one is rejected.
-#' @param rule The embedded quadrature pair, by default
-#'   [gauss_kronrod15()].
+#' The budget is judged on the sum for a reason worth knowing, because the
+#' obvious alternative fails. Giving each panel a share proportional to its
+#' length cannot integrate an endpoint singularity at all: near such a point the
+#' error stays concentrated in the innermost panel however deep the bisection
+#' goes, so a per-length share demands of that panel an accuracy no depth
+#' reaches. Judging the sum lets the smooth panels carry the row.
 #'
-#' @return A numeric vector of integrals, one per row, with `NA` where
-#'   the requested accuracy was not reached.
+#' # Infinite endpoints
 #'
-#' @seealso [series_vec()], [gauss_kronrod15()]
+#' Mapped to finite ones by the rational transforms \eqn{x = a + t/(1-t)},
+#' \eqn{x = b - t/(1-t)} and \eqn{x = t/(1-t^2)}, whose Jacobians multiply the
+#' integrand. Rows of different kinds may share one call, so a vector of
+#' endpoints mixing finite and infinite costs nothing extra.
+#'
+#' # A failure is reported as one
+#'
+#' A row whose panels still exceed their budget at `max_depth` returns `NA`, and
+#' one warning names every such row. An `NA` says the accuracy was not reached;
+#' a plausible number would say nothing and be believed.
+#'
+#' @param f The integrand, obeying the contract above.
+#' @param lower,upper Numeric vectors of endpoints, recycled to a common length,
+#'   either of which may be infinite. Every `lower` must be strictly below its
+#'   `upper`, or the call throws.
+#' @param atol,rtol The absolute and relative error budgets per row, defaulting
+#'   to `1e-10` and `1e-8`. A row is judged against the larger of the two, so
+#'   `atol` governs an integral near zero and `rtol` a large one.
+#' @param max_depth The greatest number of bisections one panel may undergo,
+#'   `48` by default. It is the lever for an endpoint singularity, and the
+#'   measured reach is narrower than "integrable" suggests: at the default a
+#'   gamma density of shape 0.5 converges and one of shape 0.45 does not, while
+#'   `max_depth = 200` reaches shape 0.2 and still not 0.1. A row past the
+#'   budget returns `NA`.
+#' @param rule The embedded quadrature pair, [gauss_kronrod15()] by default.
+#'   Any list of `nodes`, `wk` and `wg` of equal length serves.
+#'
+#' @return A numeric vector of integrals, one per row, of the recycled length of
+#'   `lower` and `upper`. `NA` in any row that did not reach the requested
+#'   accuracy, with a warning naming those rows.
+#'
+#' @seealso [series_vec()] for the discrete counterpart, [gauss_kronrod15()] for
+#'   the default rule.
 #'
 #' @examples
-#' # thirty gamma densities integrate to one, in one call
+#' # Thirty gamma densities integrate to one, in one call rather than thirty.
 #' shp <- seq(0.5, 15, length.out = 30)
 #' f <- function(x, i) dgamma(x, shape = shp[i], rate = 1)
-#' quad_vec(f, lower = 0, upper = rep(Inf, 30))
+#' range(quad_vec(f, lower = 0, upper = rep(Inf, 30)) - 1)
 #'
-#' # and their means, against the closed form
+#' # Their means, against the closed form.
 #' g <- function(x, i) x * dgamma(x, shape = shp[i], rate = 1)
 #' range(quad_vec(g, 0, rep(Inf, 30)) - shp)
+#'
+#' # A shape below one puts an integrable singularity at the origin. The
+#' # sum-judged budget reaches shape 0.5 at the default depth, and a harsher
+#' # one needs a deeper budget rather than a looser tolerance.
+#' quad_vec(function(x, i) dgamma(x, shape = 0.5, rate = 1), 0, Inf)
+#' quad_vec(function(x, i) dgamma(x, shape = 0.2, rate = 1), 0, Inf,
+#'          max_depth = 200L)
+#'
+#' # Endpoints of different kinds share a call.
+#' quad_vec(function(x, i) dnorm(x), c(-Inf, -1, 0), c(0, 1, Inf))
+#'
+#' # A divergent integral is refused, not estimated.
+#' suppressWarnings(quad_vec(function(x, i) 1 / x, 0, 1))
 #'
 #' @export
 quad_vec <- function(f, lower, upper, atol = 1e-10, rtol = 1e-8,
