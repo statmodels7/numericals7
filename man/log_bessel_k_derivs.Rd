@@ -7,24 +7,37 @@
 log_bessel_k_derivs(x, nu)
 }
 \arguments{
-\item{x}{A numeric vector of positive arguments, recycled against
-\code{nu}.}
+\item{x}{A numeric vector of arguments, positive, recycled against \code{nu}.}
 
-\item{nu}{A numeric vector of orders, any sign.}
+\item{nu}{A numeric vector of orders, of any sign, entering as its absolute
+value.}
 }
 \value{
-A list with the value \code{l} and the derivatives \code{d1} to
-\code{d4} in the argument.
+A named list of five numeric vectors, each of the recycled length of
+\code{x} and \code{nu}: \code{l}, the value, and \code{d1} to \code{d4}, its derivatives in the
+argument. \code{d1} is negative at every order, \code{K} decreasing in its argument.
 }
 \description{
-\eqn{\log K_\nu(x)} together with its first four derivatives with respect
-to the \emph{argument}, from the ratio identity
+Computes \eqn{\log K_\nu(x)} together with its first four derivatives with
+respect to the \emph{argument}, from the ratio identity
 \eqn{(\log K_\nu)' = \nu/x - K_{\nu+1}/K_\nu} and the modified Bessel
-equation, exactly as in \code{\link[=log_bessel_i_derivs]{log_bessel_i_derivs()}}.
+equation, exactly as in \code{\link[=log_bessel_i_derivs]{log_bessel_i_derivs()}}. The sign is the one
+difference: \eqn{K} decreases in its argument where \eqn{I} grows.
+}
+\details{
+Derivatives with respect to the \emph{order} have no elementary form and are not
+provided.
 }
 \examples{
-# d/dx log K_{1/2}(x) is exactly -1/(2x) - 1
-log_bessel_k_derivs(2, 0.5)$d1
+str(log_bessel_k_derivs(2, 0.5))
+
+# At half-integer order the closed form is elementary: the derivative of
+# log K_{1/2}(x) is -1/(2x) - 1.
+log_bessel_k_derivs(2, 0.5)$d1 - (-1 / (2 * 2) - 1)
+
+# Elsewhere, against one stencil on the value itself.
+log_bessel_k_derivs(3, 2)$d1 -
+  fd_derivative(function(z) log_bessel_k(z, 2), 3, 1, accuracy = 4)
 
 }
 \references{

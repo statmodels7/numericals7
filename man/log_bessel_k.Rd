@@ -7,19 +7,24 @@
 log_bessel_k(x, nu)
 }
 \arguments{
-\item{x}{A numeric vector of positive arguments, recycled against
-\code{nu}.}
+\item{x}{A numeric vector of arguments, recycled against \code{nu}. Positive; zero
+gives \code{Inf}, \eqn{K} diverging there, and a negative value gives \code{NA}.}
 
-\item{nu}{A numeric vector of orders, any sign.}
+\item{nu}{A numeric vector of orders, of any sign, entering as \eqn{|\nu|}.
+Unlike \code{\link[=log_bessel_i]{log_bessel_i()}} this takes no \code{threads} argument: its hybrid branch
+calls R's own scaled \code{besselK}, which can raise a warning, and a warning
+from a worker thread ends the session.}
 }
 \value{
-A numeric vector of \eqn{\log K_\nu(x)} values; \code{Inf} at
-\eqn{x = 0}, \code{NA} for arguments outside the domain.
+A numeric vector of \eqn{\log K_\nu(x)}, of the recycled length of
+\code{x} and \code{nu}. \code{Inf} at \eqn{x = 0}, and \code{NA} where \code{x} is negative or
+either argument is missing.
 }
 \description{
-\eqn{\log K_\nu(x)} for \eqn{x > 0} and any real order, computed with
-every intermediate quantity on the log scale; \eqn{K} is even in its
-order, so \eqn{\nu} enters as \eqn{|\nu|}.
+Computes \eqn{\log K_\nu(x)} for \eqn{x > 0} and any real order, carrying
+every intermediate quantity on the log scale, so the result is finite and
+accurate wherever \eqn{\log K_\nu(x)} itself is representable. \eqn{K} is
+even in its order, so \eqn{\nu} enters as \eqn{|\nu|}.
 }
 \details{
 The large-argument and large-order branches follow Plesner, Sørensen and
@@ -32,8 +37,18 @@ boundary) goes through the integral representation of Rothwell (2006),
 evaluated on the log scale over a composite Simpson rule.
 }
 \examples{
-log_bessel_k(c(0.01, 1, 1000), 2.5)
-log_bessel_k(1, 500)                 # the unscaled function overflows here
+# It agrees with R's own function wherever that one still evaluates.
+x <- c(0.01, 1, 30)
+max(abs(log_bessel_k(x, 2.5) - log(besselK(x, 2.5))))
+
+# K underflows to zero at a large argument and overflows at a large order,
+# and its logarithm is finite at both.
+log(besselK(1000, 2.5))
+log_bessel_k(1000, 2.5)
+log_bessel_k(1, 500)
+
+# Even in the order, exactly.
+log_bessel_k(1, 2.5) - log_bessel_k(1, -2.5)
 
 }
 \references{

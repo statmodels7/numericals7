@@ -148,12 +148,13 @@ NULL
 #' Logarithm of the Modified Bessel Function of the First Kind
 #'
 #' @description
-#' \eqn{\log I_\nu(x)} for \eqn{x \ge 0} and \eqn{\nu \ge 0}, computed with
+#' Computes \eqn{\log I_\nu(x)} for \eqn{x \ge 0} and \eqn{\nu \ge 0}, carrying
 #' every intermediate quantity on the log scale, so the result is finite and
-#' accurate wherever \eqn{\log I_\nu(x)} itself is representable -- including
-#' where the unscaled function overflows (from about \eqn{x = 700}) and where
-#' the exponentially scaled one underflows or loses its precision (large
-#' order with a small argument, and arguments beyond about \eqn{10^5}).
+#' accurate wherever \eqn{\log I_\nu(x)} itself is representable. That includes
+#' two regions R's own function cannot reach: past about \eqn{x = 700}, where
+#' the unscaled \eqn{I_\nu} overflows, and at a large order with a small
+#' argument or an argument beyond about \eqn{10^5}, where the exponentially
+#' scaled form underflows or loses its precision.
 #'
 #' @details
 #' The algorithm follows Plesner, Sørensen and Hauberg (2024): the truncated
@@ -179,9 +180,11 @@ NULL
 #'   which can raise a warning, and a warning from a worker thread ends the
 #'   session.
 #'
-#' @return A numeric vector of \eqn{\log I_\nu(x)} values; `-Inf` at
-#'   \eqn{x = 0} with \eqn{\nu > 0}, `0` at \eqn{x = 0} with
-#'   \eqn{\nu = 0}, `NA` for arguments outside the domain.
+#' @return A numeric vector of \eqn{\log I_\nu(x)}, of the recycled length of
+#'   `x` and `nu`. `0` at \eqn{x = 0} with \eqn{\nu = 0}, since \eqn{I_0(0) =
+#'   1}; `-Inf` at \eqn{x = 0} for any \eqn{\nu > 0}; and `NA` where either
+#'   argument is negative or missing. Nothing is thrown for an argument outside
+#'   the domain.
 #'
 #' @references
 #' Plesner, A., Sørensen, H. H. B., and Hauberg, S. (2024). Accurate
@@ -196,8 +199,18 @@ NULL
 #'   [bessel_i_ratio()]
 #'
 #' @examples
-#' log_bessel_i(c(1, 100, 1e6), 2)      # far past the unscaled overflow
-#' log_bessel_i(0.001, 500)             # far past the scaled underflow
+#' # It agrees with R's own function wherever that one still evaluates.
+#' x <- c(0.5, 2, 30)
+#' max(abs(log_bessel_i(x, 2) - log(besselI(x, 2))))
+#'
+#' # And carries on where it does not. The unscaled function overflows from
+#' # about x = 700, the scaled one underflows at a large order.
+#' log(besselI(1e6, 2))
+#' log_bessel_i(1e6, 2)
+#' log_bessel_i(0.001, 500)
+#'
+#' # The two boundary values, and an argument outside the domain.
+#' log_bessel_i(c(0, 0, -1), c(0, 2, 0))
 #'
 #' @export
 log_bessel_i <- function(x, nu, threads = 1L) {
@@ -269,9 +282,10 @@ log_bessel_i <- function(x, nu, threads = 1L) {
 #' Logarithm of the Modified Bessel Function of the Second Kind
 #'
 #' @description
-#' \eqn{\log K_\nu(x)} for \eqn{x > 0} and any real order, computed with
-#' every intermediate quantity on the log scale; \eqn{K} is even in its
-#' order, so \eqn{\nu} enters as \eqn{|\nu|}.
+#' Computes \eqn{\log K_\nu(x)} for \eqn{x > 0} and any real order, carrying
+#' every intermediate quantity on the log scale, so the result is finite and
+#' accurate wherever \eqn{\log K_\nu(x)} itself is representable. \eqn{K} is
+#' even in its order, so \eqn{\nu} enters as \eqn{|\nu|}.
 #'
 #' @details
 #' The large-argument and large-order branches follow Plesner, Sørensen and
@@ -283,12 +297,16 @@ log_bessel_i <- function(x, nu, threads = 1L) {
 #' boundary) goes through the integral representation of Rothwell (2006),
 #' evaluated on the log scale over a composite Simpson rule.
 #'
-#' @param x A numeric vector of positive arguments, recycled against
-#'   `nu`.
-#' @param nu A numeric vector of orders, any sign.
+#' @param x A numeric vector of arguments, recycled against `nu`. Positive; zero
+#'   gives `Inf`, \eqn{K} diverging there, and a negative value gives `NA`.
+#' @param nu A numeric vector of orders, of any sign, entering as \eqn{|\nu|}.
+#'   Unlike [log_bessel_i()] this takes no `threads` argument: its hybrid branch
+#'   calls R's own scaled `besselK`, which can raise a warning, and a warning
+#'   from a worker thread ends the session.
 #'
-#' @return A numeric vector of \eqn{\log K_\nu(x)} values; `Inf` at
-#'   \eqn{x = 0}, `NA` for arguments outside the domain.
+#' @return A numeric vector of \eqn{\log K_\nu(x)}, of the recycled length of
+#'   `x` and `nu`. `Inf` at \eqn{x = 0}, and `NA` where `x` is negative or
+#'   either argument is missing.
 #'
 #' @references
 #' Plesner, A., Sørensen, H. H. B., and Hauberg, S. (2024). Accurate
@@ -303,8 +321,18 @@ log_bessel_i <- function(x, nu, threads = 1L) {
 #' @seealso [log_bessel_i()], [log_bessel_k_derivs()]
 #'
 #' @examples
-#' log_bessel_k(c(0.01, 1, 1000), 2.5)
-#' log_bessel_k(1, 500)                 # the unscaled function overflows here
+#' # It agrees with R's own function wherever that one still evaluates.
+#' x <- c(0.01, 1, 30)
+#' max(abs(log_bessel_k(x, 2.5) - log(besselK(x, 2.5))))
+#'
+#' # K underflows to zero at a large argument and overflows at a large order,
+#' # and its logarithm is finite at both.
+#' log(besselK(1000, 2.5))
+#' log_bessel_k(1000, 2.5)
+#' log_bessel_k(1, 500)
+#'
+#' # Even in the order, exactly.
+#' log_bessel_k(1, 2.5) - log_bessel_k(1, -2.5)
 #'
 #' @export
 log_bessel_k <- function(x, nu) {
@@ -314,14 +342,32 @@ log_bessel_k <- function(x, nu) {
 #' The R Twin of the Compiled log K Kernel
 #'
 #' @description
-#' The same branches and formulas as the compiled kernel behind
-#' [log_bessel_k()], in vectorized R. The compiled route measured
-#' 2.9x faster on the mixed workload; the twin is kept as the independent
-#' reference the tests compare against.
+#' Computes \eqn{\log K_\nu(x)} in vectorized R, through the same branches and
+#' the same formulas as the compiled kernel behind [log_bessel_k()]. It exists
+#' as the independent reference the tests compare that kernel against, so a
+#' change to either side that is not a change to both shows up as a
+#' disagreement. Not called on any production path; [log_bessel_k()] is.
 #'
-#' @param x A non-negative numeric vector.
-#' @param nu A numeric vector; the function is even in the order.
-#' @return A numeric vector.
+#' @details
+#' `x` and `nu` are recycled against each other to the longer length, and the
+#' order enters as \eqn{|\nu|}, \eqn{K} being even in it. The branches are the
+#' large-argument and large-order expansions, R's own scaled `besselK` in the
+#' moderate region, and the Rothwell integral in the corner where that scaled
+#' value overflows.
+#'
+#' The compiled route measured 2.9x faster on a mixed workload spanning every
+#' branch, so the twin costs little to keep.
+#'
+#' @param x A numeric vector of arguments, non-negative.
+#' @param nu A numeric vector of orders, of any sign.
+#'
+#' @return A numeric vector of \eqn{\log K_\nu(x)}, of length
+#'   `max(length(x), length(nu))`. `Inf` at \eqn{x = 0}, and `NA` where `x` is
+#'   negative or either argument is missing.
+#'
+#' @seealso [log_bessel_k()], the compiled kernel this mirrors, and
+#'   [log_bessel_i()] for the first-kind counterpart.
+#'
 #' @keywords internal
 .log_bessel_k_r <- function(x, nu) {
   nn <- max(length(x), length(nu))
@@ -363,20 +409,25 @@ log_bessel_k <- function(x, nu) {
 #' Derivatives of the Logarithm of the Modified Bessel Function I
 #'
 #' @description
-#' \eqn{\log I_\nu(x)} together with its first four derivatives with respect
-#' to the *argument*. The first derivative is the ratio identity
-#' \eqn{(\log I_\nu)' = \nu/x + I_{\nu+1}/I_\nu} with the ratio formed as
-#' the exponential of a difference of logarithms, which is finite wherever
-#' the logs are; the higher orders follow from the modified Bessel equation
-#' and cost no further Bessel evaluations. Derivatives with respect to the
-#' order have no elementary form and are not provided.
+#' Computes \eqn{\log I_\nu(x)} together with its first four derivatives with
+#' respect to the *argument*. The first is the ratio identity
+#' \eqn{(\log I_\nu)' = \nu/x + I_{\nu+1}/I_\nu}, with the ratio formed as the
+#' exponential of a difference of logarithms and therefore finite wherever the
+#' logarithms are. The higher orders follow from the modified Bessel equation
+#' and cost no further Bessel evaluations, so the whole table is the price of
+#' two.
 #'
-#' @param x A numeric vector of positive arguments, recycled against
-#'   `nu`.
-#' @param nu A numeric vector of non-negative orders.
+#' @details
+#' Derivatives with respect to the *order* have no elementary form and are not
+#' provided. A caller needing one differences [log_bessel_i()] with a single
+#' stencil from [fd_derivative()].
 #'
-#' @return A list with the value `l` and the derivatives `d1` to
-#'   `d4` in the argument.
+#' @param x A numeric vector of arguments, positive, recycled against `nu`.
+#' @param nu A numeric vector of orders, non-negative.
+#'
+#' @return A named list of five numeric vectors, each of the recycled length of
+#'   `x` and `nu`: `l`, the value \eqn{\log I_\nu(x)}, and `d1` to `d4`, its
+#'   derivatives in the argument.
 #'
 #' @references
 #' Plesner, A., Sørensen, H. H. B., and Hauberg, S. (2024). Accurate
@@ -387,7 +438,15 @@ log_bessel_k <- function(x, nu) {
 #' @seealso [log_bessel_i()], [log_bessel_k_derivs()]
 #'
 #' @examples
-#' log_bessel_i_derivs(2, 0.5)$d1   # equals coth(2) - 1/(2*2) exactly
+#' str(log_bessel_i_derivs(2, 0.5))
+#'
+#' # At half-integer order the Bessel functions are elementary, so the first
+#' # derivative has a closed form to check against.
+#' log_bessel_i_derivs(2, 0.5)$d1 - (1 / tanh(2) - 1 / (2 * 2))
+#'
+#' # Elsewhere, against one stencil on the value itself.
+#' log_bessel_i_derivs(3, 2)$d1 -
+#'   fd_derivative(function(z) log_bessel_i(z, 2), 3, 1, accuracy = 4)
 #'
 #' @export
 log_bessel_i_derivs <- function(x, nu) {
@@ -402,17 +461,23 @@ log_bessel_i_derivs <- function(x, nu) {
 #' Derivatives of the Logarithm of the Modified Bessel Function K
 #'
 #' @description
-#' \eqn{\log K_\nu(x)} together with its first four derivatives with respect
-#' to the *argument*, from the ratio identity
+#' Computes \eqn{\log K_\nu(x)} together with its first four derivatives with
+#' respect to the *argument*, from the ratio identity
 #' \eqn{(\log K_\nu)' = \nu/x - K_{\nu+1}/K_\nu} and the modified Bessel
-#' equation, exactly as in [log_bessel_i_derivs()].
+#' equation, exactly as in [log_bessel_i_derivs()]. The sign is the one
+#' difference: \eqn{K} decreases in its argument where \eqn{I} grows.
 #'
-#' @param x A numeric vector of positive arguments, recycled against
-#'   `nu`.
-#' @param nu A numeric vector of orders, any sign.
+#' @details
+#' Derivatives with respect to the *order* have no elementary form and are not
+#' provided.
 #'
-#' @return A list with the value `l` and the derivatives `d1` to
-#'   `d4` in the argument.
+#' @param x A numeric vector of arguments, positive, recycled against `nu`.
+#' @param nu A numeric vector of orders, of any sign, entering as its absolute
+#'   value.
+#'
+#' @return A named list of five numeric vectors, each of the recycled length of
+#'   `x` and `nu`: `l`, the value, and `d1` to `d4`, its derivatives in the
+#'   argument. `d1` is negative at every order, `K` decreasing in its argument.
 #'
 #' @references
 #' Plesner, A., Sørensen, H. H. B., and Hauberg, S. (2024). Accurate
@@ -423,8 +488,15 @@ log_bessel_i_derivs <- function(x, nu) {
 #' @seealso [log_bessel_k()], [log_bessel_i_derivs()]
 #'
 #' @examples
-#' # d/dx log K_{1/2}(x) is exactly -1/(2x) - 1
-#' log_bessel_k_derivs(2, 0.5)$d1
+#' str(log_bessel_k_derivs(2, 0.5))
+#'
+#' # At half-integer order the closed form is elementary: the derivative of
+#' # log K_{1/2}(x) is -1/(2x) - 1.
+#' log_bessel_k_derivs(2, 0.5)$d1 - (-1 / (2 * 2) - 1)
+#'
+#' # Elsewhere, against one stencil on the value itself.
+#' log_bessel_k_derivs(3, 2)$d1 -
+#'   fd_derivative(function(z) log_bessel_k(z, 2), 3, 1, accuracy = 4)
 #'
 #' @export
 log_bessel_k_derivs <- function(x, nu) {

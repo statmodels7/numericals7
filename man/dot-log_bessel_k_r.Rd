@@ -7,17 +7,34 @@
 .log_bessel_k_r(x, nu)
 }
 \arguments{
-\item{x}{A non-negative numeric vector.}
+\item{x}{A numeric vector of arguments, non-negative.}
 
-\item{nu}{A numeric vector; the function is even in the order.}
+\item{nu}{A numeric vector of orders, of any sign.}
 }
 \value{
-A numeric vector.
+A numeric vector of \eqn{\log K_\nu(x)}, of length
+\code{max(length(x), length(nu))}. \code{Inf} at \eqn{x = 0}, and \code{NA} where \code{x} is
+negative or either argument is missing.
 }
 \description{
-The same branches and formulas as the compiled kernel behind
-\code{\link[=log_bessel_k]{log_bessel_k()}}, in vectorized R. The compiled route measured
-2.9x faster on the mixed workload; the twin is kept as the independent
-reference the tests compare against.
+Computes \eqn{\log K_\nu(x)} in vectorized R, through the same branches and
+the same formulas as the compiled kernel behind \code{\link[=log_bessel_k]{log_bessel_k()}}. It exists
+as the independent reference the tests compare that kernel against, so a
+change to either side that is not a change to both shows up as a
+disagreement. Not called on any production path; \code{\link[=log_bessel_k]{log_bessel_k()}} is.
+}
+\details{
+\code{x} and \code{nu} are recycled against each other to the longer length, and the
+order enters as \eqn{|\nu|}, \eqn{K} being even in it. The branches are the
+large-argument and large-order expansions, R's own scaled \code{besselK} in the
+moderate region, and the Rothwell integral in the corner where that scaled
+value overflows.
+
+The compiled route measured 2.9x faster on a mixed workload spanning every
+branch, so the twin costs little to keep.
+}
+\seealso{
+\code{\link[=log_bessel_k]{log_bessel_k()}}, the compiled kernel this mirrors, and
+\code{\link[=log_bessel_i]{log_bessel_i()}} for the first-kind counterpart.
 }
 \keyword{internal}

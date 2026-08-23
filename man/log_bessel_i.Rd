@@ -23,17 +23,20 @@ which can raise a warning, and a warning from a worker thread ends the
 session.}
 }
 \value{
-A numeric vector of \eqn{\log I_\nu(x)} values; \code{-Inf} at
-\eqn{x = 0} with \eqn{\nu > 0}, \code{0} at \eqn{x = 0} with
-\eqn{\nu = 0}, \code{NA} for arguments outside the domain.
+A numeric vector of \eqn{\log I_\nu(x)}, of the recycled length of
+\code{x} and \code{nu}. \code{0} at \eqn{x = 0} with \eqn{\nu = 0}, since \eqn{I_0(0) =
+  1}; \code{-Inf} at \eqn{x = 0} for any \eqn{\nu > 0}; and \code{NA} where either
+argument is negative or missing. Nothing is thrown for an argument outside
+the domain.
 }
 \description{
-\eqn{\log I_\nu(x)} for \eqn{x \ge 0} and \eqn{\nu \ge 0}, computed with
+Computes \eqn{\log I_\nu(x)} for \eqn{x \ge 0} and \eqn{\nu \ge 0}, carrying
 every intermediate quantity on the log scale, so the result is finite and
-accurate wherever \eqn{\log I_\nu(x)} itself is representable -- including
-where the unscaled function overflows (from about \eqn{x = 700}) and where
-the exponentially scaled one underflows or loses its precision (large
-order with a small argument, and arguments beyond about \eqn{10^5}).
+accurate wherever \eqn{\log I_\nu(x)} itself is representable. That includes
+two regions R's own function cannot reach: past about \eqn{x = 700}, where
+the unscaled \eqn{I_\nu} overflows, and at a large order with a small
+argument or an argument beyond about \eqn{10^5}, where the exponentially
+scaled form underflows or loses its precision.
 }
 \details{
 The algorithm follows Plesner, Sørensen and Hauberg (2024): the truncated
@@ -47,8 +50,18 @@ large-argument expansions are used only where their truncation error is
 below \eqn{10^{-11}}, the uniform expansion taking over otherwise.
 }
 \examples{
-log_bessel_i(c(1, 100, 1e6), 2)      # far past the unscaled overflow
-log_bessel_i(0.001, 500)             # far past the scaled underflow
+# It agrees with R's own function wherever that one still evaluates.
+x <- c(0.5, 2, 30)
+max(abs(log_bessel_i(x, 2) - log(besselI(x, 2))))
+
+# And carries on where it does not. The unscaled function overflows from
+# about x = 700, the scaled one underflows at a large order.
+log(besselI(1e6, 2))
+log_bessel_i(1e6, 2)
+log_bessel_i(0.001, 500)
+
+# The two boundary values, and an argument outside the domain.
+log_bessel_i(c(0, 0, -1), c(0, 2, 0))
 
 }
 \references{

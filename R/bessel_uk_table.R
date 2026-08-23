@@ -5,17 +5,47 @@
 #' The u_k Polynomials of the Uniform Asymptotic Expansion
 #'
 #' @description
-#' The coefficients of the polynomials \eqn{u_k(t)}, \eqn{k = 1, \dots, 13},
-#' entering the large-order uniform asymptotic expansions of the modified
-#' Bessel functions (DLMF 10.41). Each element carries the exponents
-#' `e` and the coefficients `c` of one polynomial. Generated in
-#' exact rational arithmetic from the recurrence stated above and converted
-#' to double at the end; the tests verify the recurrence numerically.
+#' Holds the coefficients of the polynomials \eqn{u_k(t)} for
+#' \eqn{k = 1, \dots, 13}, which enter the large-order uniform asymptotic
+#' expansions of the modified Bessel functions (DLMF 10.41). They are what
+#' [log_bessel_i()] and [log_bessel_k()] sum in their large-order branches, and
+#' the truncation depth \eqn{K} that names each of those branches is how many of
+#' these polynomials it uses.
 #'
-#' @format A list of 13 lists, each with the integer exponents `e` and
-#'   the double coefficients `c`.
-#' @return A list as described in the format section; documented for
-#'   reference, never called.
+#' @details
+#' Each \eqn{u_k} is a polynomial in \eqn{t} with only every other power
+#' present, so it is stored as the exponents that appear and their
+#' coefficients. They satisfy the recurrence
+#'
+#' \deqn{u_{k+1}(t) = \tfrac{1}{2} t^2 (1 - t^2)\, u_k'(t)
+#'       + \tfrac{1}{8} \int_0^{t} (1 - 5 s^2)\, u_k(s)\,\mathrm{d}s,
+#'       \qquad u_0(t) = 1,}
+#'
+#' DLMF 10.41.9, and were generated from it in exact rational arithmetic and
+#' converted to double only at the end. The tests re-run the recurrence
+#' numerically and compare, so a mistyped digit fails rather than degrading an
+#' expansion quietly.
+#'
+#' The polynomials grow: \eqn{u_1} has two terms and \eqn{u_{13}} has fourteen,
+#' with coefficients reaching \eqn{10^{12}}.
+#'
+#' @format A list of 13 elements, one per \eqn{k} in order. Each is a list of
+#'   two equal-length vectors:
+#'   \describe{
+#'     \item{`e`}{the exponents of \eqn{t} that appear, ascending.}
+#'     \item{`c`}{their coefficients, alternating in sign.}
+#'   }
+#' @return The list described under Format. It is a stored constant, never
+#'   called, and is documented so that the expansion can be checked against its
+#'   source.
+#'
+#' @references
+#' Olver, F. W. J., et al. (2024). *NIST Digital Library of Mathematical
+#' Functions*, section 10.41. <https://dlmf.nist.gov/10.41>.
+#'
+#' @seealso [log_bessel_i()] and [log_bessel_k()], whose large-order branches
+#'   sum these.
+#'
 #' @keywords internal
 #' @name dot-bessel_uk
 #' @aliases .bessel_uk

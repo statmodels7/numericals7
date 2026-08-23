@@ -7,26 +7,39 @@
 log_bessel_i_derivs(x, nu)
 }
 \arguments{
-\item{x}{A numeric vector of positive arguments, recycled against
-\code{nu}.}
+\item{x}{A numeric vector of arguments, positive, recycled against \code{nu}.}
 
-\item{nu}{A numeric vector of non-negative orders.}
+\item{nu}{A numeric vector of orders, non-negative.}
 }
 \value{
-A list with the value \code{l} and the derivatives \code{d1} to
-\code{d4} in the argument.
+A named list of five numeric vectors, each of the recycled length of
+\code{x} and \code{nu}: \code{l}, the value \eqn{\log I_\nu(x)}, and \code{d1} to \code{d4}, its
+derivatives in the argument.
 }
 \description{
-\eqn{\log I_\nu(x)} together with its first four derivatives with respect
-to the \emph{argument}. The first derivative is the ratio identity
-\eqn{(\log I_\nu)' = \nu/x + I_{\nu+1}/I_\nu} with the ratio formed as
-the exponential of a difference of logarithms, which is finite wherever
-the logs are; the higher orders follow from the modified Bessel equation
-and cost no further Bessel evaluations. Derivatives with respect to the
-order have no elementary form and are not provided.
+Computes \eqn{\log I_\nu(x)} together with its first four derivatives with
+respect to the \emph{argument}. The first is the ratio identity
+\eqn{(\log I_\nu)' = \nu/x + I_{\nu+1}/I_\nu}, with the ratio formed as the
+exponential of a difference of logarithms and therefore finite wherever the
+logarithms are. The higher orders follow from the modified Bessel equation
+and cost no further Bessel evaluations, so the whole table is the price of
+two.
+}
+\details{
+Derivatives with respect to the \emph{order} have no elementary form and are not
+provided. A caller needing one differences \code{\link[=log_bessel_i]{log_bessel_i()}} with a single
+stencil from \code{\link[=fd_derivative]{fd_derivative()}}.
 }
 \examples{
-log_bessel_i_derivs(2, 0.5)$d1   # equals coth(2) - 1/(2*2) exactly
+str(log_bessel_i_derivs(2, 0.5))
+
+# At half-integer order the Bessel functions are elementary, so the first
+# derivative has a closed form to check against.
+log_bessel_i_derivs(2, 0.5)$d1 - (1 / tanh(2) - 1 / (2 * 2))
+
+# Elsewhere, against one stencil on the value itself.
+log_bessel_i_derivs(3, 2)$d1 -
+  fd_derivative(function(z) log_bessel_i(z, 2), 3, 1, accuracy = 4)
 
 }
 \references{
