@@ -72,6 +72,8 @@ depend on the count, bit for bit.
   : Owen's T Function
 - [`bessel_i_ratio()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio.md)
   : The Ratio of Modified Bessel Functions
+- [`bessel_i_ratios()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratios.md)
+  : The Sequence of Modified Bessel Ratios
 - [`bessel_i_ratio_derivs()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_derivs.md)
   : Derivatives of the Bessel Ratio
 - [`bessel_i_ratio_inverse()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_inverse.md)

@@ -1,5 +1,23 @@
 # Changelog
 
+## numericals7 0.11.0
+
+- `bessel_i_ratios(kappa, m)` gives for by Miller’s backward recurrence,
+  vectorized over the argument: the loop runs over the series index and
+  not over the data, so a vector of concentrations costs the same number
+  of steps as one. That is what makes a series over these ratios cheaper
+  than a quadrature per observation, and it is why `distributions7`’s
+  von Mises distribution function stopped being one. Checked against R’s
+  own `besselI` from to 500 and orders to 200, agreeing to 1e-15
+  wherever the reference itself has not underflowed.
+
+- [`bessel_i_ratio()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio.md)
+  is the first of them and keeps its asymptotic branch for an argument
+  past , where the scaled Bessel functions underflow. The sequence has
+  none: the recurrence needs a starting index above the argument, so its
+  cost grows with it, and a caller working there is past the point where
+  a series over these ratios converges in any useful number of terms.
+
 ## numericals7 0.10.0
 
 - [`log_bessel_i()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i.md)

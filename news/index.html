@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.11.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,6 +32,11 @@
       <small>Source: <a href="https://github.com/statmodels7/numericals7/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.11.0" id="numericals7-0110">numericals7 0.11.0<a class="anchor" aria-label="anchor" href="#numericals7-0110"></a></h2>
+<ul><li><p><code>bessel_i_ratios(kappa, m)</code> gives  for  by Miller’s backward recurrence, vectorized over the argument: the loop runs over the series index and not over the data, so a vector of concentrations costs the same number of steps as one. That is what makes a series over these ratios cheaper than a quadrature per observation, and it is why <code>distributions7</code>’s von Mises distribution function stopped being one. Checked against R’s own <code>besselI</code> from  to 500 and orders to 200, agreeing to 1e-15 wherever the reference itself has not underflowed.</p></li>
+<li><p><code><a href="../reference/bessel_i_ratio.html">bessel_i_ratio()</a></code> is the first of them and keeps its asymptotic branch for an argument past , where the scaled Bessel functions underflow. The sequence has none: the recurrence needs a starting index above the argument, so its cost grows with it, and a caller working there is past the point where a series over these ratios converges in any useful number of terms.</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.10.0" id="numericals7-0100">numericals7 0.10.0<a class="anchor" aria-label="anchor" href="#numericals7-0100"></a></h2>
 <ul><li><p><code><a href="../reference/log_bessel_i.html">log_bessel_i()</a></code> takes a <code>threads</code> count and runs its elementwise loop over that many. Every branch of the kernel is this package’s own arithmetic – a series or a uniform asymptotic expansion, with no call into Rmath – so element <code>i</code> is computed and written by one thread and the result is bit-identical at any count. Measured at 20000 points: 167 ms sequential against 52 at eight threads in the dearest branch (small argument), 3.6x, and 5.9x where the asymptotic branch runs. It is the package’s first parallel kernel; until now nothing here was threaded although the policy object lives here.</p></li>
