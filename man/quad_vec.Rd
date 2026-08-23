@@ -27,7 +27,7 @@ The default reaches the integrable endpoint singularities of the mild
 kind a density with shape below one has; a harsher one is rejected.}
 
 \item{rule}{The embedded quadrature pair, by default
-\code{\link{gauss_kronrod15}()}.}
+\code{\link[=gauss_kronrod15]{gauss_kronrod15()}}.}
 }
 \value{
 A numeric vector of integrals, one per row, with \code{NA} where
@@ -84,5 +84,5 @@ range(quad_vec(g, 0, rep(Inf, 30)) - shp)
 
 }
 \seealso{
-\code{\link{series_vec}}, \code{\link{gauss_kronrod15}}
+\code{\link[=series_vec]{series_vec()}}, \code{\link[=gauss_kronrod15]{gauss_kronrod15()}}
 }

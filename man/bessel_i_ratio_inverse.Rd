@@ -21,9 +21,9 @@ derivatives of the inverse in \eqn{\rho}.
 \eqn{A} has no elementary inverse, so \eqn{\kappa} is found by root
 finding from a bracket built around the standard series approximation and
 widened until it straddles the root; the asymptotic branch of
-\code{\link{bessel_i_ratio}} keeps the function evaluable over the whole
+\code{\link[=bessel_i_ratio]{bessel_i_ratio()}} keeps the function evaluable over the whole
 bracket, however concentrated. The derivatives come from the inverse
-function rule on \code{\link{bessel_i_ratio_derivs}}:
+function rule on \code{\link[=bessel_i_ratio_derivs]{bessel_i_ratio_derivs()}}:
 \deqn{\kappa' = \dfrac{1}{A'}, \qquad
       \kappa'' = -\dfrac{A''}{(A')^3}, \qquad
       \kappa''' = \dfrac{3(A'')^2 - A'A'''}{(A')^5},}
@@ -36,5 +36,5 @@ bessel_i_ratio(bessel_i_ratio_inverse(0.7)$kappa)
 
 }
 \seealso{
-\code{\link{bessel_i_ratio}}, \code{\link{bessel_i_ratio_derivs}}
+\code{\link[=bessel_i_ratio]{bessel_i_ratio()}}, \code{\link[=bessel_i_ratio_derivs]{bessel_i_ratio_derivs()}}
 }

@@ -6,7 +6,7 @@
 #' The Index Tuples of a Given Width
 #'
 #' @description
-#' Every multi-index of a derivative of the given order over \code{d}
+#' Every multi-index of a derivative of the given order over `d`
 #' variables: the tuples \eqn{(i_1 \le \dots \le i_k)} that key a list of
 #' partial derivatives.
 #'
@@ -22,9 +22,9 @@
 #' @param d The number of variables.
 #' @param order The derivative order, 1 to 4.
 #'
-#' @return A list of integer vectors of length \code{order}.
+#' @return A list of integer vectors of length `order`.
 #'
-#' @seealso \code{\link{set_partitions}}
+#' @seealso [set_partitions()]
 #'
 #' @examples
 #' tuple_indices(2, 2)
@@ -58,16 +58,16 @@ tuple_indices <- function(d, order = 2L) {
 #' The Set Partitions of the First n Integers
 #'
 #' @description
-#' Every way of splitting \code{1:n} into disjoint non-empty blocks, which is
+#' Every way of splitting `1:n` into disjoint non-empty blocks, which is
 #' what a chain rule of order \eqn{n} sums over.
 #'
 #' @details
-#' Built by the standard recursion: the partitions of \code{1:n} are obtained
-#' from those of \code{1:(n-1)} by placing \code{n} into each existing block
+#' Built by the standard recursion: the partitions of `1:n` are obtained
+#' from those of `1:(n-1)` by placing `n` into each existing block
 #' in turn and then into a block of its own. There are 1, 2, 5 and 15 of them
 #' for \eqn{n = 1, \dots, 4}, the Bell numbers.
 #'
-#' The blocks index \strong{positions} rather than variables, which is what
+#' The blocks index **positions** rather than variables, which is what
 #' makes a repeated variable count with the right multiplicity without any
 #' bookkeeping of its own -- the same subset-of-positions device with
 #' subsets of positions.
@@ -76,7 +76,7 @@ tuple_indices <- function(d, order = 2L) {
 #'
 #' @return A list of partitions, each a list of integer vectors.
 #'
-#' @seealso \code{\link{tuple_indices}}
+#' @seealso [tuple_indices()]
 #'
 #' @examples
 #' set_partitions(3)
@@ -102,8 +102,8 @@ set_partitions <- function(n) {
 #' Every Way to Write an Integer as an Ordered Sum
 #'
 #' @description
-#' The weak compositions of \code{n} into \code{k} parts: every vector of
-#' \code{k} non-negative integers summing to \code{n}, one per row.
+#' The weak compositions of `n` into `k` parts: every vector of
+#' `k` non-negative integers summing to `n`, one per row.
 #'
 #' @details
 #' The set enumerated is
@@ -117,9 +117,9 @@ set_partitions <- function(n) {
 #'
 #' Built by recursion on the number of parts, which is what keeps the result
 #' in a fixed order and avoids generating and filtering a full grid. There
-#' are \code{choose(n + k - 1, k - 1)} of them, so the enumeration is only
-#' practical for a moderate size: at \code{n = 20} and \code{k = 5} it is
-#' 10626 rows, and at \code{k = 10} it is 10015005.
+#' are `choose(n + k - 1, k - 1)` of them, so the enumeration is only
+#' practical for a moderate size: at `n = 20` and `k = 5` it is
+#' 10626 rows, and at `k = 10` it is 10015005.
 #'
 #' A discrete distribution on a fixed total -- a multinomial -- has exactly
 #' this set as its support, which is what makes its expectations exact sums.
@@ -127,9 +127,9 @@ set_partitions <- function(n) {
 #' @param n The total, a non-negative integer.
 #' @param k The number of parts, a positive integer.
 #'
-#' @return An integer matrix with \code{k} columns.
+#' @return An integer matrix with `k` columns.
 #'
-#' @seealso \code{\link{set_partitions}}
+#' @seealso [set_partitions()]
 #'
 #' @examples
 #' compositions(3, 2)

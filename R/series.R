@@ -9,16 +9,16 @@ NULL
 #' converge so that a slow row does not keep the finished ones paying.
 #'
 #' @details
-#' \strong{The term contract.} \code{term(k, i)} receives two integer
-#' vectors of equal length and returns the terms elementwise: \code{k} is
-#' the summation index, \code{i} says which parameter set. A Poisson mass,
-#' for a rate vector \code{lam}, is
-#' \code{function(k, i) dpois(k, lam[i])}.
+#' **The term contract.** `term(k, i)` receives two integer
+#' vectors of equal length and returns the terms elementwise: `k` is
+#' the summation index, `i` says which parameter set. A Poisson mass,
+#' for a rate vector `lam`, is
+#' `function(k, i) dpois(k, lam[i])`.
 #'
-#' \strong{Convergence, per row.} A row retires when its last block
+#' **Convergence, per row.** A row retires when its last block
 #' contributed less than \eqn{\max(\mathrm{atol},
 #' \mathrm{rtol}\,\lvert S_i \rvert)}, the final term of the block is itself
-#' below that budget, \emph{and} the terms are not growing across the block.
+#' below that budget, *and* the terms are not growing across the block.
 #' The last two conditions are the tail guard: a hump-shaped term -- a
 #' Poisson mass at a large rate, say -- can open with a block that sums to
 #' nearly nothing and ends on a term smaller still, while the whole series
@@ -26,8 +26,8 @@ NULL
 #' before the mode rather than after it. The terms are assumed eventually
 #' decreasing in magnitude, which every series in the toolkit satisfies.
 #'
-#' \strong{Rejection over plausibility.} A row not converged after
-#' \code{max_terms} terms returns \code{NA} with a warning naming it.
+#' **Rejection over plausibility.** A row not converged after
+#' `max_terms` terms returns `NA` with a warning naming it.
 #'
 #' @param term The term function, as described above.
 #' @param n The number of parameter rows.
@@ -36,10 +36,10 @@ NULL
 #' @param max_terms The largest number of terms a row may consume.
 #' @param block How many terms are evaluated per pass.
 #'
-#' @return A numeric vector of sums, one per row, with \code{NA} where the
+#' @return A numeric vector of sums, one per row, with `NA` where the
 #'   series did not converge.
 #'
-#' @seealso \code{\link{quad_vec}}
+#' @seealso [quad_vec()]
 #'
 #' @examples
 #' # geometric series against the closed form

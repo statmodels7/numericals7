@@ -24,10 +24,10 @@ NULL
 #' integrates polynomials to degree 13 exactly and the 15-point one to
 #' degree 22.
 #'
-#' @return A list with \code{nodes}, the Kronrod weights \code{wk} and the
-#'   embedded Gauss weights \code{wg}, each of length 15.
+#' @return A list with `nodes`, the Kronrod weights `wk` and the
+#'   embedded Gauss weights `wg`, each of length 15.
 #'
-#' @seealso \code{\link{quad_vec}}
+#' @seealso [quad_vec()]
 #'
 #' @examples
 #' r <- gauss_kronrod15()
@@ -57,23 +57,23 @@ gauss_kronrod15 <- function() {
 #' @description
 #' \eqn{\int_{a_i}^{b_i} f(x; \theta_i)\,dx} for every row \eqn{i} at once,
 #' by matrix evaluation: the nodes of every panel of every row go into
-#' \code{f} in a single call per refinement pass.
+#' `f` in a single call per refinement pass.
 #'
 #' @details
-#' \strong{The integrand contract.} \code{f(x, i)} receives a numeric matrix
-#' \code{x} of evaluation points and an integer vector \code{i}, one entry
-#' per row of \code{x}, saying which parameter set that row belongs to. It
-#' returns the values elementwise, as a matrix like \code{x} or as a vector
+#' **The integrand contract.** `f(x, i)` receives a numeric matrix
+#' `x` of evaluation points and an integer vector `i`, one entry
+#' per row of `x`, saying which parameter set that row belongs to. It
+#' returns the values elementwise, as a matrix like `x` or as a vector
 #' in column-major order. A caller holding parameter vectors of length
 #' \eqn{n} writes, for a gamma mean,
 #' \preformatted{
 #' f <- function(x, i) x * dgamma(x, shape = shp[i], rate = rt[i])
 #' }
-#' and the elementwise recycling does the rest: \code{shp[i]} has one entry
-#' per row and recycles down each column of \code{x}.
+#' and the elementwise recycling does the rest: `shp[i]` has one entry
+#' per row and recycles down each column of `x`.
 #'
-#' \strong{Batched adaptivity.} Each panel carries the error estimate of its
-#' Gauss-Kronrod pair, and a row converges when the \emph{sum} of its panel
+#' **Batched adaptivity.** Each panel carries the error estimate of its
+#' Gauss-Kronrod pair, and a row converges when the *sum* of its panel
 #' errors fits the budget
 #' \eqn{\max(\mathrm{atol}, \mathrm{rtol}\,\lvert I_i \rvert)}. Until then
 #' the row's worst panels are bisected, and the splits from all rows join
@@ -84,14 +84,14 @@ gauss_kronrod15 <- function() {
 #' concentrated however deep the bisection goes, and a per-length share
 #' would demand of the innermost panel an accuracy no depth can reach.
 #'
-#' \strong{Infinite endpoints} are mapped to finite ones with the rational
+#' **Infinite endpoints** are mapped to finite ones with the rational
 #' transforms \eqn{x = a + t/(1-t)}, \eqn{x = b - t/(1-t)} and
 #' \eqn{x = t/(1-t^2)}, whose Jacobians multiply the integrand; rows of
 #' different kinds may share a call.
 #'
-#' \strong{Rejection over plausibility.} A row whose panels still exceed their
-#' budget at \code{max_depth} returns \code{NA} with a warning naming it. An
-#' \code{NA} names a failure; a plausible number would hide one.
+#' **Rejection over plausibility.** A row whose panels still exceed their
+#' budget at `max_depth` returns `NA` with a warning naming it. An
+#' `NA` names a failure; a plausible number would hide one.
 #'
 #' @param f The integrand, as described above.
 #' @param lower,upper Numeric vectors of endpoints, recycled to a common
@@ -101,12 +101,12 @@ gauss_kronrod15 <- function() {
 #'   The default reaches the integrable endpoint singularities of the mild
 #'   kind a density with shape below one has; a harsher one is rejected.
 #' @param rule The embedded quadrature pair, by default
-#'   \code{\link{gauss_kronrod15}()}.
+#'   [gauss_kronrod15()].
 #'
-#' @return A numeric vector of integrals, one per row, with \code{NA} where
+#' @return A numeric vector of integrals, one per row, with `NA` where
 #'   the requested accuracy was not reached.
 #'
-#' @seealso \code{\link{series_vec}}, \code{\link{gauss_kronrod15}}
+#' @seealso [series_vec()], [gauss_kronrod15()]
 #'
 #' @examples
 #' # thirty gamma densities integrate to one, in one call

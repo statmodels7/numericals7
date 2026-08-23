@@ -166,10 +166,10 @@ fd_weights <- function(offsets, order) {
 #'   stencils gain a free order on symmetry, so an odd request costs the same
 #'   nodes as the even one above it.
 #'
-#' @return A list with the \code{reach} and the three offset vectors
-#'   \code{central}, \code{forward} and \code{backward}.
+#' @return A list with the `reach` and the three offset vectors
+#'   `central`, `forward` and `backward`.
 #'
-#' @seealso \code{\link{fd_weights}}, \code{\link{fd_derivative}}
+#' @seealso [fd_weights()], [fd_derivative()]
 #'
 #' @examples
 #' fd_offsets(1)               # three points
@@ -201,16 +201,16 @@ fd_offsets <- function(order, accuracy = 2L) {
 #' \eqn{h^{a}} and rounding like \eqn{\varepsilon h^{-d}}, and this is where
 #' they balance. Near a finite bound the step is shrunk so that the farthest
 #' node of the stencil stays strictly inside, since a node outside the domain
-#' does not make a derivative inaccurate, it makes it \code{NaN}.
+#' does not make a derivative inaccurate, it makes it `NaN`.
 #'
 #' @param x A numeric vector of evaluation points.
 #' @param order The derivative order.
 #' @param accuracy The accuracy the stencil will be built at.
 #' @param bounds An optional length-two numeric vector of domain bounds.
 #'
-#' @return A numeric vector of steps, the same length as \code{x}.
+#' @return A numeric vector of steps, the same length as `x`.
 #'
-#' @seealso \code{\link{fd_derivative}}
+#' @seealso [fd_derivative()]
 #'
 #' @examples
 #' fd_step(c(0.5, 1000), 2)
@@ -232,7 +232,7 @@ fd_step <- function(x, order, accuracy = 2L, bounds = NULL) {
 #' One Stencil, Applied
 #'
 #' @description
-#' The \code{order}-th derivative of \code{f} at \code{x} from a single
+#' The `order`-th derivative of `f` at `x` from a single
 #' finite-difference stencil: the weighted sum of function values at the
 #' stencil's nodes, divided by \eqn{h^{d}}.
 #'
@@ -240,27 +240,27 @@ fd_step <- function(x, order, accuracy = 2L, bounds = NULL) {
 #' This is the applicator every fallback in the toolkit speaks through, and
 #' it enforces the one rule they share: one stencil of the requested order,
 #' never a composition of lower-order differences. What it deliberately does
-#' \strong{not} choose is the policy around it -- which order to fall back
+#' **not** choose is the policy around it -- which order to fall back
 #' from, when a reference can be trusted, what to do at a domain boundary
 #' beyond keeping the nodes inside. Those belong to the callers, who know
 #' what they are differentiating.
 #'
-#' \code{f} must be vectorized in its argument; \code{x} and \code{h} may be
+#' `f` must be vectorized in its argument; `x` and `h` may be
 #' vectors, and the stencil is applied elementwise.
 #'
 #' @param f A vectorized function of one numeric argument.
 #' @param x A numeric vector of evaluation points.
 #' @param order The derivative order, 1 to 4.
-#' @param h A numeric vector of steps; \code{\link{fd_step}} when missing.
+#' @param h A numeric vector of steps; [fd_step()] when missing.
 #' @param accuracy The order of the error term. Two gives the classical
 #'   compact stencils; four gives the five-point first and second
 #'   derivatives.
-#' @param side \code{"central"} away from boundaries, \code{"forward"} or
-#'   \code{"backward"} where a symmetric stencil would leave the domain.
+#' @param side `"central"` away from boundaries, `"forward"` or
+#'   `"backward"` where a symmetric stencil would leave the domain.
 #'
-#' @return A numeric vector of the same length as \code{x}.
+#' @return A numeric vector of the same length as `x`.
 #'
-#' @seealso \code{\link{fd_weights}}, \code{\link{fd_step}}
+#' @seealso [fd_weights()], [fd_step()]
 #'
 #' @examples
 #' # the third derivative of exp is exp

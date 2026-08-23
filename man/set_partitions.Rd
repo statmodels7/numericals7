@@ -33,5 +33,5 @@ lengths(lapply(1:4, set_partitions))
 
 }
 \seealso{
-\code{\link{tuple_indices}}
+\code{\link[=tuple_indices]{tuple_indices()}}
 }

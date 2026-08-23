@@ -7,7 +7,7 @@
 local_threads(x, frame = parent.frame())
 }
 \arguments{
-\item{x}{An object returned by \code{\link{n_threads}}.}
+\item{x}{An object returned by \code{\link[=n_threads]{n_threads()}}.}
 
 \item{frame}{The environment whose exit restores the previous setting.
 Defaults to the caller's.}
@@ -39,5 +39,5 @@ Sys.getenv("RCPP_PARALLEL_NUM_THREADS", unset = "unset")   # restored
 
 }
 \seealso{
-\code{\link{n_threads}}, \code{\link{thread_count}}
+\code{\link[=n_threads]{n_threads()}}, \code{\link[=thread_count]{thread_count()}}
 }

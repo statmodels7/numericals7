@@ -19,7 +19,7 @@ differentiating \eqn{A' = 1 - A/\kappa - A^2} repeatedly.
 }
 \details{
 Each order is written in the orders below it, so the whole table costs the
-two Bessel evaluations of \code{\link{bessel_i_ratio}} and nothing more.
+two Bessel evaluations of \code{\link[=bessel_i_ratio]{bessel_i_ratio()}} and nothing more.
 The first identity follows from \eqn{I_0' = I_1} and
 \eqn{I_1' = I_0 - I_1/\kappa}; the alternative, a Bessel function of
 higher order per derivative, costs more and is less accurate at large
@@ -31,5 +31,5 @@ bessel_i_ratio_derivs(2)$d1
 
 }
 \seealso{
-\code{\link{bessel_i_ratio}}, \code{\link{bessel_i_ratio_inverse}}
+\code{\link[=bessel_i_ratio]{bessel_i_ratio()}}, \code{\link[=bessel_i_ratio_inverse]{bessel_i_ratio_inverse()}}
 }

@@ -34,5 +34,5 @@ bessel_i_ratio(c(0.5, 2, 1000))
 
 }
 \seealso{
-\code{\link{bessel_i_ratio_derivs}}, \code{\link{bessel_i_ratio_inverse}}
+\code{\link[=bessel_i_ratio_derivs]{bessel_i_ratio_derivs()}}, \code{\link[=bessel_i_ratio_inverse]{bessel_i_ratio_inverse()}}
 }

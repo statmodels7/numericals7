@@ -8,11 +8,11 @@
 #'
 #' @description
 #' Constructs the parallelism policy an entry point such as
-#' \code{statmodels7::statmod()} or \code{distributions7::fit_distrib()}
-#' accepts through its \code{threads} argument. The default, one thread and
+#' `statmodels7::statmod()` or `distributions7::fit_distrib()`
+#' accepts through its `threads` argument. The default, one thread and
 #' one process, takes exactly the sequential code path; a larger
-#' \code{threads} lets the compiled per-observation kernels and the dense
-#' assembly products run in parallel, and a larger \code{workers} fans the
+#' `threads` lets the compiled per-observation kernels and the dense
+#' assembly products run in parallel, and a larger `workers` fans the
 #' independent fits of a cross-validation's folds out over separate R
 #' processes.
 #'
@@ -27,8 +27,8 @@
 #' both are properties of the drivers rather than of the kernels: a worker
 #' installs the calling thread's floating-point environment before running
 #' its chunk, without which some of the platform's own math routines return
-#' per-thread last bits (R's \code{psigamma} at higher orders,
-#' \code{bessel_k}, and \code{pgamma} and \code{pbeta} on the log scale
+#' per-thread last bits (R's `psigamma` at higher orders,
+#' `bessel_k`, and `pgamma` and `pbeta` on the log scale
 #' were each measured doing so), and the sequential branch runs through the
 #' same compiled function the parallel one does, so the two cannot be
 #' optimized apart. One qualification remains: where raising the count first
@@ -39,30 +39,30 @@
 #' (OpenBLAS, Accelerate), whose accumulation order is its own. The
 #' guarantee is also a design constraint on any kernel added later.
 #'
-#' At \code{threads = 1} nothing parallel is entered and no process-level
+#' At `threads = 1` nothing parallel is entered and no process-level
 #' thread setting is touched: the code taken is the sequential path, not a
 #' parallel one with a single thread. Below a per-kernel internal threshold,
 #' measured where the cost of opening a parallel region overtakes its gain,
 #' a kernel stays sequential whatever the count says.
 #'
 #' The two levels do not nest: a fit running inside a worker process is
-#' sequential by construction, so \code{workers = 4} opens four processes
-#' each fitting on one thread rather than \code{4 x threads} of them.
+#' sequential by construction, so `workers = 4` opens four processes
+#' each fitting on one thread rather than `4 x threads` of them.
 #' Worker processes are separate R sessions loading the installed packages,
 #' which is what makes them safe for the S7 objects a fold's fit carries
-#' (the same rule \code{optimizers7::multistart} records); starting one
-#' costs on the order of a second, so \code{workers} pays on a
+#' (the same rule `optimizers7::multistart` records); starting one
+#' costs on the order of a second, so `workers` pays on a
 #' cross-validated path and is not worth asking for on a fit that takes
 #' less than that.
 #'
-#' @param threads A single whole number, at least 1. \code{1}, the default,
+#' @param threads A single whole number, at least 1. `1`, the default,
 #'   is sequential. The count is what the kernels are given and what they
 #'   run on, not an upper bound they may exceed.
 #' @param workers A single whole number, at least 1: how many R processes
-#'   the independent fits of a cross-validation's folds may use. \code{1},
+#'   the independent fits of a cross-validation's folds may use. `1`,
 #'   the default, runs them in this process.
 #'
-#' @return An object of class \code{"n_threads"} carrying the counts.
+#' @return An object of class `"n_threads"` carrying the counts.
 #'
 #' @examples
 #' n_threads()
@@ -71,8 +71,8 @@
 #' thread_count(n_threads(4))
 #' worker_count(n_threads(1, workers = 4))
 #'
-#' @seealso \code{\link{thread_count}}, \code{\link{worker_count}},
-#'   \code{\link{local_threads}}
+#' @seealso [thread_count()], [worker_count()],
+#'   [local_threads()]
 #' @export
 n_threads <- function(threads = 1, workers = 1) {
   whole <- function(x) {
@@ -92,7 +92,7 @@ n_threads <- function(threads = 1, workers = 1) {
 }
 
 #' @rdname n_threads
-#' @param x An \code{n_threads} object.
+#' @param x An `n_threads` object.
 #' @param ... Unused.
 #' @export
 print.n_threads <- function(x, ...) {
@@ -105,12 +105,12 @@ print.n_threads <- function(x, ...) {
 #' Read the Count Off a Thread Policy
 #'
 #' @description
-#' Returns the thread count an \code{\link{n_threads}} object carries, as a
+#' Returns the thread count an [n_threads()] object carries, as a
 #' single integer. Entry points call it once to validate their
-#' \code{threads} argument and then pass the plain count down to the
+#' `threads` argument and then pass the plain count down to the
 #' kernels.
 #'
-#' @param x An object returned by \code{\link{n_threads}}.
+#' @param x An object returned by [n_threads()].
 #'
 #' @return A single integer, at least 1.
 #'
@@ -118,7 +118,7 @@ print.n_threads <- function(x, ...) {
 #' thread_count(n_threads())
 #' thread_count(n_threads(8))
 #'
-#' @seealso \code{\link{n_threads}}
+#' @seealso [n_threads()]
 #' @export
 thread_count <- function(x) {
   if (!inherits(x, "n_threads")) {
@@ -131,11 +131,11 @@ thread_count <- function(x) {
 #' Read the Worker Count Off a Thread Policy
 #'
 #' @description
-#' Returns the worker-process count an \code{\link{n_threads}} object
-#' carries, as a single integer. An object built before \code{workers}
+#' Returns the worker-process count an [n_threads()] object
+#' carries, as a single integer. An object built before `workers`
 #' existed answers 1, so a stored policy keeps meaning what it meant.
 #'
-#' @param x An object returned by \code{\link{n_threads}}.
+#' @param x An object returned by [n_threads()].
 #'
 #' @return A single integer, at least 1.
 #'
@@ -143,7 +143,7 @@ thread_count <- function(x) {
 #' worker_count(n_threads())
 #' worker_count(n_threads(2, workers = 4))
 #'
-#' @seealso \code{\link{n_threads}}, \code{\link{thread_count}}
+#' @seealso [n_threads()], [thread_count()]
 #' @export
 worker_count <- function(x) {
   if (!inherits(x, "n_threads")) {
@@ -163,13 +163,13 @@ worker_count <- function(x) {
 #' parallel regions draw from.
 #'
 #' @details
-#' \code{RcppParallel::setThreadOptions()} writes a process-level variable,
+#' `RcppParallel::setThreadOptions()` writes a process-level variable,
 #' so a fit that set it and returned would leave it moved for whatever code
-#' runs next; the restoration is registered with \code{on.exit} in the
+#' runs next; the restoration is registered with `on.exit` in the
 #' caller's frame. At a count of 1 nothing is touched at all, which is what
 #' keeps the sequential path exactly the sequential path.
 #'
-#' @param x An object returned by \code{\link{n_threads}}.
+#' @param x An object returned by [n_threads()].
 #' @param frame The environment whose exit restores the previous setting.
 #'   Defaults to the caller's.
 #'
@@ -183,7 +183,7 @@ worker_count <- function(x) {
 #' f()                                     # "2" inside the frame
 #' Sys.getenv("RCPP_PARALLEL_NUM_THREADS", unset = "unset")   # restored
 #'
-#' @seealso \code{\link{n_threads}}, \code{\link{thread_count}}
+#' @seealso [n_threads()], [thread_count()]
 #' @export
 local_threads <- function(x, frame = parent.frame()) {
   k <- thread_count(x)

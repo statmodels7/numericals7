@@ -20,7 +20,7 @@ fd_derivative(
 
 \item{order}{The derivative order, 1 to 4.}
 
-\item{h}{A numeric vector of steps; \code{\link{fd_step}} when missing.}
+\item{h}{A numeric vector of steps; \code{\link[=fd_step]{fd_step()}} when missing.}
 
 \item{accuracy}{The order of the error term. Two gives the classical
 compact stencils; four gives the five-point first and second
@@ -63,5 +63,5 @@ fd_derivative(sqrt, 1e-4, order = 1, side = "forward",
 
 }
 \seealso{
-\code{\link{fd_weights}}, \code{\link{fd_step}}
+\code{\link[=fd_weights]{fd_weights()}}, \code{\link[=fd_step]{fd_step()}}
 }

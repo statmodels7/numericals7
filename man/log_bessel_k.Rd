@@ -23,8 +23,8 @@ order, so \eqn{\nu} enters as \eqn{|\nu|}.
 }
 \details{
 The large-argument and large-order branches follow Plesner, Sørensen and
-Hauberg (2024) exactly as in \code{\link{log_bessel_i}}. At moderate
-inputs the exponentially scaled \code{\link[base]{besselK}} is
+Hauberg (2024) exactly as in \code{\link[=log_bessel_i]{log_bessel_i()}}. At moderate
+inputs the exponentially scaled \code{\link[base:Bessel]{base::besselK()}} is
 machine-precision exact wherever it does not overflow and one call beats
 a quadrature, so it serves that region; the corner where the scaled value
 itself overflows (a small argument with the order near the switching
@@ -47,5 +47,5 @@ of complex argument and fractional order. \emph{Communications in
 Numerical Methods in Engineering} 24(3), 237--249.
 }
 \seealso{
-\code{\link{log_bessel_i}}, \code{\link{log_bessel_k_derivs}}
+\code{\link[=log_bessel_i]{log_bessel_i()}}, \code{\link[=log_bessel_k_derivs]{log_bessel_k_derivs()}}
 }

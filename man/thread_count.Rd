@@ -7,13 +7,13 @@
 thread_count(x)
 }
 \arguments{
-\item{x}{An object returned by \code{\link{n_threads}}.}
+\item{x}{An object returned by \code{\link[=n_threads]{n_threads()}}.}
 }
 \value{
 A single integer, at least 1.
 }
 \description{
-Returns the thread count an \code{\link{n_threads}} object carries, as a
+Returns the thread count an \code{\link[=n_threads]{n_threads()}} object carries, as a
 single integer. Entry points call it once to validate their
 \code{threads} argument and then pass the plain count down to the
 kernels.
@@ -24,5 +24,5 @@ thread_count(n_threads(8))
 
 }
 \seealso{
-\code{\link{n_threads}}
+\code{\link[=n_threads]{n_threads()}}
 }

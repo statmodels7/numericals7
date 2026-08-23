@@ -20,7 +20,7 @@ A list with the value \code{l} and the derivatives \code{d1} to
 \eqn{\log K_\nu(x)} together with its first four derivatives with respect
 to the \emph{argument}, from the ratio identity
 \eqn{(\log K_\nu)' = \nu/x - K_{\nu+1}/K_\nu} and the modified Bessel
-equation, exactly as in \code{\link{log_bessel_i_derivs}}.
+equation, exactly as in \code{\link[=log_bessel_i_derivs]{log_bessel_i_derivs()}}.
 }
 \examples{
 # d/dx log K_{1/2}(x) is exactly -1/(2x) - 1
@@ -34,5 +34,5 @@ computation of the logarithm of modified Bessel functions on GPUs.
 Supercomputing (ICS '24)}. arXiv:2409.08729.
 }
 \seealso{
-\code{\link{log_bessel_k}}, \code{\link{log_bessel_i_derivs}}
+\code{\link[=log_bessel_k]{log_bessel_k()}}, \code{\link[=log_bessel_i_derivs]{log_bessel_i_derivs()}}
 }

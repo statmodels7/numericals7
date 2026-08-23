@@ -69,5 +69,5 @@ series_vec(function(k, i) dpois(k, lam[i]), n = 3)
 
 }
 \seealso{
-\code{\link{quad_vec}}
+\code{\link[=quad_vec]{quad_vec()}}
 }

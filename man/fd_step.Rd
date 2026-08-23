@@ -37,5 +37,5 @@ fd_step(0.01, 2, bounds = c(0, Inf))
 
 }
 \seealso{
-\code{\link{fd_derivative}}
+\code{\link[=fd_derivative]{fd_derivative()}}
 }

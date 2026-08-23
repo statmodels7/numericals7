@@ -43,5 +43,5 @@ nrow(compositions(5, 3)) == choose(5 + 3 - 1, 3 - 1)
 
 }
 \seealso{
-\code{\link{set_partitions}}
+\code{\link[=set_partitions]{set_partitions()}}
 }

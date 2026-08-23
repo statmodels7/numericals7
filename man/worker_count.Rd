@@ -7,13 +7,13 @@
 worker_count(x)
 }
 \arguments{
-\item{x}{An object returned by \code{\link{n_threads}}.}
+\item{x}{An object returned by \code{\link[=n_threads]{n_threads()}}.}
 }
 \value{
 A single integer, at least 1.
 }
 \description{
-Returns the worker-process count an \code{\link{n_threads}} object
+Returns the worker-process count an \code{\link[=n_threads]{n_threads()}} object
 carries, as a single integer. An object built before \code{workers}
 existed answers 1, so a stored policy keeps meaning what it meant.
 }
@@ -23,5 +23,5 @@ worker_count(n_threads(2, workers = 4))
 
 }
 \seealso{
-\code{\link{n_threads}}, \code{\link{thread_count}}
+\code{\link[=n_threads]{n_threads()}}, \code{\link[=thread_count]{thread_count()}}
 }

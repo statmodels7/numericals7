@@ -37,5 +37,5 @@ fd_offsets(4)$central       # the five-point fourth-derivative stencil
 
 }
 \seealso{
-\code{\link{fd_weights}}, \code{\link{fd_derivative}}
+\code{\link[=fd_weights]{fd_weights()}}, \code{\link[=fd_derivative]{fd_derivative()}}
 }

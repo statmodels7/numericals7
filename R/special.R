@@ -22,12 +22,12 @@ NULL
 #'
 #' @param t A numeric vector.
 #'
-#' @return A list with \code{r} and \code{dr}.
+#' @return A list with `r` and `dr`.
 #'
 #' @examples
 #' mills_ratio(c(-40, 0, 3))$r
 #'
-#' @seealso \code{\link{owen_t}}, \code{\link{bessel_i_ratio}}, \code{\link{log_bessel_i}}, \code{\link{log_bessel_k}}
+#' @seealso [owen_t()], [bessel_i_ratio()], [log_bessel_i()], [log_bessel_k()]
 #' @export
 mills_ratio <- function(t) {
   r <- exp(stats::dnorm(t, log = TRUE) - stats::pnorm(t, log.p = TRUE))
@@ -44,23 +44,23 @@ mills_ratio <- function(t) {
 #' @details
 #' The integrand is bounded and smooth over a finite range, so quadrature
 #' evaluates it to near machine precision; every element of the input goes
-#' into one batched call of \code{\link{quad_vec}}, one row per element. Two
+#' into one batched call of [quad_vec()], one row per element. Two
 #' identities keep the extremes exact rather than quadrature-bound:
 #' \eqn{T(h, a) = -T(h, -a)}, and \eqn{T(h, \infty) = \tfrac{1}{2}\Phi(-|h|)}.
 #'
 #' @param h A numeric vector.
-#' @param a A numeric vector, recycled against \code{h}.
+#' @param a A numeric vector, recycled against `h`.
 #'
 #' @return A numeric vector.
 #'
 #' @references
 #' Owen, D. B. (1956). Tables for computing bivariate normal probabilities.
-#' \emph{Annals of Mathematical Statistics} 27, 1075-1090.
+#' *Annals of Mathematical Statistics* 27, 1075-1090.
 #'
 #' @examples
 #' owen_t(0, 1) - atan(1) / (2 * pi)
 #'
-#' @seealso \code{\link{mills_ratio}}, \code{\link{bessel_i_ratio}}, \code{\link{log_bessel_i}}, \code{\link{log_bessel_k}}
+#' @seealso [mills_ratio()], [bessel_i_ratio()], [log_bessel_i()], [log_bessel_k()]
 #' @export
 owen_t <- function(h, a) {
   n <- max(length(h), length(a))
@@ -111,7 +111,7 @@ owen_t <- function(h, a) {
 #'
 #' @return A numeric vector in \eqn{(0, 1)}.
 #'
-#' @seealso \code{\link{bessel_i_ratio_derivs}}, \code{\link{bessel_i_ratio_inverse}}
+#' @seealso [bessel_i_ratio_derivs()], [bessel_i_ratio_inverse()]
 #'
 #' @examples
 #' bessel_i_ratio(c(0.5, 2, 1000))
@@ -155,7 +155,7 @@ bessel_i_ratio <- function(kappa) {
 #' That is what makes a series over these ratios cheaper than a quadrature
 #' per observation.
 #'
-#' \code{\link{bessel_i_ratio}} is the first of them, \eqn{I_1/I_0}, and
+#' [bessel_i_ratio()] is the first of them, \eqn{I_1/I_0}, and
 #' carries an asymptotic branch for an argument past \eqn{10^4} where the
 #' scaled Bessel functions underflow. There is no such branch here: the
 #' recurrence needs a starting index above \eqn{\kappa}, so the cost grows
@@ -166,9 +166,9 @@ bessel_i_ratio <- function(kappa) {
 #' @param kappa A positive numeric vector.
 #' @param m How many ratios to return.
 #'
-#' @return A \code{length(kappa)} by \code{m} matrix.
+#' @return A `length(kappa)` by `m` matrix.
 #'
-#' @seealso \code{\link{bessel_i_ratio}}, \code{\link{log_bessel_i}}
+#' @seealso [bessel_i_ratio()], [log_bessel_i()]
 #'
 #' @examples
 #' r <- bessel_i_ratios(c(1, 5), 4)
@@ -213,7 +213,7 @@ bessel_i_ratios <- function(kappa, m) {
 #'
 #' @details
 #' Each order is written in the orders below it, so the whole table costs the
-#' two Bessel evaluations of \code{\link{bessel_i_ratio}} and nothing more.
+#' two Bessel evaluations of [bessel_i_ratio()] and nothing more.
 #' The first identity follows from \eqn{I_0' = I_1} and
 #' \eqn{I_1' = I_0 - I_1/\kappa}; the alternative, a Bessel function of
 #' higher order per derivative, costs more and is less accurate at large
@@ -222,10 +222,10 @@ bessel_i_ratios <- function(kappa, m) {
 #'
 #' @param kappa A positive numeric vector.
 #'
-#' @return A named list with \code{A} and its derivatives \code{d1} to
-#'   \code{d4}.
+#' @return A named list with `A` and its derivatives `d1` to
+#'   `d4`.
 #'
-#' @seealso \code{\link{bessel_i_ratio}}, \code{\link{bessel_i_ratio_inverse}}
+#' @seealso [bessel_i_ratio()], [bessel_i_ratio_inverse()]
 #'
 #' @examples
 #' bessel_i_ratio_derivs(2)$d1
@@ -252,22 +252,22 @@ bessel_i_ratio_derivs <- function(kappa) {
 #' \eqn{A} has no elementary inverse, so \eqn{\kappa} is found by root
 #' finding from a bracket built around the standard series approximation and
 #' widened until it straddles the root; the asymptotic branch of
-#' \code{\link{bessel_i_ratio}} keeps the function evaluable over the whole
+#' [bessel_i_ratio()] keeps the function evaluable over the whole
 #' bracket, however concentrated. The derivatives come from the inverse
-#' function rule on \code{\link{bessel_i_ratio_derivs}}:
+#' function rule on [bessel_i_ratio_derivs()]:
 #' \deqn{\kappa' = \dfrac{1}{A'}, \qquad
 #'       \kappa'' = -\dfrac{A''}{(A')^3}, \qquad
 #'       \kappa''' = \dfrac{3(A'')^2 - A'A'''}{(A')^5},}
 #' and the fourth in the same pattern; \eqn{A' > 0} keeps every denominator
-#' away from zero in the interior. A \code{rho} outside \eqn{(0, 1)} returns
-#' \code{NA}.
+#' away from zero in the interior. A `rho` outside \eqn{(0, 1)} returns
+#' `NA`.
 #'
 #' @param rho A numeric vector in \eqn{(0, 1)}.
 #'
-#' @return A named list with \code{kappa} and its derivatives \code{d1} to
-#'   \code{d4} in \code{rho}.
+#' @return A named list with `kappa` and its derivatives `d1` to
+#'   `d4` in `rho`.
 #'
-#' @seealso \code{\link{bessel_i_ratio}}, \code{\link{bessel_i_ratio_derivs}}
+#' @seealso [bessel_i_ratio()], [bessel_i_ratio_derivs()]
 #'
 #' @examples
 #' bessel_i_ratio(bessel_i_ratio_inverse(0.7)$kappa)

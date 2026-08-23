@@ -8,12 +8,12 @@
 #' The coefficients of the polynomials \eqn{u_k(t)}, \eqn{k = 1, \dots, 13},
 #' entering the large-order uniform asymptotic expansions of the modified
 #' Bessel functions (DLMF 10.41). Each element carries the exponents
-#' \code{e} and the coefficients \code{c} of one polynomial. Generated in
+#' `e` and the coefficients `c` of one polynomial. Generated in
 #' exact rational arithmetic from the recurrence stated above and converted
 #' to double at the end; the tests verify the recurrence numerically.
 #'
-#' @format A list of 13 lists, each with the integer exponents \code{e} and
-#'   the double coefficients \code{c}.
+#' @format A list of 13 lists, each with the integer exponents `e` and
+#'   the double coefficients `c`.
 #' @return A list as described in the format section; documented for
 #'   reference, never called.
 #' @keywords internal

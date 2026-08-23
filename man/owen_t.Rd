@@ -22,7 +22,7 @@ distribution function is written in.
 \details{
 The integrand is bounded and smooth over a finite range, so quadrature
 evaluates it to near machine precision; every element of the input goes
-into one batched call of \code{\link{quad_vec}}, one row per element. Two
+into one batched call of \code{\link[=quad_vec]{quad_vec()}}, one row per element. Two
 identities keep the extremes exact rather than quadrature-bound:
 \eqn{T(h, a) = -T(h, -a)}, and \eqn{T(h, \infty) = \tfrac{1}{2}\Phi(-|h|)}.
 }
@@ -35,5 +35,5 @@ Owen, D. B. (1956). Tables for computing bivariate normal probabilities.
 \emph{Annals of Mathematical Statistics} 27, 1075-1090.
 }
 \seealso{
-\code{\link{mills_ratio}}, \code{\link{bessel_i_ratio}}, \code{\link{log_bessel_i}}, \code{\link{log_bessel_k}}
+\code{\link[=mills_ratio]{mills_ratio()}}, \code{\link[=bessel_i_ratio]{bessel_i_ratio()}}, \code{\link[=log_bessel_i]{log_bessel_i()}}, \code{\link[=log_bessel_k]{log_bessel_k()}}
 }

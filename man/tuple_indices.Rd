@@ -36,5 +36,5 @@ length(tuple_indices(3, 4)) == choose(3 + 4 - 1, 4)
 
 }
 \seealso{
-\code{\link{set_partitions}}
+\code{\link[=set_partitions]{set_partitions()}}
 }

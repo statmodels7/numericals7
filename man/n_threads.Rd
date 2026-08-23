@@ -66,7 +66,7 @@ a kernel stays sequential whatever the count says.
 
 The two levels do not nest: a fit running inside a worker process is
 sequential by construction, so \code{workers = 4} opens four processes
-each fitting on one thread rather than \code{4 x threads} of them.
+each fitting on one thread rather than \verb{4 x threads} of them.
 Worker processes are separate R sessions loading the installed packages,
 which is what makes them safe for the S7 objects a fold's fit carries
 (the same rule \code{optimizers7::multistart} records); starting one
@@ -83,6 +83,6 @@ worker_count(n_threads(1, workers = 4))
 
 }
 \seealso{
-\code{\link{thread_count}}, \code{\link{worker_count}},
-\code{\link{local_threads}}
+\code{\link[=thread_count]{thread_count()}}, \code{\link[=worker_count]{worker_count()}},
+\code{\link[=local_threads]{local_threads()}}
 }

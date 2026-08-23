@@ -33,7 +33,7 @@ The loop runs over the series index and not over the data, so a vector of
 That is what makes a series over these ratios cheaper than a quadrature
 per observation.
 
-\code{\link{bessel_i_ratio}} is the first of them, \eqn{I_1/I_0}, and
+\code{\link[=bessel_i_ratio]{bessel_i_ratio()}} is the first of them, \eqn{I_1/I_0}, and
 carries an asymptotic branch for an argument past \eqn{10^4} where the
 scaled Bessel functions underflow. There is no such branch here: the
 recurrence needs a starting index above \eqn{\kappa}, so the cost grows
@@ -48,5 +48,5 @@ besselI(5, 1:4, expon.scaled = TRUE) / besselI(5, 0, expon.scaled = TRUE)
 
 }
 \seealso{
-\code{\link{bessel_i_ratio}}, \code{\link{log_bessel_i}}
+\code{\link[=bessel_i_ratio]{bessel_i_ratio()}}, \code{\link[=log_bessel_i]{log_bessel_i()}}
 }

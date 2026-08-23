@@ -167,33 +167,33 @@ NULL
 #' below \eqn{10^{-11}}, the uniform expansion taking over otherwise.
 #'
 #' @param x A numeric vector of non-negative arguments, recycled against
-#'   \code{nu}.
+#'   `nu`.
 #' @param nu A numeric vector of non-negative orders.
 #' @param threads How many threads the kernel may use, a plain integer, as
-#'   \code{\link{thread_count}} reads it off an \code{\link{n_threads}}
+#'   [thread_count()] reads it off an [n_threads()]
 #'   policy. Every branch of the kernel is this package's own arithmetic, so
 #'   element \eqn{i} is computed and written by one thread and the result is
 #'   bit-identical at any count; below an internal threshold the sequential
-#'   path is taken whatever the count says. \code{\link{log_bessel_k}} takes
-#'   no such argument: its hybrid branch calls R's own scaled \code{besselK},
+#'   path is taken whatever the count says. [log_bessel_k()] takes
+#'   no such argument: its hybrid branch calls R's own scaled `besselK`,
 #'   which can raise a warning, and a warning from a worker thread ends the
 #'   session.
 #'
-#' @return A numeric vector of \eqn{\log I_\nu(x)} values; \code{-Inf} at
-#'   \eqn{x = 0} with \eqn{\nu > 0}, \code{0} at \eqn{x = 0} with
-#'   \eqn{\nu = 0}, \code{NA} for arguments outside the domain.
+#' @return A numeric vector of \eqn{\log I_\nu(x)} values; `-Inf` at
+#'   \eqn{x = 0} with \eqn{\nu > 0}, `0` at \eqn{x = 0} with
+#'   \eqn{\nu = 0}, `NA` for arguments outside the domain.
 #'
 #' @references
 #' Plesner, A., Sørensen, H. H. B., and Hauberg, S. (2024). Accurate
 #' computation of the logarithm of modified Bessel functions on GPUs.
-#' \emph{Proceedings of the 38th ACM International Conference on
-#' Supercomputing (ICS '24)}. arXiv:2409.08729.
+#' *Proceedings of the 38th ACM International Conference on
+#' Supercomputing (ICS '24)*. arXiv:2409.08729.
 #'
-#' Olver, F. W. J., et al. (2024). \emph{NIST Digital Library of
-#' Mathematical Functions}, chapter 10. https://dlmf.nist.gov/.
+#' Olver, F. W. J., et al. (2024). *NIST Digital Library of
+#' Mathematical Functions*, chapter 10. https://dlmf.nist.gov/.
 #'
-#' @seealso \code{\link{log_bessel_k}}, \code{\link{log_bessel_i_derivs}},
-#'   \code{\link{bessel_i_ratio}}
+#' @seealso [log_bessel_k()], [log_bessel_i_derivs()],
+#'   [bessel_i_ratio()]
 #'
 #' @examples
 #' log_bessel_i(c(1, 100, 1e6), 2)      # far past the unscaled overflow
@@ -275,8 +275,8 @@ log_bessel_i <- function(x, nu, threads = 1L) {
 #'
 #' @details
 #' The large-argument and large-order branches follow Plesner, Sørensen and
-#' Hauberg (2024) exactly as in \code{\link{log_bessel_i}}. At moderate
-#' inputs the exponentially scaled \code{\link[base]{besselK}} is
+#' Hauberg (2024) exactly as in [log_bessel_i()]. At moderate
+#' inputs the exponentially scaled [base::besselK()] is
 #' machine-precision exact wherever it does not overflow and one call beats
 #' a quadrature, so it serves that region; the corner where the scaled value
 #' itself overflows (a small argument with the order near the switching
@@ -284,23 +284,23 @@ log_bessel_i <- function(x, nu, threads = 1L) {
 #' evaluated on the log scale over a composite Simpson rule.
 #'
 #' @param x A numeric vector of positive arguments, recycled against
-#'   \code{nu}.
+#'   `nu`.
 #' @param nu A numeric vector of orders, any sign.
 #'
-#' @return A numeric vector of \eqn{\log K_\nu(x)} values; \code{Inf} at
-#'   \eqn{x = 0}, \code{NA} for arguments outside the domain.
+#' @return A numeric vector of \eqn{\log K_\nu(x)} values; `Inf` at
+#'   \eqn{x = 0}, `NA` for arguments outside the domain.
 #'
 #' @references
 #' Plesner, A., Sørensen, H. H. B., and Hauberg, S. (2024). Accurate
 #' computation of the logarithm of modified Bessel functions on GPUs.
-#' \emph{Proceedings of the 38th ACM International Conference on
-#' Supercomputing (ICS '24)}. arXiv:2409.08729.
+#' *Proceedings of the 38th ACM International Conference on
+#' Supercomputing (ICS '24)*. arXiv:2409.08729.
 #'
 #' Rothwell, E. J. (2006). Computation of the logarithm of Bessel functions
-#' of complex argument and fractional order. \emph{Communications in
-#' Numerical Methods in Engineering} 24(3), 237--249.
+#' of complex argument and fractional order. *Communications in
+#' Numerical Methods in Engineering* 24(3), 237--249.
 #'
-#' @seealso \code{\link{log_bessel_i}}, \code{\link{log_bessel_k_derivs}}
+#' @seealso [log_bessel_i()], [log_bessel_k_derivs()]
 #'
 #' @examples
 #' log_bessel_k(c(0.01, 1, 1000), 2.5)
@@ -315,7 +315,7 @@ log_bessel_k <- function(x, nu) {
 #'
 #' @description
 #' The same branches and formulas as the compiled kernel behind
-#' \code{\link{log_bessel_k}}, in vectorized R. The compiled route measured
+#' [log_bessel_k()], in vectorized R. The compiled route measured
 #' 2.9x faster on the mixed workload; the twin is kept as the independent
 #' reference the tests compare against.
 #'
@@ -364,7 +364,7 @@ log_bessel_k <- function(x, nu) {
 #'
 #' @description
 #' \eqn{\log I_\nu(x)} together with its first four derivatives with respect
-#' to the \emph{argument}. The first derivative is the ratio identity
+#' to the *argument*. The first derivative is the ratio identity
 #' \eqn{(\log I_\nu)' = \nu/x + I_{\nu+1}/I_\nu} with the ratio formed as
 #' the exponential of a difference of logarithms, which is finite wherever
 #' the logs are; the higher orders follow from the modified Bessel equation
@@ -372,19 +372,19 @@ log_bessel_k <- function(x, nu) {
 #' order have no elementary form and are not provided.
 #'
 #' @param x A numeric vector of positive arguments, recycled against
-#'   \code{nu}.
+#'   `nu`.
 #' @param nu A numeric vector of non-negative orders.
 #'
-#' @return A list with the value \code{l} and the derivatives \code{d1} to
-#'   \code{d4} in the argument.
+#' @return A list with the value `l` and the derivatives `d1` to
+#'   `d4` in the argument.
 #'
 #' @references
 #' Plesner, A., Sørensen, H. H. B., and Hauberg, S. (2024). Accurate
 #' computation of the logarithm of modified Bessel functions on GPUs.
-#' \emph{Proceedings of the 38th ACM International Conference on
-#' Supercomputing (ICS '24)}. arXiv:2409.08729.
+#' *Proceedings of the 38th ACM International Conference on
+#' Supercomputing (ICS '24)*. arXiv:2409.08729.
 #'
-#' @seealso \code{\link{log_bessel_i}}, \code{\link{log_bessel_k_derivs}}
+#' @seealso [log_bessel_i()], [log_bessel_k_derivs()]
 #'
 #' @examples
 #' log_bessel_i_derivs(2, 0.5)$d1   # equals coth(2) - 1/(2*2) exactly
@@ -403,24 +403,24 @@ log_bessel_i_derivs <- function(x, nu) {
 #'
 #' @description
 #' \eqn{\log K_\nu(x)} together with its first four derivatives with respect
-#' to the \emph{argument}, from the ratio identity
+#' to the *argument*, from the ratio identity
 #' \eqn{(\log K_\nu)' = \nu/x - K_{\nu+1}/K_\nu} and the modified Bessel
-#' equation, exactly as in \code{\link{log_bessel_i_derivs}}.
+#' equation, exactly as in [log_bessel_i_derivs()].
 #'
 #' @param x A numeric vector of positive arguments, recycled against
-#'   \code{nu}.
+#'   `nu`.
 #' @param nu A numeric vector of orders, any sign.
 #'
-#' @return A list with the value \code{l} and the derivatives \code{d1} to
-#'   \code{d4} in the argument.
+#' @return A list with the value `l` and the derivatives `d1` to
+#'   `d4` in the argument.
 #'
 #' @references
 #' Plesner, A., Sørensen, H. H. B., and Hauberg, S. (2024). Accurate
 #' computation of the logarithm of modified Bessel functions on GPUs.
-#' \emph{Proceedings of the 38th ACM International Conference on
-#' Supercomputing (ICS '24)}. arXiv:2409.08729.
+#' *Proceedings of the 38th ACM International Conference on
+#' Supercomputing (ICS '24)*. arXiv:2409.08729.
 #'
-#' @seealso \code{\link{log_bessel_k}}, \code{\link{log_bessel_i_derivs}}
+#' @seealso [log_bessel_k()], [log_bessel_i_derivs()]
 #'
 #' @examples
 #' # d/dx log K_{1/2}(x) is exactly -1/(2x) - 1

@@ -16,7 +16,7 @@ A numeric vector.
 }
 \description{
 The same branches and formulas as the compiled kernel behind
-\code{\link{log_bessel_k}}, in vectorized R. The compiled route measured
+\code{\link[=log_bessel_k]{log_bessel_k()}}, in vectorized R. The compiled route measured
 2.9x faster on the mixed workload; the twin is kept as the independent
 reference the tests compare against.
 }

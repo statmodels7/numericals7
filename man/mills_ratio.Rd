@@ -29,5 +29,5 @@ mills_ratio(c(-40, 0, 3))$r
 
 }
 \seealso{
-\code{\link{owen_t}}, \code{\link{bessel_i_ratio}}, \code{\link{log_bessel_i}}, \code{\link{log_bessel_k}}
+\code{\link[=owen_t]{owen_t()}}, \code{\link[=bessel_i_ratio]{bessel_i_ratio()}}, \code{\link[=log_bessel_i]{log_bessel_i()}}, \code{\link[=log_bessel_k]{log_bessel_k()}}
 }

@@ -36,5 +36,5 @@ computation of the logarithm of modified Bessel functions on GPUs.
 Supercomputing (ICS '24)}. arXiv:2409.08729.
 }
 \seealso{
-\code{\link{log_bessel_i}}, \code{\link{log_bessel_k_derivs}}
+\code{\link[=log_bessel_i]{log_bessel_i()}}, \code{\link[=log_bessel_k_derivs]{log_bessel_k_derivs()}}
 }

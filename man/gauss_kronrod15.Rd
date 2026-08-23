@@ -31,5 +31,5 @@ sum(r$wg)
 
 }
 \seealso{
-\code{\link{quad_vec}}
+\code{\link[=quad_vec]{quad_vec()}}
 }
