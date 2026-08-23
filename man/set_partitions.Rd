@@ -2,36 +2,70 @@
 % Please edit documentation in R/enumerate.R
 \name{set_partitions}
 \alias{set_partitions}
-\title{The Set Partitions of the First n Integers}
+\title{Set Partitions of the First n Integers}
 \usage{
 set_partitions(n)
 }
 \arguments{
-\item{n}{A positive integer, at most four here.}
+\item{n}{A positive whole number. The recursion has no base case below one,
+so zero and negative values recurse until the stack overflows instead of
+throwing.}
 }
 \value{
-A list of partitions, each a list of integer vectors.
+A list of \eqn{B_n} partitions. Each partition is a list of numeric
+vectors, its blocks, which between them contain each of \code{1:n} exactly
+once. The storage mode of a block follows \code{n}: \code{set_partitions(4L)} gives
+integer blocks and \code{set_partitions(4)} double ones, so compare a block
+against \code{1:n} with \code{==} and not with \code{identical()}.
 }
 \description{
-Every way of splitting \code{1:n} into disjoint non-empty blocks, which is
-what a chain rule of order \eqn{n} sums over.
+Enumerates every way of splitting \code{1:n} into disjoint non-empty blocks. A
+chain rule of order \eqn{n} contributes one term per partition, so this is
+the index set of Faà di Bruno's formula and of the Bell-polynomial
+identities built on it. The number of partitions is the Bell number
+\eqn{B_n}: 1, 2, 5, 15, 52 and 203 for \eqn{n} from one to six.
 }
-\details{
-Built by the standard recursion: the partitions of \code{1:n} are obtained
-from those of \code{1:(n-1)} by placing \code{n} into each existing block
-in turn and then into a block of its own. There are 1, 2, 5 and 15 of them
-for \eqn{n = 1, \dots, 4}, the Bell numbers.
+\section{How they are built}{
+By the standard recursion. The partitions of \code{1:n} come from those of
+\code{1:(n-1)} by putting \eqn{n} into each existing block in turn, and then into
+a block of its own.
 
-The blocks index \strong{positions} rather than variables, which is what
-makes a repeated variable count with the right multiplicity without any
-bookkeeping of its own -- the same subset-of-positions device with
-subsets of positions.
+The cost is therefore \eqn{B_n}, which grows faster than any exponential:
+\eqn{B_8} is 4140 and \eqn{B_{10}} is 115975. Four is as high as the
+toolkit's derivatives go, where the sum has fifteen terms.
 }
+
+\section{The blocks index positions}{
+A block holds positions within a multi-index, not variables. A variable
+repeated in that multi-index therefore counts with its correct multiplicity
+and needs no bookkeeping of its own: differentiating three times in one
+variable and once in another sums over the same fifteen partitions as four
+distinct variables do, and what differs is which derivative each block
+names. \code{\link[=tuple_indices]{tuple_indices()}} supplies the multi-index the positions point into.
+}
+
 \examples{
+# The five partitions of {1, 2, 3}.
 set_partitions(3)
-lengths(lapply(1:4, set_partitions))
 
+# The counts are the Bell numbers.
+lengths(lapply(1:6, set_partitions))
+
+# Every partition covers 1:n exactly once, the blocks being disjoint.
+all(vapply(set_partitions(4), function(p) all(sort(unlist(p)) == 1:4),
+           logical(1)))
+
+# A fourth-order chain rule sums fifteen terms, one per partition, and the
+# number of blocks in each is the number of factors in that term.
+table(lengths(set_partitions(4)))
+
+}
+\references{
+Constantine, G. M. and Savits, T. H. (1996). A multivariate Faà di Bruno
+formula with applications. \emph{Transactions of the American Mathematical
+Society} \strong{348}, 503-520.
 }
 \seealso{
-\code{\link[=tuple_indices]{tuple_indices()}}
+\code{\link[=tuple_indices]{tuple_indices()}} for the multi-indices the blocks index into, and
+\code{\link[=compositions]{compositions()}} for the ordered sums.
 }

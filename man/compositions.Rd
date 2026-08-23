@@ -2,46 +2,77 @@
 % Please edit documentation in R/enumerate.R
 \name{compositions}
 \alias{compositions}
-\title{Every Way to Write an Integer as an Ordered Sum}
+\title{Weak Compositions of an Integer}
 \usage{
 compositions(n, k)
 }
 \arguments{
-\item{n}{The total, a non-negative integer.}
+\item{n}{The total, a non-negative whole number. Neither argument is
+validated. A negative \code{n} returns a matrix that answers no question, since
+the recursion walks \code{0:n} and that sequence runs downwards.}
 
-\item{k}{The number of parts, a positive integer.}
+\item{k}{The number of parts, a positive whole number. Zero recurses until
+the stack overflows.}
 }
 \value{
-An integer matrix with \code{k} columns.
+An integer matrix with \code{k} columns and
+\eqn{\binom{n + k - 1}{k - 1}} rows, every row summing to \code{n}.
 }
 \description{
-The weak compositions of \code{n} into \code{k} parts: every vector of
-\code{k} non-negative integers summing to \code{n}, one per row.
+Enumerates the weak compositions of \eqn{n} into \eqn{k} parts: every vector
+of \eqn{k} non-negative whole numbers summing to \eqn{n}, returned one per
+row of an integer matrix. \emph{Weak} means a part may be zero, so the set is the
+whole lattice simplex of counts and includes its faces. There are
+\eqn{\binom{n + k - 1}{k - 1}} rows.
 }
-\details{
-The set enumerated is
-
+\section{The set}{
 \deqn{\mathcal{C}(n, k) = \Bigl\{(c_1, \dots, c_k) \in \mathbb{N}_0^{k} :
   \textstyle\sum_{j=1}^{k} c_j = n\Bigr\},
-  \qquad \lvert\mathcal{C}(n, k)\rvert = \binom{n + k - 1}{k - 1},}
+  \qquad \lvert\mathcal{C}(n, k)\rvert = \binom{n + k - 1}{k - 1}.}
 
-the count being the number of ways to place \eqn{k - 1} dividers among
-\eqn{n} units.
-
-Built by recursion on the number of parts, which is what keeps the result
-in a fixed order and avoids generating and filtering a full grid. There
-are \code{choose(n + k - 1, k - 1)} of them, so the enumeration is only
-practical for a moderate size: at \code{n = 20} and \code{k = 5} it is
-10626 rows, and at \code{k = 10} it is 10015005.
-
-A discrete distribution on a fixed total -- a multinomial -- has exactly
-this set as its support, which is what makes its expectations exact sums.
+The count is the number of ways to place \eqn{k - 1} dividers among \eqn{n}
+units.
 }
+
+\section{Order and cost}{
+Rows come out in lexicographic order, the first part ascending from zero to
+\eqn{n}. The recursion runs on the number of parts, so the rows are produced
+in that order directly and no full grid is built and filtered.
+
+The whole matrix is materialized and the count grows quickly, which bounds
+the practical size: \eqn{n = 20} with \eqn{k = 5} is 10626 rows, and the
+same \eqn{n} with \eqn{k = 10} is 10015005.
+}
+
+\section{Where the set turns up}{
+It is exactly the support of a multinomial with total \eqn{n} over \eqn{k}
+categories, and of any other distribution on a fixed total. An expectation
+under such a law is therefore a finite sum over these rows, evaluated
+exactly, where a continuous family would need a quadrature.
+}
+
 \examples{
+# The four ways to split 3 into two ordered non-negative parts.
 compositions(3, 2)
-nrow(compositions(5, 3)) == choose(5 + 3 - 1, 3 - 1)
+
+# Every row sums to the total, and the row count is the divider formula.
+cs <- compositions(5, 3)
+all(rowSums(cs) == 5)
+nrow(cs) == choose(5 + 3 - 1, 3 - 1)
+
+# Zero parts are allowed, so the faces of the simplex are included. Of the
+# fifteen rows, twelve touch a face and three are strictly positive.
+cs4 <- compositions(4, 3)
+c(rows = nrow(cs4),
+  with_a_zero = sum(apply(cs4, 1, function(r) any(r == 0))),
+  positive = choose(4 - 1, 3 - 1))
+
+# One part, or a total of zero, leaves a single composition.
+compositions(3, 1)
+compositions(0, 3)
 
 }
 \seealso{
-\code{\link[=set_partitions]{set_partitions()}}
+\code{\link[=set_partitions]{set_partitions()}} and \code{\link[=tuple_indices]{tuple_indices()}}, the other two
+enumerations collected here.
 }

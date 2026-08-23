@@ -2,39 +2,67 @@
 % Please edit documentation in R/enumerate.R
 \name{tuple_indices}
 \alias{tuple_indices}
-\title{The Index Tuples of a Given Width}
+\title{Multi-Indices for Derivatives of a Given Order}
 \usage{
 tuple_indices(d, order = 2L)
 }
 \arguments{
-\item{d}{The number of variables.}
+\item{d}{The number of variables, a non-negative whole number. Zero gives an
+empty list. A negative value throws, from \code{seq_len()}, with a message
+about coercion to a non-negative integer.}
 
-\item{order}{The derivative order, 1 to 4.}
+\item{order}{The derivative order \eqn{k}, one of \code{1}, \code{2}, \code{3} or \code{4}.
+Anything else throws: the enumeration is written out only that far,
+because a fourth derivative is as high as the toolkit carries.}
 }
 \value{
-A list of integer vectors of length \code{order}.
+A list of \eqn{\binom{d + k - 1}{k}} integer vectors, each of length
+\code{order}, each non-decreasing. An empty list when \code{d} is zero.
 }
 \description{
-Every multi-index of a derivative of the given order over \code{d}
-variables: the tuples \eqn{(i_1 \le \dots \le i_k)} that key a list of
-partial derivatives.
+Enumerates the multi-indices that key a list of partial derivatives: every
+non-decreasing tuple \eqn{(i_1 \le \cdots \le i_k)} drawn from \code{1:d}, where
+\eqn{k} is the derivative order and \eqn{d} the number of variables. There
+is one tuple per distinct partial derivative, because a mixed partial does
+not depend on the order the variables are differentiated in, so the count is
+\eqn{\binom{d + k - 1}{k}}.
 }
-\details{
-The ordering is part of the contract. At order two the diagonal comes
-first and the off-diagonal pairs follow, because that is the order a
-Hessian consumer indexes by; at orders three and four the enumeration is
-the lexicographic one over non-decreasing tuples. Anything that holds
-derivatives over \eqn{d} variables -- a constrained parameter, say --
-keys its components by this enumeration, so nothing has to be reordered
-when they meet.
+\section{The ordering is part of the interface}{
+At order two the diagonal comes first, \eqn{(1,1), (2,2), \dots, (d,d)}, and
+the off-diagonal pairs follow in lexicographic order. That is the order a
+Hessian consumer indexes by. At orders three and four the enumeration is
+plain lexicographic over non-decreasing tuples.
+
+Every object in the toolkit holding derivatives over \eqn{d} variables keys
+its components by this enumeration, so two of them meet without either being
+reordered. Treat the order as fixed.
 }
+
+\section{Counts}{
+\deqn{\lvert T(d, k)\rvert = \binom{d + k - 1}{k},}
+
+the number of multisets of size \eqn{k} drawn from \eqn{d} symbols. At
+\eqn{d = 3} the four orders give 3, 6, 10 and 15 tuples.
+}
+
 \examples{
-tuple_indices(2, 2)
-lengths(tuple_indices(3, 4))[1:3]
-# there are choose(d + k - 1, k) tuples of width k
-length(tuple_indices(3, 4)) == choose(3 + 4 - 1, 4)
+# Second-order tuples of three variables: the diagonal first, then the
+# off-diagonal pairs. A Hessian consumer indexes in this order.
+tuple_indices(3, 2)
+
+# One tuple per distinct partial derivative, so the count is the number of
+# multisets of size k drawn from d symbols.
+vapply(1:4, function(k) length(tuple_indices(3, k)), integer(1))
+choose(3 + 1:4 - 1, 1:4)
+
+# Every tuple is non-decreasing, so no derivative is enumerated twice.
+all(vapply(tuple_indices(4, 3), function(i) !is.unsorted(i), logical(1)))
+
+# With no variables there are no derivatives.
+tuple_indices(0, 2)
 
 }
 \seealso{
-\code{\link[=set_partitions]{set_partitions()}}
+\code{\link[=set_partitions]{set_partitions()}}, the other enumeration a higher-order chain rule
+needs, and \code{\link[=compositions]{compositions()}} for the ordered sums.
 }
