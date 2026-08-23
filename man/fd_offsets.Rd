@@ -7,35 +7,77 @@
 fd_offsets(order, accuracy = 2L)
 }
 \arguments{
-\item{order}{The derivative order.}
+\item{order}{The derivative order \eqn{d}. Not validated here, though
+\code{\link[=fd_weights]{fd_weights()}} rejects anything but a non-negative whole number when the
+offsets reach it.}
 
-\item{accuracy}{The order of the error term, a positive integer. Central
-stencils gain a free order on symmetry, so an odd request costs the same
-nodes as the even one above it.}
+\item{accuracy}{The order of the error term, a positive integer, \code{2} by
+default. Zero or below throws. See above for what an odd value does.}
 }
 \value{
-A list with the \code{reach} and the three offset vectors
-\code{central}, \code{forward} and \code{backward}.
+A list of four components:
+\describe{
+\item{\code{reach}}{integer, the half-width \eqn{r}, at least 1.}
+\item{\code{central}}{integer vector \code{-r:r}, the symmetric stencil.}
+\item{\code{forward}}{integer vector \verb{0:(2r)}, for the lower boundary.}
+\item{\code{backward}}{integer vector \verb{(-2r):0}, for the upper one.}
+}
+All three offset vectors have the same length, \eqn{2r + 1}, so the three
+sides cost the same number of evaluations.
 }
 \description{
-The symmetric offsets used away from a boundary, and the one-sided ones
-used where a symmetric stencil would not fit, sized from the derivative
-order and the accuracy asked of it.
+Sizes a stencil from the derivative order and the accuracy asked of it, and
+returns the offsets to evaluate at: the symmetric ones used away from a
+boundary, and the one-sided ones used where a symmetric stencil would leave
+the domain. Pass them to \code{\link[=fd_weights]{fd_weights()}} for the weights and to
+\code{\link[=fd_derivative]{fd_derivative()}} to apply the whole thing.
 }
-\details{
-The reach is \eqn{r = \lceil (d + a)/2 \rceil - 1} for order \eqn{d} and
-accuracy \eqn{a}, giving \eqn{2r + 1} nodes: at the default accuracy of
-two this is the three-point stencil for the first and second derivatives
-and the five-point one for the third and fourth, and at accuracy four it
-is the five-point stencils for the first and second -- every stencil the
+\section{The reach}{
+For order \eqn{d} and accuracy \eqn{a} the half-width is
+
+\deqn{r = \Bigl\lceil \tfrac{d + a}{2} \Bigr\rceil - 1,}
+
+floored at one, giving \eqn{2r + 1} nodes. At the default accuracy of two
+that is the three-point stencil for the first and second derivatives and the
+five-point one for the third and fourth. At accuracy four it is the
+five-point stencils for the first and second. Those are every stencil the
 toolkit's packages had written out by hand, from one formula.
 }
+
+\section{An odd accuracy is rounded, and which way depends on the order}{
+A central stencil is symmetric, so the odd powers cancel from its error
+expansion and the accuracy it delivers is always even. An odd request is
+therefore served by an even neighbour, and the parity of \eqn{d + a} decides
+which one. Measured on \eqn{\exp} by halving the step:
+
+\tabular{lrrrr}{
+\strong{order}    \tab 1 \tab 2 \tab 3 \tab 4 \cr
+accuracy 2 \tab 2 \tab 2 \tab 2 \tab 2 \cr
+accuracy 3 \tab 2 \tab 4 \tab 2 \tab 4 \cr
+accuracy 4 \tab 4 \tab 4 \tab 4 \tab 4
+}
+
+At an odd order the request rounds down and costs nothing extra; at an even
+order it rounds up and buys two more nodes. Ask for an even accuracy and the
+question does not arise.
+}
+
 \examples{
-fd_offsets(1)               # three points
-fd_offsets(1, accuracy = 4) # five points
-fd_offsets(4)$central       # the five-point fourth-derivative stencil
+# Three points for a first or second derivative, five for a third or fourth.
+fd_offsets(1)$central
+fd_offsets(4)$central
+
+# Accuracy four buys two more nodes for a first derivative.
+fd_offsets(1, accuracy = 4)$central
+
+# The one-sided sets are the same size, so a boundary costs no more.
+str(fd_offsets(2))
+
+# Accuracy must be positive.
+try(fd_offsets(2, accuracy = 0))
 
 }
 \seealso{
-\code{\link[=fd_weights]{fd_weights()}}, \code{\link[=fd_derivative]{fd_derivative()}}
+\code{\link[=fd_weights]{fd_weights()}} for the weights at these offsets, \code{\link[=fd_step]{fd_step()}} for the
+step to pair with them, \code{\link[=fd_derivative]{fd_derivative()}} for all three assembled.
 }

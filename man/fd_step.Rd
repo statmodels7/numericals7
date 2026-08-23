@@ -9,33 +9,68 @@ fd_step(x, order, accuracy = 2L, bounds = NULL)
 \arguments{
 \item{x}{A numeric vector of evaluation points.}
 
-\item{order}{The derivative order.}
+\item{order}{The derivative order \eqn{d}.}
 
-\item{accuracy}{The accuracy the stencil will be built at.}
+\item{accuracy}{The accuracy the stencil will be built at, \code{2} by default.
+Matches \code{\link[=fd_offsets]{fd_offsets()}}'s argument of the same name.}
 
-\item{bounds}{An optional length-two numeric vector of domain bounds.}
+\item{bounds}{An optional numeric vector of two domain bounds, either of
+which may be infinite. \code{NULL}, the default, applies no clamp.}
 }
 \value{
-A numeric vector of steps, the same length as \code{x}.
+A numeric vector of steps the same length as \code{x}, positive except at
+a point sitting on a finite bound, where it is zero.
 }
 \description{
-The magnitude-scaled step that balances truncation against rounding for a
-single stencil of the given order and accuracy, clamped so the whole
-stencil stays inside the domain when bounds are given.
+Returns the step at which a single stencil of the given order and accuracy
+balances truncation error against rounding error, scaled by the magnitude of
+the point, and shrunk near a finite bound so that the whole stencil stays
+inside the domain.
 }
-\details{
-The step is \eqn{\varepsilon^{1/(d+a)}\max(1, |x|)}: truncation grows like
-\eqn{h^{a}} and rounding like \eqn{\varepsilon h^{-d}}, and this is where
-they balance. Near a finite bound the step is shrunk so that the farthest
-node of the stencil stays strictly inside, since a node outside the domain
-does not make a derivative inaccurate, it makes it \code{NaN}.
+\section{Where the balance falls}{
+\deqn{h = \varepsilon^{1/(d + a)} \max(1, \lvert x \rvert).}
+
+Truncation grows like \eqn{h^{a}} and rounding like \eqn{\varepsilon h^{-d}},
+and this is where the two meet. The factor \eqn{\max(1, \lvert x \rvert)}
+makes the step relative for a large argument and absolute for a small one, so
+a point near zero does not get a step below the resolution of its own
+neighbourhood.
+
+At the default accuracy the exponent is \eqn{1/4} for a second derivative and
+\eqn{1/6} for a fourth, giving steps of about \code{1.2e-4} and \code{2.5e-3} at
+\eqn{x = 1}. A high order wants a \emph{large} step, since rounding is what
+dominates there.
 }
+
+\section{Staying inside the domain}{
+Given \code{bounds}, the step is shrunk so the farthest node of the stencil stays
+strictly inside: a node outside the domain does not make a derivative
+inaccurate, it makes it \code{NaN}. The margin is 0.49 of the distance to the
+bound, divided by the reach.
+}
+
+\section{The one case to guard}{
+A point sitting exactly on a finite bound gets a step of \strong{zero}, and a
+stencil divided by \eqn{h^{d}} is then \code{NaN}. The evaluation point is the
+caller's, so this is not checked here; either keep the point off the bound or
+use a one-sided stencil with a step of your own.
+}
+
 \examples{
+# Magnitude-scaled: absolute near zero, relative far from it.
 fd_step(c(0.5, 1000), 2)
-# near a boundary the stencil is kept inside
+
+# A higher order wants a larger step, rounding being what dominates.
+c(order2 = fd_step(1, 2), order4 = fd_step(1, 4))
+
+# Near a boundary the stencil is kept inside the domain.
 fd_step(0.01, 2, bounds = c(0, Inf))
+
+# On the boundary the step is zero, which no stencil can use.
+fd_step(0, 2, bounds = c(0, Inf))
 
 }
 \seealso{
-\code{\link[=fd_derivative]{fd_derivative()}}
+\code{\link[=fd_derivative]{fd_derivative()}}, which calls this when no step is given,
+\code{\link[=fd_offsets]{fd_offsets()}} for the reach the clamp divides by.
 }

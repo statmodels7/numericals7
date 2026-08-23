@@ -18,50 +18,73 @@ fd_derivative(
 
 \item{x}{A numeric vector of evaluation points.}
 
-\item{order}{The derivative order, 1 to 4.}
+\item{order}{The derivative order. One to four is what the toolkit uses and
+what the step rule is tuned for. A higher order is accepted and sized by
+\code{\link[=fd_offsets]{fd_offsets()}}, but nothing is claimed about its accuracy.}
 
-\item{h}{A numeric vector of steps; \code{\link[=fd_step]{fd_step()}} when missing.}
+\item{h}{A numeric vector of steps, recycled against \code{x}. \code{NULL}, the
+default, takes \code{\link[=fd_step]{fd_step()}} at the same order and accuracy, with no bounds;
+pass a step explicitly when the domain is bounded.}
 
-\item{accuracy}{The order of the error term. Two gives the classical
-compact stencils; four gives the five-point first and second
+\item{accuracy}{The order of the error term, \code{2} by default. Two gives the
+classical compact stencils, four the five-point first and second
 derivatives.}
 
-\item{side}{\code{"central"} away from boundaries, \code{"forward"} or
-\code{"backward"} where a symmetric stencil would leave the domain.}
+\item{side}{\code{"central"} away from boundaries, \code{"forward"} or \code{"backward"}
+where a symmetric stencil would leave the domain. All three use
+\eqn{2r + 1} nodes, so a one-sided estimate costs the same and is one order
+less accurate.}
 }
 \value{
 A numeric vector of the same length as \code{x}.
 }
 \description{
-The \code{order}-th derivative of \code{f} at \code{x} from a single
+Estimates the \code{order}-th derivative of \code{f} at \code{x} from a single
 finite-difference stencil: the weighted sum of function values at the
-stencil's nodes, divided by \eqn{h^{d}}.
+stencil's nodes, divided by \eqn{h^{d}}. It picks the offsets with
+\code{\link[=fd_offsets]{fd_offsets()}}, the weights with \code{\link[=fd_weights]{fd_weights()}} and, unless given one, the
+step with \code{\link[=fd_step]{fd_step()}}.
 }
-\details{
-This is the applicator every fallback in the toolkit speaks through, and
-it enforces the one rule they share: one stencil of the requested order,
-never a composition of lower-order differences. What it deliberately does
-\strong{not} choose is the policy around it -- which order to fall back
-from, when a reference can be trusted, what to do at a domain boundary
-beyond keeping the nodes inside. Those belong to the callers, who know
-what they are differentiating.
+\section{One stencil, never nested}{
+This is the applicator every numerical fallback in the toolkit speaks
+through, and it enforces the rule they share: one stencil of the order
+requested, never a composition of lower-order differences. Each numerical
+differentiation multiplies the error of the one before it, so a fourth
+derivative reached by four nested first differences is noise.
+}
 
-\code{f} must be vectorized in its argument; \code{x} and \code{h} may be
-vectors, and the stencil is applied elementwise.
+\section{What it deliberately leaves to the caller}{
+The policy around the stencil. Which order to fall back from, when a
+reference can be trusted, and what to do at a domain boundary beyond keeping
+the nodes inside are all decisions that need to know what is being
+differentiated, and this function does not.
 }
+
+\section{Vectorization}{
+\code{f} must be vectorized in its argument. \code{x} and \code{h} may be vectors, and the
+stencil is applied elementwise, so a whole vector of points costs
+\eqn{2r + 1} calls to \code{f} and no more.
+}
+
 \examples{
-# the third derivative of exp is exp
-fd_derivative(exp, 1, order = 3)
-exp(1)
+# The third derivative of exp is exp.
+fd_derivative(exp, 1, order = 3) - exp(1)
 
-# a five-point first derivative is fourth-order accurate
-fd_derivative(sin, 0.7, order = 1, accuracy = 4) - cos(0.7)
+# Accuracy four is worth about two decades here.
+c(acc2 = fd_derivative(sin, 0.7, 1) - cos(0.7),
+  acc4 = fd_derivative(sin, 0.7, 1, accuracy = 4) - cos(0.7))
 
-# one-sided at a boundary
+# At a boundary, one-sided with a step that keeps the nodes inside. The
+# central stencil would reach below zero, where sqrt is not defined.
 fd_derivative(sqrt, 1e-4, order = 1, side = "forward",
               h = fd_step(1e-4, 1, bounds = c(0, Inf)))
+0.5 / sqrt(1e-4)
+
+# Vectorized in the point: one call per node, not one per point.
+fd_derivative(sin, c(0, pi / 4, pi / 2), order = 1) - cos(c(0, pi / 4, pi / 2))
 
 }
 \seealso{
-\code{\link[=fd_weights]{fd_weights()}}, \code{\link[=fd_step]{fd_step()}}
+\code{\link[=fd_weights]{fd_weights()}}, \code{\link[=fd_offsets]{fd_offsets()}} and \code{\link[=fd_step]{fd_step()}}, the three pieces
+this assembles.
 }
