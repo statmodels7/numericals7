@@ -2,26 +2,33 @@
 % Please edit documentation in R/threads.R
 \name{worker_count}
 \alias{worker_count}
-\title{Read the Worker Count Off a Thread Policy}
+\title{Read the Worker Count Off a Policy}
 \usage{
 worker_count(x)
 }
 \arguments{
-\item{x}{An object returned by \code{\link[=n_threads]{n_threads()}}.}
+\item{x}{An object returned by \code{\link[=n_threads]{n_threads()}}. Anything else throws, with a
+message naming the constructor.}
 }
 \value{
-A single integer, at least 1.
+A single integer, at least 1. One for a policy carrying no \code{workers}
+component.
 }
 \description{
-Returns the worker-process count an \code{\link[=n_threads]{n_threads()}} object
-carries, as a single integer. An object built before \code{workers}
-existed answers 1, so a stored policy keeps meaning what it meant.
+Returns the worker-process count an \code{\link[=n_threads]{n_threads()}} object carries, as a single
+integer. A policy stored before \code{workers} existed has no such component, and
+this reader answers 1 for it, so an object saved with an old fit keeps
+meaning what it meant.
 }
 \examples{
 worker_count(n_threads())
 worker_count(n_threads(2, workers = 4))
 
+# A policy stored before workers existed still reads as sequential across
+# folds. Only the readers tolerate one; print() on it throws.
+worker_count(structure(list(threads = 3L), class = "n_threads"))
+
 }
 \seealso{
-\code{\link[=n_threads]{n_threads()}}, \code{\link[=thread_count]{thread_count()}}
+\code{\link[=n_threads]{n_threads()}} for the object, \code{\link[=thread_count]{thread_count()}} for the other count.
 }

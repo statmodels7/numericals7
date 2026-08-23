@@ -2,27 +2,32 @@
 % Please edit documentation in R/threads.R
 \name{thread_count}
 \alias{thread_count}
-\title{Read the Count Off a Thread Policy}
+\title{Read the Thread Count Off a Policy}
 \usage{
 thread_count(x)
 }
 \arguments{
-\item{x}{An object returned by \code{\link[=n_threads]{n_threads()}}.}
+\item{x}{An object returned by \code{\link[=n_threads]{n_threads()}}. Anything else throws, with a
+message naming the constructor, because a bare number reaching an entry
+point is the likely mistake and would otherwise be read as a policy.}
 }
 \value{
 A single integer, at least 1.
 }
 \description{
-Returns the thread count an \code{\link[=n_threads]{n_threads()}} object carries, as a
-single integer. Entry points call it once to validate their
-\code{threads} argument and then pass the plain count down to the
-kernels.
+Returns the thread count an \code{\link[=n_threads]{n_threads()}} object carries, as a single
+integer. An entry point calls it once to validate the \code{threads} argument it
+was given, then passes the plain count down to the kernels, which take a
+number and know nothing about the policy object.
 }
 \examples{
 thread_count(n_threads())
 thread_count(n_threads(8))
 
+# A bare count is not a policy.
+try(thread_count(8))
+
 }
 \seealso{
-\code{\link[=n_threads]{n_threads()}}
+\code{\link[=n_threads]{n_threads()}} for the object, \code{\link[=worker_count]{worker_count()}} for the other count.
 }

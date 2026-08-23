@@ -7,13 +7,15 @@
 local_threads(x, frame = parent.frame())
 }
 \arguments{
-\item{x}{An object returned by \code{\link[=n_threads]{n_threads()}}.}
+\item{x}{An object returned by \code{\link[=n_threads]{n_threads()}}. Anything else throws, through
+\code{\link[=thread_count]{thread_count()}}.}
 
-\item{frame}{The environment whose exit restores the previous setting.
-Defaults to the caller's.}
+\item{frame}{The environment whose exit restores the previous setting,
+defaulting to the caller's. Pass an outer frame to hold the setting for
+longer than one call.}
 }
 \value{
-The count, invisibly.
+The thread count, invisibly: a single integer, at least 1.
 }
 \description{
 Sets \pkg{RcppParallel}'s thread count to the policy's for the calling
@@ -23,11 +25,13 @@ to each kernel as an argument, this call only sizes the worker pool the
 parallel regions draw from.
 }
 \details{
-\code{RcppParallel::setThreadOptions()} writes a process-level variable,
-so a fit that set it and returned would leave it moved for whatever code
-runs next; the restoration is registered with \code{on.exit} in the
-caller's frame. At a count of 1 nothing is touched at all, which is what
-keeps the sequential path exactly the sequential path.
+\code{RcppParallel::setThreadOptions()} writes a process-level variable, so a fit
+that set it and returned would leave it moved for whatever runs next. The
+restoration is therefore registered with \code{on.exit} in the caller's frame,
+which fires however the fit leaves, an error included.
+
+At a count of 1 nothing is touched at all. That is what keeps the sequential
+path free of any trace of the parallel machinery.
 }
 \examples{
 f <- function() {
