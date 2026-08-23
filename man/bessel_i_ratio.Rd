@@ -7,16 +7,19 @@
 bessel_i_ratio(kappa)
 }
 \arguments{
-\item{kappa}{A positive numeric vector.}
+\item{kappa}{A numeric vector of concentrations, positive and of any size.
+Zero returns 0, the limit. A negative value returns \code{NaN}.}
 }
 \value{
-A numeric vector in \eqn{(0, 1)}.
+A numeric vector the length of \code{kappa}, in \eqn{(0, 1)} and
+increasing in its argument.
 }
 \description{
-\eqn{A(\kappa) = I_1(\kappa)/I_0(\kappa)}, a strictly increasing bijection
-from \eqn{(0, \infty)} onto \eqn{(0, 1)}. For a von Mises distribution it
-is the mean resultant length, the expected cosine of the deviation from
-the mean direction.
+Computes \eqn{A(\kappa) = I_1(\kappa)/I_0(\kappa)}, a strictly increasing
+bijection from \eqn{(0, \infty)} onto \eqn{(0, 1)}. For a von Mises
+distribution it is the mean resultant length, the expected cosine of the
+deviation from the mean direction, so it is the map between a concentration
+and the moment a method of moments estimates.
 }
 \details{
 Both Bessel functions are taken exponentially scaled, so the factor
@@ -32,7 +35,18 @@ is therefore finite and accurate for an argument of any size.
 \examples{
 bessel_i_ratio(c(0.5, 2, 1000))
 
+# It agrees with the scaled Bessel functions where those still evaluate.
+k <- c(0.5, 2, 1e3, 1e4)
+max(abs(bessel_i_ratio(k) - besselI(k, 1, TRUE) / besselI(k, 0, TRUE)))
+
+# Past that the scaled functions underflow to zero and their ratio is NaN,
+# while the asymptotic branch carries the answer to any concentration.
+suppressWarnings(besselI(1e6, 1, TRUE) / besselI(1e6, 0, TRUE))
+bessel_i_ratio(c(1e6, 1e12))
+
 }
 \seealso{
-\code{\link[=bessel_i_ratio_derivs]{bessel_i_ratio_derivs()}}, \code{\link[=bessel_i_ratio_inverse]{bessel_i_ratio_inverse()}}
+\code{\link[=bessel_i_ratio_derivs]{bessel_i_ratio_derivs()}} for its derivatives,
+\code{\link[=bessel_i_ratio_inverse]{bessel_i_ratio_inverse()}} for the map back, \code{\link[=bessel_i_ratios]{bessel_i_ratios()}} for the
+sequence of higher orders.
 }

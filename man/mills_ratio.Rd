@@ -7,10 +7,16 @@
 mills_ratio(t)
 }
 \arguments{
-\item{t}{A numeric vector.}
+\item{t}{A numeric vector of any values, the whole real line included. No
+argument is out of range and none is special-cased.}
 }
 \value{
-A list with \code{r} and \code{dr}.
+A list of two numeric vectors, each the length of \code{t}:
+\describe{
+\item{\code{r}}{the ratio \eqn{R(t) = \phi(t)/\Phi(t)}, positive and
+decreasing, asymptotic to \eqn{-t} as \eqn{t \to -\infty}.}
+\item{\code{dr}}{its derivative \eqn{R'(t)}, which lies in \eqn{(-1, 0)}.}
+}
 }
 \description{
 Returns \eqn{R(t) = \phi(t)/\Phi(t)} and \eqn{R'(t) = -R(t)\{t + R(t)\}},
@@ -25,7 +31,17 @@ function underflow, while the ratio itself is finite there and close to
 quotient and using \eqn{\phi'(t) = -t\phi(t)}.
 }
 \examples{
-mills_ratio(c(-40, 0, 3))$r
+mills_ratio(c(-5, 0, 3))$r
+
+# The point of the log-scale form. Written directly the ratio is 0/0 well
+# inside the range a skew normal reaches, while the true value is finite
+# and close to -t.
+dnorm(-40) / pnorm(-40)
+mills_ratio(-400)$r + (-400)
+
+# The derivative is the stated identity, exactly.
+m <- mills_ratio(c(-5, 0, 3))
+max(abs(m$dr - (-m$r * (c(-5, 0, 3) + m$r))))
 
 }
 \seealso{

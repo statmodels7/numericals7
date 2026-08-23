@@ -7,46 +7,61 @@
 bessel_i_ratios(kappa, m)
 }
 \arguments{
-\item{kappa}{A positive numeric vector.}
+\item{kappa}{A numeric vector of concentrations, positive.}
 
-\item{m}{How many ratios to return.}
+\item{m}{How many ratios to return, a positive whole number. It sets the
+number of columns and, with \code{kappa}, the starting index of the recurrence.}
 }
 \value{
-A \code{length(kappa)} by \code{m} matrix.
+A numeric matrix of \code{length(kappa)} rows and \code{m} columns. Entry
+\eqn{(i, j)} is \eqn{I_j(\kappa_i)/I_0(\kappa_i)}, decreasing along a row.
 }
 \description{
-\eqn{I_j(\kappa)/I_0(\kappa)} for \eqn{j = 1, \dots, m}, by the backward
-recurrence, vectorized over \eqn{\kappa}.
+Computes \eqn{I_j(\kappa)/I_0(\kappa)} for \eqn{j = 1, \dots, m} by Miller's
+backward recurrence, vectorized over \eqn{\kappa}. A series in these ratios
+is what a von Mises distribution function costs, so getting all \eqn{m} of
+them for the price of one matters.
 }
-\details{
-The three-term recurrence \eqn{I_{j-1} - I_{j+1} = (2j/\kappa) I_j} is
-unstable run upwards -- the recessive solution it should follow is
-swamped by the dominant one -- and stable run downwards, which is Miller's
-algorithm. The ratios \eqn{r_j = I_j/I_{j-1}} satisfy
+\section{Why the recurrence runs backwards}{
+The three-term recurrence \eqn{I_{j-1} - I_{j+1} = (2j/\kappa) I_j} has two
+solutions, one growing and one decaying. Run upwards it should follow the
+decaying one and instead follows rounding error into the growing one, so it
+is unstable. Run downwards the roles swap and it is stable, which is
+Miller's algorithm. The ratios \eqn{r_j = I_j/I_{j-1}} satisfy
 \eqn{r_j = 1/(2j/\kappa + r_{j+1})}, started from \eqn{r_{n_0+1} = 0} at
 an index far enough above both \eqn{m} and \eqn{\kappa}; the answer is
 their running product, and the normalization by \eqn{I_0} is free because
 the product starts there.
-
-The loop runs over the series index and not over the data, so a vector of
-\eqn{\kappa} costs the same number of vectorized steps as a single value.
-That is what makes a series over these ratios cheaper than a quadrature
-per observation.
-
-\code{\link[=bessel_i_ratio]{bessel_i_ratio()}} is the first of them, \eqn{I_1/I_0}, and
-carries an asymptotic branch for an argument past \eqn{10^4} where the
-scaled Bessel functions underflow. There is no such branch here: the
-recurrence needs a starting index above \eqn{\kappa}, so the cost grows
-with it, and a caller working at a concentration that large is past the
-point where a series over these ratios converges in any useful number of
-terms.
 }
+
+\section{Cost}{
+The loop runs over the series index, never over the data, so a vector of
+\eqn{\kappa} costs the same number of vectorized steps as a single value.
+A series over these ratios therefore costs less than a quadrature per
+observation, which is why the von Mises distribution function stopped being
+one.
+
+\code{\link[=bessel_i_ratio]{bessel_i_ratio()}} is the first of them and carries an asymptotic branch past
+\eqn{\kappa = 10^4}, where the scaled Bessel functions underflow. There is no
+such branch here, and none is wanted: the recurrence needs a starting index
+above \eqn{\kappa}, so its cost grows with the concentration, and a caller
+that far out is already past the point where a series in these ratios
+converges in any useful number of terms.
+}
+
 \examples{
+# Four ratios at two concentrations, one row each.
 r <- bessel_i_ratios(c(1, 5), 4)
-r[2L, ]
-besselI(5, 1:4, expon.scaled = TRUE) / besselI(5, 0, expon.scaled = TRUE)
+round(r, 6)
+
+# They agree with the scaled Bessel functions to the last bit.
+r[2L, ] - besselI(5, 1:4, TRUE) / besselI(5, 0, TRUE)
+
+# And decrease along a row: a higher order is a smaller ratio.
+all(diff(r[2L, ]) < 0)
 
 }
 \seealso{
-\code{\link[=bessel_i_ratio]{bessel_i_ratio()}}, \code{\link[=log_bessel_i]{log_bessel_i()}}
+\code{\link[=bessel_i_ratio]{bessel_i_ratio()}} for the first ratio alone, \code{\link[=log_bessel_i]{log_bessel_i()}} for
+the functions themselves.
 }

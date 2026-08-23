@@ -7,15 +7,18 @@
 bessel_i_ratio_derivs(kappa)
 }
 \arguments{
-\item{kappa}{A positive numeric vector.}
+\item{kappa}{A numeric vector of concentrations, positive.}
 }
 \value{
-A named list with \code{A} and its derivatives \code{d1} to
-\code{d4}.
+A named list of five numeric vectors, each the length of \code{kappa}:
+\code{A}, the ratio itself, and \code{d1} to \code{d4}, its derivatives in \eqn{\kappa}.
+\code{d1} is strictly positive, being a variance.
 }
 \description{
-\eqn{A(\kappa)} and its first four derivatives, obtained by
-differentiating \eqn{A' = 1 - A/\kappa - A^2} repeatedly.
+Computes \eqn{A(\kappa) = I_1(\kappa)/I_0(\kappa)} and its first four
+derivatives, by differentiating the identity \eqn{A' = 1 - A/\kappa - A^2}
+repeatedly. A von Mises family needs all five to reach fourth-order
+derivatives in its concentration.
 }
 \details{
 Each order is written in the orders below it, so the whole table costs the
@@ -27,9 +30,18 @@ higher order per derivative, costs more and is less accurate at large
 does not. \eqn{A'} is the variance of a cosine and therefore positive.
 }
 \examples{
-bessel_i_ratio_derivs(2)$d1
+str(bessel_i_ratio_derivs(2))
+
+# The first derivative is the variance of a cosine, so it is positive at
+# every concentration and vanishes as the distribution concentrates.
+bessel_i_ratio_derivs(c(0.1, 1, 100))$d1
+
+# It satisfies the identity the whole table is built from.
+d <- bessel_i_ratio_derivs(2)
+d$d1 - (1 - d$A / 2 - d$A^2)
 
 }
 \seealso{
-\code{\link[=bessel_i_ratio]{bessel_i_ratio()}}, \code{\link[=bessel_i_ratio_inverse]{bessel_i_ratio_inverse()}}
+\code{\link[=bessel_i_ratio]{bessel_i_ratio()}} for the value alone,
+\code{\link[=bessel_i_ratio_inverse]{bessel_i_ratio_inverse()}} for the derivatives of the inverse map.
 }

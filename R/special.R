@@ -20,12 +20,28 @@ NULL
 #' \eqn{-t}. The identity for \eqn{R'} follows from differentiating the
 #' quotient and using \eqn{\phi'(t) = -t\phi(t)}.
 #'
-#' @param t A numeric vector.
+#' @param t A numeric vector of any values, the whole real line included. No
+#'   argument is out of range and none is special-cased.
 #'
-#' @return A list with `r` and `dr`.
+#' @return A list of two numeric vectors, each the length of `t`:
+#'   \describe{
+#'     \item{`r`}{the ratio \eqn{R(t) = \phi(t)/\Phi(t)}, positive and
+#'       decreasing, asymptotic to \eqn{-t} as \eqn{t \to -\infty}.}
+#'     \item{`dr`}{its derivative \eqn{R'(t)}, which lies in \eqn{(-1, 0)}.}
+#'   }
 #'
 #' @examples
-#' mills_ratio(c(-40, 0, 3))$r
+#' mills_ratio(c(-5, 0, 3))$r
+#'
+#' # The point of the log-scale form. Written directly the ratio is 0/0 well
+#' # inside the range a skew normal reaches, while the true value is finite
+#' # and close to -t.
+#' dnorm(-40) / pnorm(-40)
+#' mills_ratio(-400)$r + (-400)
+#'
+#' # The derivative is the stated identity, exactly.
+#' m <- mills_ratio(c(-5, 0, 3))
+#' max(abs(m$dr - (-m$r * (c(-5, 0, 3) + m$r))))
 #'
 #' @seealso [owen_t()], [bessel_i_ratio()], [log_bessel_i()], [log_bessel_k()]
 #' @export
@@ -38,27 +54,42 @@ mills_ratio <- function(t) {
 #'
 #' @description
 #' Computes \eqn{T(h, a) = \dfrac{1}{2\pi}\displaystyle\int_0^{a}
-#'   \dfrac{e^{-h^2(1 + x^2)/2}}{1 + x^2}\,dx}, which is what the skew normal
-#' distribution function is written in.
+#'   \dfrac{e^{-h^2(1 + x^2)/2}}{1 + x^2}\,\mathrm{d}x}, the function the skew
+#' normal distribution function is written in. \eqn{T(h, a)} is the probability
+#' that a standard bivariate normal pair falls in the wedge below the line of
+#' slope \eqn{a} beyond \eqn{h}, so it is bounded by \eqn{1/4} and is odd in
+#' \eqn{a}.
 #'
 #' @details
 #' The integrand is bounded and smooth over a finite range, so quadrature
-#' evaluates it to near machine precision; every element of the input goes
-#' into one batched call of [quad_vec()], one row per element. Two
-#' identities keep the extremes exact rather than quadrature-bound:
-#' \eqn{T(h, a) = -T(h, -a)}, and \eqn{T(h, \infty) = \tfrac{1}{2}\Phi(-|h|)}.
+#' evaluates it to near machine precision. Every element of the input goes into
+#' one batched call of [quad_vec()], one row per element, so a whole vector of
+#' skew normal probabilities costs a single quadrature.
 #'
-#' @param h A numeric vector.
-#' @param a A numeric vector, recycled against `h`.
+#' Two identities are applied in closed form, so the extremes are exact where
+#' quadrature would merely be accurate: \eqn{T(h, a) = -T(h, -a)} handles a
+#' negative second argument, and \eqn{T(h, \infty) = \tfrac{1}{2}\Phi(-|h|)}
+#' handles an infinite one.
 #'
-#' @return A numeric vector.
+#' @param h A numeric vector, the offset. Any finite value.
+#' @param a A numeric vector of slopes, recycled against `h`. May be negative or
+#'   infinite; both are taken by identity.
+#'
+#' @return A numeric vector of the recycled length of `h` and `a`, bounded in
+#'   \eqn{[-1/4, 1/4]}.
 #'
 #' @references
 #' Owen, D. B. (1956). Tables for computing bivariate normal probabilities.
 #' *Annals of Mathematical Statistics* 27, 1075-1090.
 #'
 #' @examples
-#' owen_t(0, 1) - atan(1) / (2 * pi)
+#' # At h = 0 the integral is elementary: T(0, a) = atan(a) / (2 pi).
+#' a <- c(0.5, 1, 4)
+#' max(abs(owen_t(0, a) - atan(a) / (2 * pi)))
+#'
+#' # Odd in the second argument, and the infinite case is a normal tail.
+#' owen_t(1, 2) + owen_t(1, -2)
+#' owen_t(1.3, Inf) - pnorm(-1.3) / 2
 #'
 #' @seealso [mills_ratio()], [bessel_i_ratio()], [log_bessel_i()], [log_bessel_k()]
 #' @export
@@ -91,10 +122,11 @@ owen_t <- function(h, a) {
 #' The Ratio of Modified Bessel Functions
 #'
 #' @description
-#' \eqn{A(\kappa) = I_1(\kappa)/I_0(\kappa)}, a strictly increasing bijection
-#' from \eqn{(0, \infty)} onto \eqn{(0, 1)}. For a von Mises distribution it
-#' is the mean resultant length, the expected cosine of the deviation from
-#' the mean direction.
+#' Computes \eqn{A(\kappa) = I_1(\kappa)/I_0(\kappa)}, a strictly increasing
+#' bijection from \eqn{(0, \infty)} onto \eqn{(0, 1)}. For a von Mises
+#' distribution it is the mean resultant length, the expected cosine of the
+#' deviation from the mean direction, so it is the map between a concentration
+#' and the moment a method of moments estimates.
 #'
 #' @details
 #' Both Bessel functions are taken exponentially scaled, so the factor
@@ -107,14 +139,27 @@ owen_t <- function(h, a) {
 #' already below the resolution of a double at the switch point; the result
 #' is therefore finite and accurate for an argument of any size.
 #'
-#' @param kappa A positive numeric vector.
+#' @param kappa A numeric vector of concentrations, positive and of any size.
+#'   Zero returns 0, the limit. A negative value returns `NaN`.
 #'
-#' @return A numeric vector in \eqn{(0, 1)}.
+#' @return A numeric vector the length of `kappa`, in \eqn{(0, 1)} and
+#'   increasing in its argument.
 #'
-#' @seealso [bessel_i_ratio_derivs()], [bessel_i_ratio_inverse()]
+#' @seealso [bessel_i_ratio_derivs()] for its derivatives,
+#'   [bessel_i_ratio_inverse()] for the map back, [bessel_i_ratios()] for the
+#'   sequence of higher orders.
 #'
 #' @examples
 #' bessel_i_ratio(c(0.5, 2, 1000))
+#'
+#' # It agrees with the scaled Bessel functions where those still evaluate.
+#' k <- c(0.5, 2, 1e3, 1e4)
+#' max(abs(bessel_i_ratio(k) - besselI(k, 1, TRUE) / besselI(k, 0, TRUE)))
+#'
+#' # Past that the scaled functions underflow to zero and their ratio is NaN,
+#' # while the asymptotic branch carries the answer to any concentration.
+#' suppressWarnings(besselI(1e6, 1, TRUE) / besselI(1e6, 0, TRUE))
+#' bessel_i_ratio(c(1e6, 1e12))
 #'
 #' @export
 bessel_i_ratio <- function(kappa) {
@@ -137,43 +182,59 @@ bessel_i_ratio <- function(kappa) {
 #' The Sequence of Modified Bessel Ratios
 #'
 #' @description
-#' \eqn{I_j(\kappa)/I_0(\kappa)} for \eqn{j = 1, \dots, m}, by the backward
-#' recurrence, vectorized over \eqn{\kappa}.
+#' Computes \eqn{I_j(\kappa)/I_0(\kappa)} for \eqn{j = 1, \dots, m} by Miller's
+#' backward recurrence, vectorized over \eqn{\kappa}. A series in these ratios
+#' is what a von Mises distribution function costs, so getting all \eqn{m} of
+#' them for the price of one matters.
 #'
 #' @details
-#' The three-term recurrence \eqn{I_{j-1} - I_{j+1} = (2j/\kappa) I_j} is
-#' unstable run upwards -- the recessive solution it should follow is
-#' swamped by the dominant one -- and stable run downwards, which is Miller's
-#' algorithm. The ratios \eqn{r_j = I_j/I_{j-1}} satisfy
+#' # Why the recurrence runs backwards
+#'
+#' The three-term recurrence \eqn{I_{j-1} - I_{j+1} = (2j/\kappa) I_j} has two
+#' solutions, one growing and one decaying. Run upwards it should follow the
+#' decaying one and instead follows rounding error into the growing one, so it
+#' is unstable. Run downwards the roles swap and it is stable, which is
+#' Miller's algorithm. The ratios \eqn{r_j = I_j/I_{j-1}} satisfy
 #' \eqn{r_j = 1/(2j/\kappa + r_{j+1})}, started from \eqn{r_{n_0+1} = 0} at
 #' an index far enough above both \eqn{m} and \eqn{\kappa}; the answer is
 #' their running product, and the normalization by \eqn{I_0} is free because
 #' the product starts there.
 #'
-#' The loop runs over the series index and not over the data, so a vector of
+#' # Cost
+#'
+#' The loop runs over the series index, never over the data, so a vector of
 #' \eqn{\kappa} costs the same number of vectorized steps as a single value.
-#' That is what makes a series over these ratios cheaper than a quadrature
-#' per observation.
+#' A series over these ratios therefore costs less than a quadrature per
+#' observation, which is why the von Mises distribution function stopped being
+#' one.
 #'
-#' [bessel_i_ratio()] is the first of them, \eqn{I_1/I_0}, and
-#' carries an asymptotic branch for an argument past \eqn{10^4} where the
-#' scaled Bessel functions underflow. There is no such branch here: the
-#' recurrence needs a starting index above \eqn{\kappa}, so the cost grows
-#' with it, and a caller working at a concentration that large is past the
-#' point where a series over these ratios converges in any useful number of
-#' terms.
+#' [bessel_i_ratio()] is the first of them and carries an asymptotic branch past
+#' \eqn{\kappa = 10^4}, where the scaled Bessel functions underflow. There is no
+#' such branch here, and none is wanted: the recurrence needs a starting index
+#' above \eqn{\kappa}, so its cost grows with the concentration, and a caller
+#' that far out is already past the point where a series in these ratios
+#' converges in any useful number of terms.
 #'
-#' @param kappa A positive numeric vector.
-#' @param m How many ratios to return.
+#' @param kappa A numeric vector of concentrations, positive.
+#' @param m How many ratios to return, a positive whole number. It sets the
+#'   number of columns and, with `kappa`, the starting index of the recurrence.
 #'
-#' @return A `length(kappa)` by `m` matrix.
+#' @return A numeric matrix of `length(kappa)` rows and `m` columns. Entry
+#'   \eqn{(i, j)} is \eqn{I_j(\kappa_i)/I_0(\kappa_i)}, decreasing along a row.
 #'
-#' @seealso [bessel_i_ratio()], [log_bessel_i()]
+#' @seealso [bessel_i_ratio()] for the first ratio alone, [log_bessel_i()] for
+#'   the functions themselves.
 #'
 #' @examples
+#' # Four ratios at two concentrations, one row each.
 #' r <- bessel_i_ratios(c(1, 5), 4)
-#' r[2L, ]
-#' besselI(5, 1:4, expon.scaled = TRUE) / besselI(5, 0, expon.scaled = TRUE)
+#' round(r, 6)
+#'
+#' # They agree with the scaled Bessel functions to the last bit.
+#' r[2L, ] - besselI(5, 1:4, TRUE) / besselI(5, 0, TRUE)
+#'
+#' # And decrease along a row: a higher order is a smaller ratio.
+#' all(diff(r[2L, ]) < 0)
 #'
 #' @export
 bessel_i_ratios <- function(kappa, m) {
@@ -208,8 +269,10 @@ bessel_i_ratios <- function(kappa, m) {
 #' Derivatives of the Bessel Ratio
 #'
 #' @description
-#' \eqn{A(\kappa)} and its first four derivatives, obtained by
-#' differentiating \eqn{A' = 1 - A/\kappa - A^2} repeatedly.
+#' Computes \eqn{A(\kappa) = I_1(\kappa)/I_0(\kappa)} and its first four
+#' derivatives, by differentiating the identity \eqn{A' = 1 - A/\kappa - A^2}
+#' repeatedly. A von Mises family needs all five to reach fourth-order
+#' derivatives in its concentration.
 #'
 #' @details
 #' Each order is written in the orders below it, so the whole table costs the
@@ -220,15 +283,25 @@ bessel_i_ratios <- function(kappa, m) {
 #' \eqn{\kappa}, where the functions themselves overflow and only their ratio
 #' does not. \eqn{A'} is the variance of a cosine and therefore positive.
 #'
-#' @param kappa A positive numeric vector.
+#' @param kappa A numeric vector of concentrations, positive.
 #'
-#' @return A named list with `A` and its derivatives `d1` to
-#'   `d4`.
+#' @return A named list of five numeric vectors, each the length of `kappa`:
+#'   `A`, the ratio itself, and `d1` to `d4`, its derivatives in \eqn{\kappa}.
+#'   `d1` is strictly positive, being a variance.
 #'
-#' @seealso [bessel_i_ratio()], [bessel_i_ratio_inverse()]
+#' @seealso [bessel_i_ratio()] for the value alone,
+#'   [bessel_i_ratio_inverse()] for the derivatives of the inverse map.
 #'
 #' @examples
-#' bessel_i_ratio_derivs(2)$d1
+#' str(bessel_i_ratio_derivs(2))
+#'
+#' # The first derivative is the variance of a cosine, so it is positive at
+#' # every concentration and vanishes as the distribution concentrates.
+#' bessel_i_ratio_derivs(c(0.1, 1, 100))$d1
+#'
+#' # It satisfies the identity the whole table is built from.
+#' d <- bessel_i_ratio_derivs(2)
+#' d$d1 - (1 - d$A / 2 - d$A^2)
 #'
 #' @export
 bessel_i_ratio_derivs <- function(kappa) {
@@ -245,8 +318,10 @@ bessel_i_ratio_derivs <- function(kappa) {
 #' The Inverse of the Bessel Ratio
 #'
 #' @description
-#' \eqn{\kappa = A^{-1}(\rho)} by root finding, together with the four
-#' derivatives of the inverse in \eqn{\rho}.
+#' Computes \eqn{\kappa = A^{-1}(\rho)} by root finding, together with the four
+#' derivatives of the inverse in \eqn{\rho}. This is the map a von Mises method
+#' of moments runs: it turns an observed mean resultant length back into the
+#' concentration that produced it.
 #'
 #' @details
 #' \eqn{A} has no elementary inverse, so \eqn{\kappa} is found by root
@@ -262,15 +337,28 @@ bessel_i_ratio_derivs <- function(kappa) {
 #' away from zero in the interior. A `rho` outside \eqn{(0, 1)} returns
 #' `NA`.
 #'
-#' @param rho A numeric vector in \eqn{(0, 1)}.
+#' @param rho A numeric vector of mean resultant lengths, strictly inside
+#'   \eqn{(0, 1)}. Anything outside, the endpoints included, returns `NA`
+#'   without a warning, the inverse having no finite value there.
 #'
-#' @return A named list with `kappa` and its derivatives `d1` to
-#'   `d4` in `rho`.
+#' @return A named list of five numeric vectors, each the length of `rho`:
+#'   `kappa`, the concentration, and `d1` to `d4`, the derivatives of the
+#'   inverse in \eqn{\rho}. `NA` wherever `rho` left \eqn{(0, 1)}.
 #'
-#' @seealso [bessel_i_ratio()], [bessel_i_ratio_derivs()]
+#' @seealso [bessel_i_ratio()] for the forward map,
+#'   [bessel_i_ratio_derivs()] for the derivatives it inverts.
 #'
 #' @examples
-#' bessel_i_ratio(bessel_i_ratio_inverse(0.7)$kappa)
+#' # The round trip closes to machine precision across the range.
+#' rho <- c(0.1, 0.5, 0.99)
+#' bessel_i_ratio(bessel_i_ratio_inverse(rho)$kappa) - rho
+#'
+#' # The first derivative is the reciprocal of A', the inverse function rule.
+#' inv <- bessel_i_ratio_inverse(0.7)
+#' inv$d1 - 1 / bessel_i_ratio_derivs(inv$kappa)$d1
+#'
+#' # Outside the open unit interval there is no concentration to return.
+#' bessel_i_ratio_inverse(c(0, 0.5, 1))$kappa
 #'
 #' @export
 bessel_i_ratio_inverse <- function(rho) {

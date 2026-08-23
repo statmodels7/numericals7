@@ -7,27 +7,42 @@
 owen_t(h, a)
 }
 \arguments{
-\item{h}{A numeric vector.}
+\item{h}{A numeric vector, the offset. Any finite value.}
 
-\item{a}{A numeric vector, recycled against \code{h}.}
+\item{a}{A numeric vector of slopes, recycled against \code{h}. May be negative or
+infinite; both are taken by identity.}
 }
 \value{
-A numeric vector.
+A numeric vector of the recycled length of \code{h} and \code{a}, bounded in
+\eqn{[-1/4, 1/4]}.
 }
 \description{
 Computes \eqn{T(h, a) = \dfrac{1}{2\pi}\displaystyle\int_0^{a}
-  \dfrac{e^{-h^2(1 + x^2)/2}}{1 + x^2}\,dx}, which is what the skew normal
-distribution function is written in.
+  \dfrac{e^{-h^2(1 + x^2)/2}}{1 + x^2}\,\mathrm{d}x}, the function the skew
+normal distribution function is written in. \eqn{T(h, a)} is the probability
+that a standard bivariate normal pair falls in the wedge below the line of
+slope \eqn{a} beyond \eqn{h}, so it is bounded by \eqn{1/4} and is odd in
+\eqn{a}.
 }
 \details{
 The integrand is bounded and smooth over a finite range, so quadrature
-evaluates it to near machine precision; every element of the input goes
-into one batched call of \code{\link[=quad_vec]{quad_vec()}}, one row per element. Two
-identities keep the extremes exact rather than quadrature-bound:
-\eqn{T(h, a) = -T(h, -a)}, and \eqn{T(h, \infty) = \tfrac{1}{2}\Phi(-|h|)}.
+evaluates it to near machine precision. Every element of the input goes into
+one batched call of \code{\link[=quad_vec]{quad_vec()}}, one row per element, so a whole vector of
+skew normal probabilities costs a single quadrature.
+
+Two identities are applied in closed form, so the extremes are exact where
+quadrature would merely be accurate: \eqn{T(h, a) = -T(h, -a)} handles a
+negative second argument, and \eqn{T(h, \infty) = \tfrac{1}{2}\Phi(-|h|)}
+handles an infinite one.
 }
 \examples{
-owen_t(0, 1) - atan(1) / (2 * pi)
+# At h = 0 the integral is elementary: T(0, a) = atan(a) / (2 pi).
+a <- c(0.5, 1, 4)
+max(abs(owen_t(0, a) - atan(a) / (2 * pi)))
+
+# Odd in the second argument, and the infinite case is a normal tail.
+owen_t(1, 2) + owen_t(1, -2)
+owen_t(1.3, Inf) - pnorm(-1.3) / 2
 
 }
 \references{

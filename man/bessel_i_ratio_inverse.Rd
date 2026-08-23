@@ -7,15 +7,20 @@
 bessel_i_ratio_inverse(rho)
 }
 \arguments{
-\item{rho}{A numeric vector in \eqn{(0, 1)}.}
+\item{rho}{A numeric vector of mean resultant lengths, strictly inside
+\eqn{(0, 1)}. Anything outside, the endpoints included, returns \code{NA}
+without a warning, the inverse having no finite value there.}
 }
 \value{
-A named list with \code{kappa} and its derivatives \code{d1} to
-\code{d4} in \code{rho}.
+A named list of five numeric vectors, each the length of \code{rho}:
+\code{kappa}, the concentration, and \code{d1} to \code{d4}, the derivatives of the
+inverse in \eqn{\rho}. \code{NA} wherever \code{rho} left \eqn{(0, 1)}.
 }
 \description{
-\eqn{\kappa = A^{-1}(\rho)} by root finding, together with the four
-derivatives of the inverse in \eqn{\rho}.
+Computes \eqn{\kappa = A^{-1}(\rho)} by root finding, together with the four
+derivatives of the inverse in \eqn{\rho}. This is the map a von Mises method
+of moments runs: it turns an observed mean resultant length back into the
+concentration that produced it.
 }
 \details{
 \eqn{A} has no elementary inverse, so \eqn{\kappa} is found by root
@@ -32,9 +37,19 @@ away from zero in the interior. A \code{rho} outside \eqn{(0, 1)} returns
 \code{NA}.
 }
 \examples{
-bessel_i_ratio(bessel_i_ratio_inverse(0.7)$kappa)
+# The round trip closes to machine precision across the range.
+rho <- c(0.1, 0.5, 0.99)
+bessel_i_ratio(bessel_i_ratio_inverse(rho)$kappa) - rho
+
+# The first derivative is the reciprocal of A', the inverse function rule.
+inv <- bessel_i_ratio_inverse(0.7)
+inv$d1 - 1 / bessel_i_ratio_derivs(inv$kappa)$d1
+
+# Outside the open unit interval there is no concentration to return.
+bessel_i_ratio_inverse(c(0, 0.5, 1))$kappa
 
 }
 \seealso{
-\code{\link[=bessel_i_ratio]{bessel_i_ratio()}}, \code{\link[=bessel_i_ratio_derivs]{bessel_i_ratio_derivs()}}
+\code{\link[=bessel_i_ratio]{bessel_i_ratio()}} for the forward map,
+\code{\link[=bessel_i_ratio_derivs]{bessel_i_ratio_derivs()}} for the derivatives it inverts.
 }
