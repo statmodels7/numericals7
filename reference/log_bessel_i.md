@@ -1,12 +1,12 @@
 # Logarithm of the Modified Bessel Function of the First Kind
 
-\\\log I\_\nu(x)\\ for \\x \ge 0\\ and \\\nu \ge 0\\, computed with
+Computes \\\log I\_\nu(x)\\ for \\x \ge 0\\ and \\\nu \ge 0\\, carrying
 every intermediate quantity on the log scale, so the result is finite
-and accurate wherever \\\log I\_\nu(x)\\ itself is representable –
-including where the unscaled function overflows (from about \\x = 700\\)
-and where the exponentially scaled one underflows or loses its precision
-(large order with a small argument, and arguments beyond about
-\\10^5\\).
+and accurate wherever \\\log I\_\nu(x)\\ itself is representable. That
+includes two regions R's own function cannot reach: past about \\x =
+700\\, where the unscaled \\I\_\nu\\ overflows, and at a large order
+with a small argument or an argument beyond about \\10^5\\, where the
+exponentially scaled form underflows or loses its precision.
 
 ## Usage
 
@@ -27,23 +27,25 @@ log_bessel_i(x, nu, threads = 1L)
 - threads:
 
   How many threads the kernel may use, a plain integer, as
-  [`thread_count`](https://statmodels7.github.io/numericals7/reference/thread_count.md)
+  [`thread_count()`](https://statmodels7.github.io/numericals7/reference/thread_count.md)
   reads it off an
-  [`n_threads`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
+  [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
   policy. Every branch of the kernel is this package's own arithmetic,
   so element \\i\\ is computed and written by one thread and the result
   is bit-identical at any count; below an internal threshold the
   sequential path is taken whatever the count says.
-  [`log_bessel_k`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md)
+  [`log_bessel_k()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md)
   takes no such argument: its hybrid branch calls R's own scaled
   `besselK`, which can raise a warning, and a warning from a worker
   thread ends the session.
 
 ## Value
 
-A numeric vector of \\\log I\_\nu(x)\\ values; `-Inf` at \\x = 0\\ with
-\\\nu \> 0\\, `0` at \\x = 0\\ with \\\nu = 0\\, `NA` for arguments
-outside the domain.
+A numeric vector of \\\log I\_\nu(x)\\, of the recycled length of `x`
+and `nu`. `0` at \\x = 0\\ with \\\nu = 0\\, since \\I_0(0) = 1\\;
+`-Inf` at \\x = 0\\ for any \\\nu \> 0\\; and `NA` where either argument
+is negative or missing. Nothing is thrown for an argument outside the
+domain.
 
 ## Details
 
@@ -70,15 +72,28 @@ Functions*, chapter 10. https://dlmf.nist.gov/.
 
 ## See also
 
-[`log_bessel_k`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md),
-[`log_bessel_i_derivs`](https://statmodels7.github.io/numericals7/reference/log_bessel_i_derivs.md),
-[`bessel_i_ratio`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio.md)
+[`log_bessel_k()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md),
+[`log_bessel_i_derivs()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i_derivs.md),
+[`bessel_i_ratio()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio.md)
 
 ## Examples
 
 ``` r
-log_bessel_i(c(1, 100, 1e6), 2)      # far past the unscaled overflow
-#> [1]     -1.996957     96.759632 999992.173304
-log_bessel_i(0.001, 500)             # far past the scaled underflow
+# It agrees with R's own function wherever that one still evaluates.
+x <- c(0.5, 2, 30)
+max(abs(log_bessel_i(x, 2) - log(besselI(x, 2))))
+#> [1] 4.440892e-16
+
+# And carries on where it does not. The unscaled function overflows from
+# about x = 700, the scaled one underflows at a large order.
+log(besselI(1e6, 2))
+#> [1] Inf
+log_bessel_i(1e6, 2)
+#> [1] 999992.2
+log_bessel_i(0.001, 500)
 #> [1] -6411.782
+
+# The two boundary values, and an argument outside the domain.
+log_bessel_i(c(0, 0, -1), c(0, 2, 0))
+#> [1]    0 -Inf   NA
 ```

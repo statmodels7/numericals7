@@ -21,7 +21,7 @@ processes."><meta property="og:image" content="https://statmodels7.github.io/num
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.11.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,15 +71,17 @@ processes.</p>
 
 
 <dl><dt id="arg-threads">threads<a class="anchor" aria-label="anchor" href="#arg-threads"></a></dt>
-<dd><p>A single whole number, at least 1. <code>1</code>, the default,
-is sequential. The count is what the kernels are given and what they
-run on, not an upper bound they may exceed.</p></dd>
+<dd><p>A single whole number, at least 1, and the default is <code>1</code>.
+The count is what the kernels are given and what they run on, not a ceiling
+they may come under. Anything else throws: a value below 1, a fractional
+value, <code>Inf</code>, a character string and a vector of length other than one are
+all rejected with the same message.</p></dd>
 
 
 <dt id="arg-workers">workers<a class="anchor" aria-label="anchor" href="#arg-workers"></a></dt>
-<dd><p>A single whole number, at least 1: how many R processes
-the independent fits of a cross-validation's folds may use. <code>1</code>,
-the default, runs them in this process.</p></dd>
+<dd><p>A single whole number, at least 1, and the default is <code>1</code>:
+how many R processes the independent fits of a cross-validation's folds may
+use. <code>1</code> runs them in this process. Validated exactly as <code>threads</code> is.</p></dd>
 
 
 <dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
@@ -87,69 +89,101 @@ the default, runs them in this process.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Unused.</p></dd>
+<dd><p>Unused, and present because <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> requires it.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An object of class <code>"n_threads"</code> carrying the counts.</p>
+    <p><code>n_threads()</code> returns an object of class <code>"n_threads"</code>, a list of two
+components:</p><dl><dt><code>threads</code></dt>
+<dd><p>integer, the thread count, at least 1.</p></dd>
+
+<dt><code>workers</code></dt>
+<dd><p>integer, the worker-process count, at least 1.</p></dd>
+
+
+</dl><p>Read them with <code><a href="thread_count.html">thread_count()</a></code> and <code><a href="worker_count.html">worker_count()</a></code>, which check the class
+first. <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> returns its argument invisibly.</p>
     </div>
     <div class="section level2">
-    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The count never changes what a kernel computes: every parallel region in
-the toolkit decomposes its work over the elements of its output, so each
-accumulated value is summed in full by one thread and no reduction is
-ever split across threads – a kernel's result is bit for bit the same at
-any count – and a fold's fit is a complete, independent computation
-whose results are collected in fold order whatever the number of
-processes. Two things make that hold rather than merely be intended, and
-both are properties of the drivers rather than of the kernels: a worker
-installs the calling thread's floating-point environment before running
-its chunk, without which some of the platform's own math routines return
-per-thread last bits (R's <code>psigamma</code> at higher orders,
-<code>bessel_k</code>, and <code>pgamma</code> and <code>pbeta</code> on the log scale
-were each measured doing so), and the sequential branch runs through the
-same compiled function the parallel one does, so the two cannot be
-optimized apart. One qualification remains: where raising the count first
-ENGAGES a threaded kernel in place of a BLAS expression (the dense
-assembly products of <span class="pkg">statmodels7</span>), the replacement is a second
-implementation of the same sum, bit-exact against the reference BLAS R
-ships and within the rounding of one dot product against an optimized one
-(OpenBLAS, Accelerate), whose accumulation order is its own. The
-guarantee is also a design constraint on any kernel added later.</p>
-<p>At <code>threads = 1</code> nothing parallel is entered and no process-level
-thread setting is touched: the code taken is the sequential path, not a
-parallel one with a single thread. Below a per-kernel internal threshold,
-measured where the cost of opening a parallel region overtakes its gain,
-a kernel stays sequential whatever the count says.</p>
-<p>The two levels do not nest: a fit running inside a worker process is
-sequential by construction, so <code>workers = 4</code> opens four processes
-each fitting on one thread rather than <code>4 x threads</code> of them.
-Worker processes are separate R sessions loading the installed packages,
-which is what makes them safe for the S7 objects a fold's fit carries
-(the same rule <code>optimizers7::multistart</code> records); starting one
-costs on the order of a second, so <code>workers</code> pays on a
-cross-validated path and is not worth asking for on a fit that takes
-less than that.</p>
+    <h2 id="the-count-does-not-change-the-answer">The count does not change the answer<a class="anchor" aria-label="anchor" href="#the-count-does-not-change-the-answer"></a></h2>
+    <p>Every parallel region in the toolkit decomposes its work over the elements
+of its output. Each accumulated value is therefore summed in full by one
+thread, no reduction is ever split across threads, and a kernel returns the
+same bits at any count. A fold's fit is a complete independent computation,
+and the folds are collected in fold order however many processes ran them.</p>
+<p>Two properties of the drivers make that hold, and neither belongs to the
+kernels themselves. A worker installs the calling thread's floating-point
+environment before running its chunk: without it some of the platform's own
+math routines return per-thread last bits, and R's <code>psigamma</code> at higher
+orders, <code>bessel_k</code>, and <code>pgamma</code> and <code>pbeta</code> on the log scale were each
+measured doing so. The sequential branch also runs through the same compiled
+function the parallel one does, so a compiler cannot optimize the two apart.</p>
+<p>One qualification. In the dense assembly products of <span class="pkg">statmodels7</span>,
+raising the count first <em>engages</em> a threaded kernel where a BLAS expression
+stood. That kernel is a second implementation of the same sum: bit-exact
+against the reference BLAS R ships, and within the rounding of one dot
+product against an optimized BLAS such as OpenBLAS or Accelerate, whose
+accumulation order is its own.</p>
+<p>The guarantee is a design constraint on any kernel added later.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="the-sequential-path-is-the-sequential-path">The sequential path is the sequential path<a class="anchor" aria-label="anchor" href="#the-sequential-path-is-the-sequential-path"></a></h2>
+    <p>At <code>threads = 1</code> nothing parallel is entered and no process-level thread
+setting is touched. The code taken is the sequential one, not a parallel path
+running on a single thread.</p>
+<p>Each kernel carries an internal threshold as well, measured where the cost of
+opening a parallel region overtakes its gain. Below it the kernel stays
+sequential whatever the count says.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="the-two-levels-do-not-nest">The two levels do not nest<a class="anchor" aria-label="anchor" href="#the-two-levels-do-not-nest"></a></h2>
+    <p>A fit running inside a worker process is sequential by construction, so
+<code>workers = 4</code> opens four processes each fitting on one thread, never
+<code>4 * threads</code> of them.</p>
+<p>Worker processes are separate R sessions that load the installed packages,
+which makes them safe for the S7 objects a fold's fit carries; this is the
+rule <code>optimizers7::multistart</code> records. Starting one costs on the order of a
+second, so <code>workers</code> pays on a cross-validated path and is not worth asking
+for on a fit shorter than that.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="printing">Printing<a class="anchor" aria-label="anchor" href="#printing"></a></h2>
+    <p><code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> shows the call that would rebuild the object, with <code>workers</code> shown
+only when it is not 1, and appends <code>[sequential]</code> when both counts are 1. It
+returns its argument invisibly.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="thread_count.html">thread_count</a></code>, <code><a href="worker_count.html">worker_count</a></code>,
-<code><a href="local_threads.html">local_threads</a></code></p></div>
+    <div class="dont-index"><p><code><a href="thread_count.html">thread_count()</a></code> and <code><a href="worker_count.html">worker_count()</a></code> to read the counts,
+<code><a href="local_threads.html">local_threads()</a></code> to apply one for the duration of a fit.</p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">n_threads</span><span class="op">(</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># The default is sequential, and says so.</span></span></span>
+<span class="r-in"><span><span class="fu">n_threads</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> n_threads(1)  [sequential]</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Threads within a fit, worker processes across folds, or both.</span></span></span>
 <span class="r-in"><span><span class="fu">n_threads</span><span class="op">(</span><span class="fl">4</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> n_threads(4)</span>
 <span class="r-in"><span><span class="fu">n_threads</span><span class="op">(</span><span class="fl">1</span>, workers <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> n_threads(1, workers = 4)</span>
-<span class="r-in"><span><span class="fu"><a href="thread_count.html">thread_count</a></span><span class="op">(</span><span class="fu">n_threads</span><span class="op">(</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4</span>
-<span class="r-in"><span><span class="fu"><a href="worker_count.html">worker_count</a></span><span class="op">(</span><span class="fu">n_threads</span><span class="op">(</span><span class="fl">1</span>, workers <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4</span>
+<span class="r-in"><span><span class="fu">n_threads</span><span class="op">(</span><span class="fl">4</span>, workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> n_threads(4, workers = 2)</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># The counts come back out through the two readers.</span></span></span>
+<span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu">n_threads</span><span class="op">(</span><span class="fl">4</span>, workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>threads <span class="op">=</span> <span class="fu"><a href="thread_count.html">thread_count</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span>, workers <span class="op">=</span> <span class="fu"><a href="worker_count.html">worker_count</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> threads workers </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       4       2 </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># A count must be a single whole number of at least one.</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span><span class="fu">n_threads</span><span class="op">(</span><span class="fl">0</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Error : 'threads' must be a single whole number, at least 1.</span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span><span class="fu">n_threads</span><span class="op">(</span><span class="fl">2.5</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Error : 'threads' must be a single whole number, at least 1.</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

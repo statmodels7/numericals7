@@ -17,30 +17,35 @@ local_threads(x, frame = parent.frame())
 - x:
 
   An object returned by
-  [`n_threads`](https://statmodels7.github.io/numericals7/reference/n_threads.md).
+  [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md).
+  Anything else throws, through
+  [`thread_count()`](https://statmodels7.github.io/numericals7/reference/thread_count.md).
 
 - frame:
 
-  The environment whose exit restores the previous setting. Defaults to
-  the caller's.
+  The environment whose exit restores the previous setting, defaulting
+  to the caller's. Pass an outer frame to hold the setting for longer
+  than one call.
 
 ## Value
 
-The count, invisibly.
+The thread count, invisibly: a single integer, at least 1.
 
 ## Details
 
 [`RcppParallel::setThreadOptions()`](https://rdrr.io/pkg/RcppParallel/man/setThreadOptions.html)
 writes a process-level variable, so a fit that set it and returned would
-leave it moved for whatever code runs next; the restoration is
-registered with `on.exit` in the caller's frame. At a count of 1 nothing
-is touched at all, which is what keeps the sequential path exactly the
-sequential path.
+leave it moved for whatever runs next. The restoration is therefore
+registered with `on.exit` in the caller's frame, which fires however the
+fit leaves, an error included.
+
+At a count of 1 nothing is touched at all. That is what keeps the
+sequential path free of any trace of the parallel machinery.
 
 ## See also
 
-[`n_threads`](https://statmodels7.github.io/numericals7/reference/n_threads.md),
-[`thread_count`](https://statmodels7.github.io/numericals7/reference/thread_count.md)
+[`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md),
+[`thread_count()`](https://statmodels7.github.io/numericals7/reference/thread_count.md)
 
 ## Examples
 

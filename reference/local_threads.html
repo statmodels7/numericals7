@@ -15,7 +15,7 @@ parallel regions draw from."><meta property="og:image" content="https://statmode
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.11.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,29 +59,32 @@ parallel regions draw from.</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>An object returned by <code><a href="n_threads.html">n_threads</a></code>.</p></dd>
+<dd><p>An object returned by <code><a href="n_threads.html">n_threads()</a></code>. Anything else throws, through
+<code><a href="thread_count.html">thread_count()</a></code>.</p></dd>
 
 
 <dt id="arg-frame">frame<a class="anchor" aria-label="anchor" href="#arg-frame"></a></dt>
-<dd><p>The environment whose exit restores the previous setting.
-Defaults to the caller's.</p></dd>
+<dd><p>The environment whose exit restores the previous setting,
+defaulting to the caller's. Pass an outer frame to hold the setting for
+longer than one call.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>The count, invisibly.</p>
+    <p>The thread count, invisibly: a single integer, at least 1.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p><code><a href="https://rdrr.io/pkg/RcppParallel/man/setThreadOptions.html" class="external-link">RcppParallel::setThreadOptions()</a></code> writes a process-level variable,
-so a fit that set it and returned would leave it moved for whatever code
-runs next; the restoration is registered with <code>on.exit</code> in the
-caller's frame. At a count of 1 nothing is touched at all, which is what
-keeps the sequential path exactly the sequential path.</p>
+    <p><code><a href="https://rdrr.io/pkg/RcppParallel/man/setThreadOptions.html" class="external-link">RcppParallel::setThreadOptions()</a></code> writes a process-level variable, so a fit
+that set it and returned would leave it moved for whatever runs next. The
+restoration is therefore registered with <code>on.exit</code> in the caller's frame,
+which fires however the fit leaves, an error included.</p>
+<p>At a count of 1 nothing is touched at all. That is what keeps the sequential
+path free of any trace of the parallel machinery.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="n_threads.html">n_threads</a></code>, <code><a href="thread_count.html">thread_count</a></code></p></div>
+    <div class="dont-index"><p><code><a href="n_threads.html">n_threads()</a></code>, <code><a href="thread_count.html">thread_count()</a></code></p></div>
     </div>
 
     <div class="section level2">

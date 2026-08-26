@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.11.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,8 +33,14 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.12.0" id="numericals7-0120">numericals7 0.12.0<a class="anchor" aria-label="anchor" href="#numericals7-0120"></a></h2>
+<ul><li>
+<code><a href="../reference/set_partitions.html">set_partitions()</a></code> returns integer blocks whatever storage <code>n</code> arrives in. It coerced nothing, so the blocks inherited the caller’s mode and <code>set_partitions(4)</code> gave doubles where <code>set_partitions(4L)</code> gave integers, and where both sibling enumerations, <code><a href="../reference/tuple_indices.html">tuple_indices()</a></code> and <code><a href="../reference/compositions.html">compositions()</a></code>, give integers however they are called. The consequence was that <code>identical(sort(unlist(p)), 1:4)</code> was <code>FALSE</code> for every one of the fifteen partitions of four, and is <code>TRUE</code> for all fifteen now. Measured across the four call sites in <code>distributions7</code> and <code>parameters7</code> that consume the enumeration, which are the wrapper derivatives at orders three and four, the Bartlett expected Hessian, the reparametrized chain rule and <code>sum_struct()</code>’s log-determinant expansion: every computed value is unchanged bit for bit. The coercion is applied where <code>n</code> enters a block and not to <code>n</code> at the top, so that a zero, negative or fractional argument still recurses until the stack overflows, which is what the page documents.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.11.0" id="numericals7-0110">numericals7 0.11.0<a class="anchor" aria-label="anchor" href="#numericals7-0110"></a></h2>
-<ul><li><p><code>bessel_i_ratios(kappa, m)</code> gives  for  by Miller’s backward recurrence, vectorized over the argument: the loop runs over the series index and not over the data, so a vector of concentrations costs the same number of steps as one. That is what makes a series over these ratios cheaper than a quadrature per observation, and it is why <code>distributions7</code>’s von Mises distribution function stopped being one. Checked against R’s own <code>besselI</code> from  to 500 and orders to 200, agreeing to 1e-15 wherever the reference itself has not underflowed.</p></li>
+<ul><li><p><code><a href="../reference/fd_weights.html">fd_weights()</a></code> rejects an <code>order</code> that is not a single non-negative whole number. A fractional order used to fall through the existing checks and return the weights of the truncated order scaled by <code>factorial(order)</code> — a vector shaped like a stencil that satisfies no moment condition, and no warning. A negative one returned all <code>NaN</code> behind a warning about <code>NaN</code>s. <code><a href="../reference/fd_derivative.html">fd_derivative()</a></code> is covered by the same check, always going through <code><a href="../reference/fd_weights.html">fd_weights()</a></code>. The orders that mean something are unaffected, order zero included.</p></li>
+<li><p><code>bessel_i_ratios(kappa, m)</code> gives  for  by Miller’s backward recurrence, vectorized over the argument: the loop runs over the series index and not over the data, so a vector of concentrations costs the same number of steps as one. That is what makes a series over these ratios cheaper than a quadrature per observation, and it is why <code>distributions7</code>’s von Mises distribution function stopped being one. Checked against R’s own <code>besselI</code> from  to 500 and orders to 200, agreeing to 1e-15 wherever the reference itself has not underflowed.</p></li>
 <li><p><code><a href="../reference/bessel_i_ratio.html">bessel_i_ratio()</a></code> is the first of them and keeps its asymptotic branch for an argument past , where the scaled Bessel functions underflow. The sequence has none: the recurrence needs a starting index above the argument, so its cost grows with it, and a caller working there is past the point where a series over these ratios converges in any useful number of terms.</p></li>
 </ul></div>
     <div class="section level2">

@@ -154,11 +154,11 @@ The combinatorial objects a higher-order chain rule sums over, each in
 one copy so that an enumeration cannot disagree with itself.
 
 - [`tuple_indices()`](https://statmodels7.github.io/numericals7/reference/tuple_indices.md)
-  : The Index Tuples of a Given Width
+  : Multi-Indices for Derivatives of a Given Order
 - [`set_partitions()`](https://statmodels7.github.io/numericals7/reference/set_partitions.md)
-  : The Set Partitions of the First n Integers
+  : Set Partitions of the First n Integers
 - [`compositions()`](https://statmodels7.github.io/numericals7/reference/compositions.md)
-  : Every Way to Write an Integer as an Ordered Sum
+  : Weak Compositions of an Integer
 
 ## Finite differences
 
@@ -198,9 +198,9 @@ depend on the count, bit for bit.
   [`print(`*`<n_threads>`*`)`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
   : How Many Threads and Worker Processes a Fit May Use
 - [`thread_count()`](https://statmodels7.github.io/numericals7/reference/thread_count.md)
-  : Read the Count Off a Thread Policy
+  : Read the Thread Count Off a Policy
 - [`worker_count()`](https://statmodels7.github.io/numericals7/reference/worker_count.md)
-  : Read the Worker Count Off a Thread Policy
+  : Read the Worker Count Off a Policy
 - [`local_threads()`](https://statmodels7.github.io/numericals7/reference/local_threads.md)
   : Apply a Thread Policy for the Duration of One Fit
 
@@ -227,3 +227,9 @@ depend on the count, bit for bit.
 - [`bessel_i_ratio_inverse()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_inverse.md)
   : The Inverse of the Bessel Ratio
 
+# Articles
+
+### All vignettes
+
+- [Numerical
+  kernels](https://statmodels7.github.io/numericals7/articles/numerical-kernels.md):

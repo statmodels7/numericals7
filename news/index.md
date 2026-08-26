@@ -1,6 +1,40 @@
 # Changelog
 
+## numericals7 0.12.0
+
+- [`set_partitions()`](https://statmodels7.github.io/numericals7/reference/set_partitions.md)
+  returns integer blocks whatever storage `n` arrives in. It coerced
+  nothing, so the blocks inherited the caller’s mode and
+  `set_partitions(4)` gave doubles where `set_partitions(4L)` gave
+  integers, and where both sibling enumerations,
+  [`tuple_indices()`](https://statmodels7.github.io/numericals7/reference/tuple_indices.md)
+  and
+  [`compositions()`](https://statmodels7.github.io/numericals7/reference/compositions.md),
+  give integers however they are called. The consequence was that
+  `identical(sort(unlist(p)), 1:4)` was `FALSE` for every one of the
+  fifteen partitions of four, and is `TRUE` for all fifteen now.
+  Measured across the four call sites in `distributions7` and
+  `parameters7` that consume the enumeration, which are the wrapper
+  derivatives at orders three and four, the Bartlett expected Hessian,
+  the reparametrized chain rule and `sum_struct()`’s log-determinant
+  expansion: every computed value is unchanged bit for bit. The coercion
+  is applied where `n` enters a block and not to `n` at the top, so that
+  a zero, negative or fractional argument still recurses until the stack
+  overflows, which is what the page documents.
+
 ## numericals7 0.11.0
+
+- [`fd_weights()`](https://statmodels7.github.io/numericals7/reference/fd_weights.md)
+  rejects an `order` that is not a single non-negative whole number. A
+  fractional order used to fall through the existing checks and return
+  the weights of the truncated order scaled by `factorial(order)` — a
+  vector shaped like a stencil that satisfies no moment condition, and
+  no warning. A negative one returned all `NaN` behind a warning about
+  `NaN`s.
+  [`fd_derivative()`](https://statmodels7.github.io/numericals7/reference/fd_derivative.md)
+  is covered by the same check, always going through
+  [`fd_weights()`](https://statmodels7.github.io/numericals7/reference/fd_weights.md).
+  The orders that mean something are unaffected, order zero included.
 
 - `bessel_i_ratios(kappa, m)` gives for by Miller’s backward recurrence,
   vectorized over the argument: the loop runs over the series index and
