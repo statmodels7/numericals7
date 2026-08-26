@@ -37,6 +37,32 @@ test_that("set_partitions has the Bell numbers and disjoint blocks", {
 })
 
 
+test_that("the three enumerations agree on storage, whatever they are given", {
+  # An enumeration kept in one copy so it cannot disagree with itself should
+  # not disagree about its return type either. The blocks are integer whether
+  # n arrives as a double or as an integer, so the comparison a caller reaches
+  # for -- identical() against 1:n -- holds. Before this was pinned,
+  # set_partitions(4) returned doubles and set_partitions(4L) integers.
+  expect_identical(set_partitions(4), set_partitions(4L))
+  for (n in 1:5) {
+    p <- set_partitions(n)
+    # `info` because an expectation that prints only TRUE or FALSE cannot be
+    # read on a platform one does not have.
+    expect_true(all(vapply(p, function(q) all(vapply(q, is.integer, TRUE)),
+                           TRUE)),
+                info = paste("a block is not integer at n =", n))
+    expect_true(all(vapply(p, function(q) identical(sort(unlist(q)),
+                                                    seq_len(n)), TRUE)),
+                info = paste("a partition does not cover 1:n at n =", n))
+  }
+
+  expect_identical(tuple_indices(3, 2), tuple_indices(3L, 2L))
+  expect_identical(compositions(3, 2), compositions(3L, 2L))
+  expect_identical(typeof(unlist(tuple_indices(3, 4))), "integer")
+  expect_identical(typeof(compositions(3, 2)), "integer")
+})
+
+
 test_that("compositions enumerates every way to split an integer", {
   expect_identical(compositions(3, 2),
                    matrix(c(0L, 1L, 2L, 3L, 3L, 2L, 1L, 0L), ncol = 2))

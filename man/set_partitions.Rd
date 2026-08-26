@@ -12,11 +12,12 @@ so zero and negative values recurse until the stack overflows instead of
 throwing.}
 }
 \value{
-A list of \eqn{B_n} partitions. Each partition is a list of numeric
+A list of \eqn{B_n} partitions. Each partition is a list of integer
 vectors, its blocks, which between them contain each of \code{1:n} exactly
-once. The storage mode of a block follows \code{n}: \code{set_partitions(4L)} gives
-integer blocks and \code{set_partitions(4)} double ones, so compare a block
-against \code{1:n} with \code{==} and not with \code{identical()}.
+once. The storage is integer whether \code{n} is given as \code{4} or as \code{4L}, which
+is what \code{\link[=tuple_indices]{tuple_indices()}} and \code{\link[=compositions]{compositions()}} also return, so the three
+enumerations agree and a block may be compared against \code{1:n} with
+\code{identical()}.
 }
 \description{
 Enumerates every way of splitting \code{1:n} into disjoint non-empty blocks. A
@@ -51,8 +52,10 @@ set_partitions(3)
 # The counts are the Bell numbers.
 lengths(lapply(1:6, set_partitions))
 
-# Every partition covers 1:n exactly once, the blocks being disjoint.
-all(vapply(set_partitions(4), function(p) all(sort(unlist(p)) == 1:4),
+# Every partition covers 1:n exactly once, the blocks being disjoint. The
+# comparison is `identical()` because the blocks are integer however `n` was
+# given, which is the convention all three enumerations follow.
+all(vapply(set_partitions(4), function(p) identical(sort(unlist(p)), 1:4),
            logical(1)))
 
 # A fourth-order chain rule sums fifteen terms, one per partition, and the

@@ -117,11 +117,12 @@ tuple_indices <- function(d, order = 2L) {
 #'   so zero and negative values recurse until the stack overflows instead of
 #'   throwing.
 #'
-#' @return A list of \eqn{B_n} partitions. Each partition is a list of numeric
+#' @return A list of \eqn{B_n} partitions. Each partition is a list of integer
 #'   vectors, its blocks, which between them contain each of `1:n` exactly
-#'   once. The storage mode of a block follows `n`: `set_partitions(4L)` gives
-#'   integer blocks and `set_partitions(4)` double ones, so compare a block
-#'   against `1:n` with `==` and not with `identical()`.
+#'   once. The storage is integer whether `n` is given as `4` or as `4L`, which
+#'   is what [tuple_indices()] and [compositions()] also return, so the three
+#'   enumerations agree and a block may be compared against `1:n` with
+#'   `identical()`.
 #'
 #' @references
 #' Constantine, G. M. and Savits, T. H. (1996). A multivariate Faà di Bruno
@@ -138,8 +139,10 @@ tuple_indices <- function(d, order = 2L) {
 #' # The counts are the Bell numbers.
 #' lengths(lapply(1:6, set_partitions))
 #'
-#' # Every partition covers 1:n exactly once, the blocks being disjoint.
-#' all(vapply(set_partitions(4), function(p) all(sort(unlist(p)) == 1:4),
+#' # Every partition covers 1:n exactly once, the blocks being disjoint. The
+#' # comparison is `identical()` because the blocks are integer however `n` was
+#' # given, which is the convention all three enumerations follow.
+#' all(vapply(set_partitions(4), function(p) identical(sort(unlist(p)), 1:4),
 #'            logical(1)))
 #'
 #' # A fourth-order chain rule sums fifteen terms, one per partition, and the
@@ -150,14 +153,22 @@ tuple_indices <- function(d, order = 2L) {
 set_partitions <- function(n) {
   if (n == 1L) return(list(list(1L)))
   prev <- set_partitions(n - 1L)
+  # The two places n enters a block, coerced so that a block's storage does not
+  # follow the caller's: `tuple_indices()` and `compositions()` both return
+  # integers whatever they are given, and an enumeration kept in one copy so it
+  # cannot disagree with itself should not disagree about its return type. The
+  # coercion is here rather than on `n` at the top so that it changes the
+  # storage and nothing else -- coercing at the top would turn a fractional
+  # argument from the documented stack overflow into a silent truncation.
+  ni <- as.integer(n)
   out <- list()
   for (p in prev) {
     for (k in seq_along(p)) {
       q <- p
-      q[[k]] <- c(q[[k]], n)
+      q[[k]] <- c(q[[k]], ni)
       out[[length(out) + 1L]] <- q
     }
-    out[[length(out) + 1L]] <- c(p, list(n))
+    out[[length(out) + 1L]] <- c(p, list(ni))
   }
   out
 }

@@ -1,3 +1,21 @@
+# numericals7 0.12.0
+
+* `set_partitions()` returns integer blocks whatever storage `n` arrives
+  in. It coerced nothing, so the blocks inherited the caller's mode and
+  `set_partitions(4)` gave doubles where `set_partitions(4L)` gave
+  integers, and where both sibling enumerations, `tuple_indices()` and
+  `compositions()`, give integers however they are called. The consequence
+  was that `identical(sort(unlist(p)), 1:4)` was `FALSE` for every one of
+  the fifteen partitions of four, and is `TRUE` for all fifteen now.
+  Measured across the four call sites in `distributions7` and
+  `parameters7` that consume the enumeration, which are the wrapper
+  derivatives at orders three and four, the Bartlett expected Hessian, the
+  reparametrized chain rule and `sum_struct()`'s log-determinant
+  expansion: every computed value is unchanged bit for bit. The coercion
+  is applied where `n` enters a block and not to `n` at the top, so that a
+  zero, negative or fractional argument still recurses until the stack
+  overflows, which is what the page documents.
+
 # numericals7 0.11.0
 
 * `fd_weights()` rejects an `order` that is not a single non-negative whole
