@@ -119,8 +119,8 @@ tuple_indices <- function(d, order = 2L) {
 #'
 #' @return A list of \eqn{B_n} partitions. Each partition is a list of integer
 #'   vectors, its blocks, which between them contain each of `1:n` exactly
-#'   once. The storage is integer whether `n` is given as `4` or as `4L`, which
-#'   is what [tuple_indices()] and [compositions()] also return, so the three
+#'   once. The storage is integer whether `n` is given as `4` or as `4L`, as
+#'   it is for [tuple_indices()] and [compositions()], so the three
 #'   enumerations agree and a block may be compared against `1:n` with
 #'   `identical()`.
 #'

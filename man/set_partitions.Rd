@@ -14,8 +14,8 @@ throwing.}
 \value{
 A list of \eqn{B_n} partitions. Each partition is a list of integer
 vectors, its blocks, which between them contain each of \code{1:n} exactly
-once. The storage is integer whether \code{n} is given as \code{4} or as \code{4L}, which
-is what \code{\link[=tuple_indices]{tuple_indices()}} and \code{\link[=compositions]{compositions()}} also return, so the three
+once. The storage is integer whether \code{n} is given as \code{4} or as \code{4L}, as
+it is for \code{\link[=tuple_indices]{tuple_indices()}} and \code{\link[=compositions]{compositions()}}, so the three
 enumerations agree and a block may be compared against \code{1:n} with
 \code{identical()}.
 }
