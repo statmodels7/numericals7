@@ -47,7 +47,7 @@ toolkit's packages had written out by hand, from one formula.
 \section{An odd accuracy is rounded, and which way depends on the order}{
 A central stencil is symmetric, so the odd powers cancel from its error
 expansion and the accuracy it delivers is always even. An odd request is
-therefore served by an even neighbour, and the parity of \eqn{d + a} decides
+therefore served by an even neighbor, and the parity of \eqn{d + a} decides
 which one. Measured on \eqn{\exp} by halving the step:
 
 \tabular{lrrrr}{

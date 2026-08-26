@@ -34,7 +34,7 @@ Truncation grows like \eqn{h^{a}} and rounding like \eqn{\varepsilon h^{-d}},
 and this is where the two meet. The factor \eqn{\max(1, \lvert x \rvert)}
 makes the step relative for a large argument and absolute for a small one, so
 a point near zero does not get a step below the resolution of its own
-neighbourhood.
+neighborhood.
 
 At the default accuracy the exponent is \eqn{1/4} for a second derivative and
 \eqn{1/6} for a fourth, giving steps of about \code{1.2e-4} and \code{2.5e-3} at

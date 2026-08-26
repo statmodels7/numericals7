@@ -172,7 +172,7 @@ fd_weights <- function(offsets, order) {
 #'
 #' A central stencil is symmetric, so the odd powers cancel from its error
 #' expansion and the accuracy it delivers is always even. An odd request is
-#' therefore served by an even neighbour, and the parity of \eqn{d + a} decides
+#' therefore served by an even neighbor, and the parity of \eqn{d + a} decides
 #' which one. Measured on \eqn{\exp} by halving the step:
 #'
 #' \tabular{lrrrr}{
@@ -249,7 +249,7 @@ fd_offsets <- function(order, accuracy = 2L) {
 #' and this is where the two meet. The factor \eqn{\max(1, \lvert x \rvert)}
 #' makes the step relative for a large argument and absolute for a small one, so
 #' a point near zero does not get a step below the resolution of its own
-#' neighbourhood.
+#' neighborhood.
 #'
 #' At the default accuracy the exponent is \eqn{1/4} for a second derivative and
 #' \eqn{1/6} for a fourth, giving steps of about `1.2e-4` and `2.5e-3` at
