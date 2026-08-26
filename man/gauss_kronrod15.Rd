@@ -20,9 +20,9 @@ Kronrod-only nodes.}
 Returns the nodes and the two sets of weights of the 15-point Kronrod
 extension of the 7-point Gauss rule on \eqn{[-1, 1]}. One set of nodes
 carries both rules, so a single evaluation of the integrand gives an
-estimate and, from the difference of the two rules, an error for it. That is
-what makes an adaptive quadrature affordable: the error costs nothing beyond
-the estimate.
+estimate and, from the difference of the two rules, an error for it. An
+adaptive routine reads that error to decide where to refine, and pays
+nothing for it beyond the estimate.
 }
 \details{
 The eight Kronrod-only nodes carry a Gauss weight of zero, so both rules are
