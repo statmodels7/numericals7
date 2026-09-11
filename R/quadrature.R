@@ -22,11 +22,17 @@ NULL
 #' The eight Kronrod-only nodes carry a Gauss weight of zero, so both rules are
 #' formed from one matrix of function values by two weighted sums.
 #'
-#' The constants are the classical ones. The tests pin them by their defining
-#' property, checking that the 7-point rule integrates polynomials of degree 13
-#' exactly and the 15-point one degree 22, which catches a transcription error
-#' that comparing digits against a table would only catch if the table were
-#' right.
+#' The constants are QUADPACK's, carried at the precision it prints them. An
+#' adaptive routine reads the difference of the two rules, and on a constant
+#' integrand that difference is \eqn{\lvert\sum w_k - \sum w_g\rvert / 2} of
+#' the integral on every panel. Transcribed to fifteen decimals, as they were
+#' before version 0.14.0, the Kronrod weights summed to
+#' \eqn{2 - 6.0 \times 10^{-15}}, so every error estimate carried a floor of
+#' \eqn{3.4 \times 10^{-15}} of the integral that no bisection lowers. At full
+#' precision both sums are 2 within the rounding of the sum. The tests pin the
+#' constants by their defining property, that the 7-point rule integrates
+#' polynomials of degree 13 exactly and the 15-point one degree 22, and pin the
+#' two sums to a few units in the last place.
 #'
 #' @return A list of three numeric vectors, each of length 15:
 #'   \describe{
@@ -66,14 +72,19 @@ NULL
 #'
 #' @export
 gauss_kronrod15 <- function() {
-  xh <- c(0.991455371120813, 0.949107912342759, 0.864864423359769,
-          0.741531185599394, 0.586087235467691, 0.405845151377397,
-          0.207784955007898, 0)
-  wkh <- c(0.022935322010529, 0.063092092629979, 0.104790010322250,
-           0.140653259715525, 0.169004726639267, 0.190350578064785,
-           0.204432940075298, 0.209482141084728)
-  wgh <- c(0, 0.129484966168870, 0, 0.279705391489277,
-           0, 0.381830050505119, 0, 0.417959183673469)
+  # QUADPACK's dqk15 constants (xgk, wgk, wg), at the precision it prints them
+  xh <- c(0.991455371120812639206854697526329, 0.949107912342758524526189684047851,
+          0.864864423359769072789712788640926, 0.741531185599394439863864773280788,
+          0.586087235467691130294144845693013, 0.405845151377397166906606412076961,
+          0.207784955007898467600689403773245, 0)
+  wkh <- c(0.022935322010529224963732008058970, 0.063092092629978553290700663189204,
+           0.104790010322250183839876322541518, 0.140653259715525918745189590510238,
+           0.169004726639267902826583426598550, 0.190350578064785409913256402421014,
+           0.204432940075298892414161999234649, 0.209482141084727828012999174891714)
+  wgh <- c(0, 0.129484966168869693270611432679082,
+           0, 0.279705391489276667901467771423780,
+           0, 0.381830050505118944950369775488975,
+           0, 0.417959183673469387755102040816327)
   list(
     nodes = c(-xh[1:7], xh[8], rev(xh[1:7])),
     wk = c(wkh[1:7], wkh[8], rev(wkh[1:7])),
@@ -134,9 +145,27 @@ gauss_kronrod15 <- function() {
 #'
 #' # A failure is reported as one
 #'
-#' A row whose panels still exceed their budget at `max_depth` returns `NA`, and
-#' one warning names every such row. An `NA` says the accuracy was not reached;
-#' a plausible number would say nothing and be believed.
+#' A row whose panels still exceed their budget at `max_depth`, or once it
+#' holds `max_panels` panels, returns `NA`, and one warning names every such
+#' row. An `NA` says the accuracy was not reached; a plausible number would say
+#' nothing and be believed.
+#'
+#' `max_depth` ends a row whose error is concentrated at a point, where
+#' bisection narrows one panel after another, and `max_panels` ends a row whose
+#' error is spread over its whole interval, from rounding or from an
+#' oscillation faster than the panels resolve. In the second case every panel
+#' carries a share of the error, half the panels are split at every pass, and
+#' the count doubles long before any panel reaches `max_depth`.
+#'
+#' # The floor of the rule
+#'
+#' On a constant integrand the two rules of the pair differ by half the
+#' difference of their weight sums on every panel, so no refinement brings a
+#' row's relative error estimate below that value plus the rounding of the
+#' sums. For [gauss_kronrod15()] it is one unit in the last place, about
+#' \eqn{2.2 \times 10^{-16}}. A relative budget below it with `atol = 0`
+#' could never be met, and the call signals an error naming the floor before
+#' the integrand is evaluated.
 #'
 #' @param f The integrand, obeying the contract above.
 #' @param lower,upper Numeric vectors of endpoints, recycled to a common length,
@@ -144,19 +173,29 @@ gauss_kronrod15 <- function() {
 #'   `upper`, or the call throws.
 #' @param atol,rtol The absolute and relative error budgets per row, defaulting
 #'   to `1e-10` and `1e-8`. A row is judged against the larger of the two, so
-#'   `atol` governs an integral near zero and `rtol` a large one.
+#'   `atol` governs an integral near zero and `rtol` a large one. With
+#'   `atol = 0` an `rtol` below the floor of the rule signals an error; with a
+#'   positive `atol` any `rtol` is accepted, `rtol = 0` included.
 #' @param max_depth The greatest number of bisections one panel may undergo,
 #'   `48` by default. It is the lever for an endpoint singularity, and the
 #'   measured reach is narrower than "integrable" suggests: at the default a
 #'   gamma density of shape 0.5 converges and one of shape 0.45 does not, while
 #'   `max_depth = 200` reaches shape 0.2 and still not 0.1. A row past the
 #'   budget returns `NA`.
+#' @param max_panels The greatest number of panels one row may hold, `4096` by
+#'   default. A row still over its budget once it holds that many returns `NA`.
+#'   It bounds the memory of a row whose error estimate does not fall with
+#'   bisection, which at the default costs about 40 MB at the peak, and it still
+#'   admits `cos(16000 x)` on the unit interval, which needs between 2048 and
+#'   4096 panels. The count is per row, so a row's result does not depend on
+#'   the other rows of the call.
 #' @param rule The embedded quadrature pair, [gauss_kronrod15()] by default.
 #'   Any list of `nodes`, `wk` and `wg` of equal length serves.
 #'
 #' @return A numeric vector of integrals, one per row, of the recycled length of
 #'   `lower` and `upper`. `NA` in any row that did not reach the requested
-#'   accuracy, with a warning naming those rows.
+#'   accuracy within `max_depth` and `max_panels`, with a warning naming those
+#'   rows.
 #'
 #' @seealso [series_vec()] for the discrete counterpart, [gauss_kronrod15()] for
 #'   the default rule.
@@ -184,9 +223,35 @@ gauss_kronrod15 <- function() {
 #' # A divergent integral is refused, not estimated.
 #' suppressWarnings(quad_vec(function(x, i) 1 / x, 0, 1))
 #'
+#' # A relative budget below the floor of the rule cannot be met, and with no
+#' # absolute budget beside it the call is refused before anything is evaluated.
+#' try(quad_vec(function(x, i) matrix(1, nrow(x), ncol(x)), 0, 1,
+#'              atol = 0, rtol = 1e-17))
+#'
+#' # An oscillation far faster than the panels resolve stops at max_panels.
+#' suppressWarnings(quad_vec(function(x, i) sin(1e9 * x), 0, 1,
+#'                           max_panels = 256L))
+#'
 #' @export
 quad_vec <- function(f, lower, upper, atol = 1e-10, rtol = 1e-8,
-                     max_depth = 48L, rule = gauss_kronrod15()) {
+                     max_depth = 48L, max_panels = 4096L,
+                     rule = gauss_kronrod15()) {
+  # A relative budget below the rule's floor cannot be met on any panel, and
+  # with no absolute budget to stop at instead the row would refine until it
+  # met the cap. It is refused here, before the integrand is evaluated.
+  fl <- quad_floor(rule)
+  if (length(atol) == 1L && length(rtol) == 1L && !is.na(atol) && !is.na(rtol) &&
+      atol <= 0 && rtol < fl) {
+    stop(sprintf(paste0(
+      "quad_vec: rtol = %g is below the floor of the quadrature rule, %.3g,\n",
+      "  and atol = %g leaves no absolute budget to stop at instead.\n",
+      "  Ask for rtol >= %.3g, or give a positive atol."), rtol, fl, atol, fl),
+      call. = FALSE)
+  }
+  if (!is.numeric(max_panels) || length(max_panels) != 1L || is.na(max_panels) ||
+      max_panels < 1) {
+    stop("'max_panels' must be a single positive number.", call. = FALSE)
+  }
   n <- max(length(lower), length(upper))
   lower <- rep_len(lower, n)
   upper <- rep_len(upper, n)
@@ -293,15 +358,22 @@ quad_vec <- function(f, lower, upper, atol = 1e-10, rtol = 1e-8,
     # the row. Without the second clause the loop keeps splitting the
     # smooth panels' rounding noise -- errors all of one tiny magnitude,
     # so half the list clears the threshold at every pass and the panel
-    # count doubles until memory runs out. All of it is computed by row
-    # aggregates rather than a loop over rows, whose which() scan cost
-    # O(rows x panels) per pass.
+    # count doubles until memory runs out. The same doubling happens with no
+    # panel near max_depth when the error is spread over the whole row --
+    # rounding below the rule's floor, or an oscillation faster than the
+    # panels resolve -- and the third clause stops it: a row still over its
+    # budget once it holds max_panels panels fails. Measured before that
+    # clause existed, a constant integrand asked for less than the floor
+    # exhausted 30 GiB at depth 28. All of it is computed by row aggregates
+    # rather than a loop over rows, whose which() scan cost O(rows x panels)
+    # per pass.
     sp <- depth < max_depth
     g <- match(orig, rows)
     irr <- rowsum(err * !sp, orig, reorder = FALSE)[, 1L]
     nsp <- rowsum(sp + 0L, orig, reorder = FALSE)[, 1L]
+    cnt <- rowsum(rep(1L, length(orig)), orig, reorder = FALSE)[, 1L]
     is_still <- rows %in% still
-    fail_rows <- rows[is_still & (nsp == 0L | irr > budget)]
+    fail_rows <- rows[is_still & (nsp == 0L | irr > budget | cnt >= max_panels)]
     if (length(fail_rows)) {
       failed[fail_rows] <- TRUE
       live[fail_rows] <- FALSE
@@ -341,9 +413,40 @@ quad_vec <- function(f, lower, upper, atol = 1e-10, rtol = 1e-8,
     shown <- paste(utils::head(which_bad, 8L), collapse = ", ")
     if (length(which_bad) > 8L) shown <- paste0(shown, ", ...")
     warning(sprintf(
-      "quad_vec: %d row(s) did not reach the requested accuracy at max_depth = %d and return NA: rows %s.",
-      length(which_bad), max_depth, shown
+      "quad_vec: %d row(s) did not reach the requested accuracy within max_depth = %d and max_panels = %s and return NA: rows %s.",
+      length(which_bad), max_depth, format(max_panels, scientific = FALSE), shown
     ), call. = FALSE)
   }
   banked
+}
+
+
+#' The Smallest Relative Budget a Quadrature Rule Can Meet
+#'
+#' @description
+#' Returns \eqn{\lvert\sum w_k - \sum w_g\rvert / 2} plus one unit in the last
+#' place: the relative error estimate an embedded pair gives on a constant
+#' integrand, on every panel, together with the rounding of the two sums.
+#' [quad_vec()] refuses a relative budget below it when no absolute budget is
+#' given.
+#'
+#' @details
+#' On a constant integrand both rules are exact up to their weight sums, so the
+#' difference of the two estimates, which an adaptive routine reads as the
+#' error, is the difference of the sums scaled by the panel's half-width.
+#' Relative to the integral it is the same on every panel, and bisection does
+#' not lower it. For [gauss_kronrod15()] the two sums are 2 and the value is
+#' about \eqn{2.2 \times 10^{-16}}; with the fifteen-decimal constants this
+#' package carried before 0.14.0 it was \eqn{3.7 \times 10^{-15}}.
+#'
+#' @param rule An embedded pair: a list of `nodes`, `wk` and `wg` of equal
+#'   length, as [gauss_kronrod15()] returns.
+#'
+#' @return A single positive number.
+#'
+#' @seealso [quad_vec()], [gauss_kronrod15()]
+#'
+#' @keywords internal
+quad_floor <- function(rule) {
+  abs(sum(rule$wk) - sum(rule$wg)) / 2 + .Machine$double.eps
 }

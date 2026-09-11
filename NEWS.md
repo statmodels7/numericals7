@@ -1,3 +1,39 @@
+# numericals7 0.14.0
+
+* **`gauss_kronrod15()` carries QUADPACK's constants at full precision.**
+  Transcribed to fifteen decimals, the Kronrod weights summed to
+  2 - 6.0e-15. On a constant integrand the difference of the two rules is
+  half the difference of their weight sums, so every panel of every integral
+  carried an error estimate of 3.4e-15 of the integral that bisection does not
+  lower. At full precision both sums are 2 within the rounding of the sum, and
+  the Legendre moments the Kronrod rule must annihilate, to degree 22, vanish
+  within 1.2e-16 where the old table left 2.5e-15. Every integral computed
+  through the rule moves in the fifteenth digit.
+
+* **`quad_vec()` refuses a relative budget below the rule's floor when no
+  absolute budget is given.** The floor is the relative error estimate the
+  rule returns on a constant integrand, `|sum(wk) - sum(wg)| / 2`, plus one
+  unit in the last place: 2.2e-16 for the default rule, and 3.7e-15 for the
+  fifteen-decimal table. Asked for less with `atol = 0`, a row could never
+  converge; the call now signals an error naming the floor, before the
+  integrand is evaluated. A positive `atol` can still end the refinement, so
+  `rtol = 0` beside one stays valid, which is the condition QUADPACK applies.
+
+* **`quad_vec(max_panels = 4096)`**, the greatest number of panels one row
+  may hold. A row still over its budget once it holds that many returns `NA`
+  with the documented warning, which now names both limits. It bounds the
+  case `max_depth` does not: an error spread over the whole row, from
+  rounding or from an oscillation faster than the panels resolve, where every
+  panel carries a share of it, half the panels are split at every pass and
+  the count doubles long before any panel reaches `max_depth`. Measured before
+  the cap, a constant integrand asked for less than the floor exhausted 30 GiB
+  at depth 28. With the cap, a row of `sin(1e9 x)` on the unit interval stops
+  after 54 passes with a peak 41 MB above the session's baseline, and 100 such
+  rows in one call at 360 MB. The default admits `cos(16000 x)` on the unit
+  interval, which needs between 2048 and 4096 panels, and `abs(sin(50 x))` on
+  [0, 10], which needs between 1024 and 2048. The cap is counted per row, so
+  a row's result does not depend on the other rows of the call.
+
 # numericals7 0.13.0
 
 * **The smoothers of the absolute value live here now, moved from

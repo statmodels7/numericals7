@@ -11,6 +11,7 @@ quad_vec(
   atol = 1e-10,
   rtol = 1e-08,
   max_depth = 48L,
+  max_panels = 4096L,
   rule = gauss_kronrod15()
 )
 }
@@ -23,7 +24,9 @@ either of which may be infinite. Every \code{lower} must be strictly below its
 
 \item{atol, rtol}{The absolute and relative error budgets per row, defaulting
 to \code{1e-10} and \code{1e-8}. A row is judged against the larger of the two, so
-\code{atol} governs an integral near zero and \code{rtol} a large one.}
+\code{atol} governs an integral near zero and \code{rtol} a large one. With
+\code{atol = 0} an \code{rtol} below the floor of the rule signals an error; with a
+positive \code{atol} any \code{rtol} is accepted, \code{rtol = 0} included.}
 
 \item{max_depth}{The greatest number of bisections one panel may undergo,
 \code{48} by default. It is the lever for an endpoint singularity, and the
@@ -32,13 +35,22 @@ gamma density of shape 0.5 converges and one of shape 0.45 does not, while
 \code{max_depth = 200} reaches shape 0.2 and still not 0.1. A row past the
 budget returns \code{NA}.}
 
+\item{max_panels}{The greatest number of panels one row may hold, \code{4096} by
+default. A row still over its budget once it holds that many returns \code{NA}.
+It bounds the memory of a row whose error estimate does not fall with
+bisection, which at the default costs about 40 MB at the peak, and it still
+admits \verb{cos(16000 x)} on the unit interval, which needs between 2048 and
+4096 panels. The count is per row, so a row's result does not depend on
+the other rows of the call.}
+
 \item{rule}{The embedded quadrature pair, \code{\link[=gauss_kronrod15]{gauss_kronrod15()}} by default.
 Any list of \code{nodes}, \code{wk} and \code{wg} of equal length serves.}
 }
 \value{
 A numeric vector of integrals, one per row, of the recycled length of
 \code{lower} and \code{upper}. \code{NA} in any row that did not reach the requested
-accuracy, with a warning naming those rows.
+accuracy within \code{max_depth} and \code{max_panels}, with a warning naming those
+rows.
 }
 \description{
 Computes \eqn{\int_{a_i}^{b_i} f(x; \theta_i)\,\mathrm{d}x} for every row
@@ -87,9 +99,27 @@ endpoints mixing finite and infinite costs nothing extra.
 }
 
 \section{A failure is reported as one}{
-A row whose panels still exceed their budget at \code{max_depth} returns \code{NA}, and
-one warning names every such row. An \code{NA} says the accuracy was not reached;
-a plausible number would say nothing and be believed.
+A row whose panels still exceed their budget at \code{max_depth}, or once it
+holds \code{max_panels} panels, returns \code{NA}, and one warning names every such
+row. An \code{NA} says the accuracy was not reached; a plausible number would say
+nothing and be believed.
+
+\code{max_depth} ends a row whose error is concentrated at a point, where
+bisection narrows one panel after another, and \code{max_panels} ends a row whose
+error is spread over its whole interval, from rounding or from an
+oscillation faster than the panels resolve. In the second case every panel
+carries a share of the error, half the panels are split at every pass, and
+the count doubles long before any panel reaches \code{max_depth}.
+}
+
+\section{The floor of the rule}{
+On a constant integrand the two rules of the pair differ by half the
+difference of their weight sums on every panel, so no refinement brings a
+row's relative error estimate below that value plus the rounding of the
+sums. For \code{\link[=gauss_kronrod15]{gauss_kronrod15()}} it is one unit in the last place, about
+\eqn{2.2 \times 10^{-16}}. A relative budget below it with \code{atol = 0}
+could never be met, and the call signals an error naming the floor before
+the integrand is evaluated.
 }
 
 \examples{
@@ -114,6 +144,15 @@ quad_vec(function(x, i) dnorm(x), c(-Inf, -1, 0), c(0, 1, Inf))
 
 # A divergent integral is refused, not estimated.
 suppressWarnings(quad_vec(function(x, i) 1 / x, 0, 1))
+
+# A relative budget below the floor of the rule cannot be met, and with no
+# absolute budget beside it the call is refused before anything is evaluated.
+try(quad_vec(function(x, i) matrix(1, nrow(x), ncol(x)), 0, 1,
+             atol = 0, rtol = 1e-17))
+
+# An oscillation far faster than the panels resolve stops at max_panels.
+suppressWarnings(quad_vec(function(x, i) sin(1e9 * x), 0, 1,
+                          max_panels = 256L))
 
 }
 \seealso{
