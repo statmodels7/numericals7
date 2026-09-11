@@ -1,6 +1,6 @@
 Package: numericals7
 Title: Numerical Kernels for Statistical Modeling
-Version: 0.12.0
+Version: 0.13.0
 Authors@R:
     person("Giovanni", "Tinervia", , "giovannitinervia9@gmail.com", role = c("aut", "cre"))
 Description: The numerical layer of a statistical modeling toolkit, written
@@ -9,8 +9,11 @@ Description: The numerical layer of a statistical modeling toolkit, written
     and special functions evaluated on the log scale where the ordinary form
     overflows, together with the combinatorial enumerations a higher-order
     chain rule rests on: index tuples, set partitions and weak compositions.
-    Collecting them here keeps one copy of each, so an enumeration cannot
-    disagree with itself between packages.
+    It also carries smoothers of the absolute value, as 'S7' objects with
+    their derivatives to fifth order, which stand in for a kink where a
+    method needs a differentiable objective. Collecting them here keeps one
+    copy of each, so an enumeration cannot disagree with itself between
+    packages.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -22,6 +25,7 @@ Depends:
 Imports:
     Rcpp,
     RcppParallel,
+    S7,
     stats,
     utils
 LinkingTo:
@@ -40,6 +44,7 @@ Config/roxygen2/version: 8.0.0
 RoxygenNote: 7.3.3
 Collate: 
     'RcppExports.R'
+    'abs_smoother.R'
     'bessel_uk_table.R'
     'enumerate.R'
     'stencil.R'

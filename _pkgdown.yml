@@ -81,3 +81,19 @@ reference:
   - bessel_i_ratios
   - bessel_i_ratio_derivs
   - bessel_i_ratio_inverse
+
+- title: Smoothers of the absolute value
+  desc: >
+    A smooth replacement for the absolute value with its derivatives up to
+    order five, from which the smooth sign, step and hinge follow by
+    composition. A break-point term smoothed this way has a true Jacobian
+    block, and the validator checks a smoother written outside the package.
+  contents:
+  - abs_smoother
+  - smooth_probit
+  - smooth_hyperbolic
+  - smooth_quintic
+  - smoother_deriv
+  - smoother_width
+  - smoother_width_floor
+  - check_abs_smoother

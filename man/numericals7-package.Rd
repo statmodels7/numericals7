@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-The numerical layer of a statistical modeling toolkit, written once and consumed by the packages above it. It supplies finite-difference stencils, quadrature and series summation vectorized over a parameter, and special functions evaluated on the log scale where the ordinary form overflows, together with the combinatorial enumerations a higher-order chain rule rests on: index tuples, set partitions and weak compositions. Collecting them here keeps one copy of each, so an enumeration cannot disagree with itself between packages.
+The numerical layer of a statistical modeling toolkit, written once and consumed by the packages above it. It supplies finite-difference stencils, quadrature and series summation vectorized over a parameter, and special functions evaluated on the log scale where the ordinary form overflows, together with the combinatorial enumerations a higher-order chain rule rests on: index tuples, set partitions and weak compositions. It also carries smoothers of the absolute value, as 'S7' objects with their derivatives to fifth order, which stand in for a kink where a method needs a differentiable objective. Collecting them here keeps one copy of each, so an enumeration cannot disagree with itself between packages.
 }
 \seealso{
 Useful links:
