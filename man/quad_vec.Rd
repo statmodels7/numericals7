@@ -119,7 +119,8 @@ row's relative error estimate below that value plus the rounding of the
 sums. For \code{\link[=gauss_kronrod15]{gauss_kronrod15()}} it is \eqn{2.2 \times 10^{-16}} where the two
 computed sums agree to the last bit, as on x86_64, and
 \eqn{4.4 \times 10^{-16}} where they differ by one unit in the last place of
-2, as on arm64. A relative budget below it with \code{atol = 0}
+2, as on the arm64 build of R for macOS. A relative budget below it with
+\code{atol = 0}
 could never be met, and the call signals an error naming the floor before
 the integrand is evaluated.
 }

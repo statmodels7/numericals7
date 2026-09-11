@@ -28,7 +28,8 @@ Relative to the integral it is the same on every panel, and bisection does
 not lower it. For \code{\link[=gauss_kronrod15]{gauss_kronrod15()}} the two sums are 2 up to their
 rounding, and the value is \eqn{2.2 \times 10^{-16}} where the computed sums
 agree to the last bit, as on x86_64, and \eqn{4.4 \times 10^{-16}} where
-they differ by one unit in the last place of 2, as on arm64; with the
+they differ by one unit in the last place of 2, as on the arm64 build of R
+for macOS; with the
 fifteen-decimal constants this package carried before 0.14.0 it was
 \eqn{3.7 \times 10^{-15}}.
 }

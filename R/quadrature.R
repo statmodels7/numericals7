@@ -165,7 +165,8 @@ gauss_kronrod15 <- function() {
 #' sums. For [gauss_kronrod15()] it is \eqn{2.2 \times 10^{-16}} where the two
 #' computed sums agree to the last bit, as on x86_64, and
 #' \eqn{4.4 \times 10^{-16}} where they differ by one unit in the last place of
-#' 2, as on arm64. A relative budget below it with `atol = 0`
+#' 2, as on the arm64 build of R for macOS. A relative budget below it with
+#' `atol = 0`
 #' could never be met, and the call signals an error naming the floor before
 #' the integrand is evaluated.
 #'
@@ -440,7 +441,8 @@ quad_vec <- function(f, lower, upper, atol = 1e-10, rtol = 1e-8,
 #' not lower it. For [gauss_kronrod15()] the two sums are 2 up to their
 #' rounding, and the value is \eqn{2.2 \times 10^{-16}} where the computed sums
 #' agree to the last bit, as on x86_64, and \eqn{4.4 \times 10^{-16}} where
-#' they differ by one unit in the last place of 2, as on arm64; with the
+#' they differ by one unit in the last place of 2, as on the arm64 build of R
+#' for macOS; with the
 #' fifteen-decimal constants this package carried before 0.14.0 it was
 #' \eqn{3.7 \times 10^{-15}}.
 #'
