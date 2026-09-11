@@ -1,5 +1,21 @@
 # Changelog
 
+## numericals7 0.14.1
+
+- **The test of the rule’s floor asserts the rule and not the last
+  bit.** It asked `quad_floor(gauss_kronrod15())` to lie below two units
+  in the last place, and the floor is 2.2e-16 on x86_64 and 4.4e-16 on
+  the arm64 macOS runner, where the computed Kronrod and Gauss sums
+  differ by one unit in the last place of 2: the check failed there
+  alone. It now asks a bound of 1e-15, between that floor and the
+  3.7e-15 of the fifteen-decimal table, and asserts that the arm64 value
+  passes it. The pages of
+  [`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)
+  and
+  [`quad_floor()`](https://statmodels7.github.io/numericals7/reference/quad_floor.md)
+  gave the floor as 2.2e-16 alone and now give both values. Nothing
+  computed moves.
+
 ## numericals7 0.14.0
 
 - **[`gauss_kronrod15()`](https://statmodels7.github.io/numericals7/reference/gauss_kronrod15.md)
@@ -17,12 +33,12 @@
   refuses a relative budget below the rule’s floor when no absolute
   budget is given.** The floor is the relative error estimate the rule
   returns on a constant integrand, `|sum(wk) - sum(wg)| / 2`, plus one
-  unit in the last place: 2.2e-16 for the default rule, and 3.7e-15 for
-  the fifteen-decimal table. Asked for less with `atol = 0`, a row could
-  never converge; the call now signals an error naming the floor, before
-  the integrand is evaluated. A positive `atol` can still end the
-  refinement, so `rtol = 0` beside one stays valid, which is the
-  condition QUADPACK applies.
+  unit in the last place: 2.2e-16 for the default rule on x86_64 and
+  4.4e-16 on arm64, and 3.7e-15 for the fifteen-decimal table. Asked for
+  less with `atol = 0`, a row could never converge; the call now signals
+  an error naming the floor, before the integrand is evaluated. A
+  positive `atol` can still end the refinement, so `rtol = 0` beside one
+  stays valid, which is the condition QUADPACK applies.
 
 - **`quad_vec(max_panels = 4096)`**, the greatest number of panels one
   row may hold. A row still over its budget once it holds that many

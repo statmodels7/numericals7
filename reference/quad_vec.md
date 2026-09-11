@@ -133,10 +133,11 @@ difference of their weight sums on every panel, so no refinement brings
 a row's relative error estimate below that value plus the rounding of
 the sums. For
 [`gauss_kronrod15()`](https://statmodels7.github.io/numericals7/reference/gauss_kronrod15.md)
-it is one unit in the last place, about \\2.2 \times 10^{-16}\\. A
-relative budget below it with `atol = 0` could never be met, and the
-call signals an error naming the floor before the integrand is
-evaluated.
+it is \\2.2 \times 10^{-16}\\ where the two computed sums agree to the
+last bit, as on x86_64, and \\4.4 \times 10^{-16}\\ where they differ by
+one unit in the last place of 2, as on arm64. A relative budget below it
+with `atol = 0` could never be met, and the call signals an error naming
+the floor before the integrand is evaluated.
 
 ## See also
 
