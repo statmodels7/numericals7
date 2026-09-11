@@ -34,11 +34,17 @@ A list of three numeric vectors, each of length 15:
 The eight Kronrod-only nodes carry a Gauss weight of zero, so both rules
 are formed from one matrix of function values by two weighted sums.
 
-The constants are the classical ones. The tests pin them by their
-defining property, checking that the 7-point rule integrates polynomials
-of degree 13 exactly and the 15-point one degree 22, which catches a
-transcription error that comparing digits against a table would only
-catch if the table were right.
+The constants are QUADPACK's, carried at the precision it prints them.
+An adaptive routine reads the difference of the two rules, and on a
+constant integrand that difference is \\\lvert\sum w_k - \sum w_g\rvert
+/ 2\\ of the integral on every panel. Transcribed to fifteen decimals,
+as they were before version 0.14.0, the Kronrod weights summed to \\2 -
+6.0 \times 10^{-15}\\, so every error estimate carried a floor of \\3.4
+\times 10^{-15}\\ of the integral that no bisection lowers. At full
+precision both sums are 2 within the rounding of the sum. The tests pin
+the constants by their defining property, that the 7-point rule
+integrates polynomials of degree 13 exactly and the 15-point one degree
+22, and pin the two sums to a few units in the last place.
 
 ## References
 

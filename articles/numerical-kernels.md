@@ -101,7 +101,7 @@ rbind(quad_vec = got, gamma = gamma(a))
 #> quad_vec 1.772454    1    1   24 1.216451e+17
 #> gamma    1.772454    1    1   24 1.216451e+17
 max(abs(got / gamma(a) - 1))
-#> [1] 4.344783e-09
+#> [1] 4.344779e-09
 ```
 
 Note that the number of rows comes from the **endpoints**, so scalar

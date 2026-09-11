@@ -17,7 +17,7 @@ pays its overhead once per value."><meta property="og:image" content="https://st
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.13.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.14.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -61,6 +61,7 @@ pays its overhead once per value.</p>
 <span>  atol <span class="op">=</span> <span class="fl">1e-10</span>,</span>
 <span>  rtol <span class="op">=</span> <span class="fl">1e-08</span>,</span>
 <span>  max_depth <span class="op">=</span> <span class="fl">48L</span>,</span>
+<span>  max_panels <span class="op">=</span> <span class="fl">4096L</span>,</span>
 <span>  rule <span class="op">=</span> <span class="fu"><a href="gauss_kronrod15.html">gauss_kronrod15</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -82,7 +83,9 @@ either of which may be infinite. Every <code>lower</code> must be strictly below
 <dt id="arg-atol-rtol">atol, rtol<a class="anchor" aria-label="anchor" href="#arg-atol-rtol"></a></dt>
 <dd><p>The absolute and relative error budgets per row, defaulting
 to <code>1e-10</code> and <code>1e-8</code>. A row is judged against the larger of the two, so
-<code>atol</code> governs an integral near zero and <code>rtol</code> a large one.</p></dd>
+<code>atol</code> governs an integral near zero and <code>rtol</code> a large one. With
+<code>atol = 0</code> an <code>rtol</code> below the floor of the rule signals an error; with a
+positive <code>atol</code> any <code>rtol</code> is accepted, <code>rtol = 0</code> included.</p></dd>
 
 
 <dt id="arg-max-depth">max_depth<a class="anchor" aria-label="anchor" href="#arg-max-depth"></a></dt>
@@ -94,6 +97,16 @@ gamma density of shape 0.5 converges and one of shape 0.45 does not, while
 budget returns <code>NA</code>.</p></dd>
 
 
+<dt id="arg-max-panels">max_panels<a class="anchor" aria-label="anchor" href="#arg-max-panels"></a></dt>
+<dd><p>The greatest number of panels one row may hold, <code>4096</code> by
+default. A row still over its budget once it holds that many returns <code>NA</code>.
+It bounds the memory of a row whose error estimate does not fall with
+bisection, which at the default costs about 40 MB at the peak, and it still
+admits <code>cos(16000 x)</code> on the unit interval, which needs between 2048 and
+4096 panels. The count is per row, so a row's result does not depend on
+the other rows of the call.</p></dd>
+
+
 <dt id="arg-rule">rule<a class="anchor" aria-label="anchor" href="#arg-rule"></a></dt>
 <dd><p>The embedded quadrature pair, <code><a href="gauss_kronrod15.html">gauss_kronrod15()</a></code> by default.
 Any list of <code>nodes</code>, <code>wk</code> and <code>wg</code> of equal length serves.</p></dd>
@@ -103,7 +116,8 @@ Any list of <code>nodes</code>, <code>wk</code> and <code>wg</code> of equal len
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A numeric vector of integrals, one per row, of the recycled length of
 <code>lower</code> and <code>upper</code>. <code>NA</code> in any row that did not reach the requested
-accuracy, with a warning naming those rows.</p>
+accuracy within <code>max_depth</code> and <code>max_panels</code>, with a warning naming those
+rows.</p>
     </div>
     <div class="section level2">
     <h2 id="the-integrand-contract">The integrand contract<a class="anchor" aria-label="anchor" href="#the-integrand-contract"></a></h2>
@@ -140,9 +154,26 @@ endpoints mixing finite and infinite costs nothing extra.</p>
     </div>
     <div class="section level2">
     <h2 id="a-failure-is-reported-as-one">A failure is reported as one<a class="anchor" aria-label="anchor" href="#a-failure-is-reported-as-one"></a></h2>
-    <p>A row whose panels still exceed their budget at <code>max_depth</code> returns <code>NA</code>, and
-one warning names every such row. An <code>NA</code> says the accuracy was not reached;
-a plausible number would say nothing and be believed.</p>
+    <p>A row whose panels still exceed their budget at <code>max_depth</code>, or once it
+holds <code>max_panels</code> panels, returns <code>NA</code>, and one warning names every such
+row. An <code>NA</code> says the accuracy was not reached; a plausible number would say
+nothing and be believed.</p>
+<p><code>max_depth</code> ends a row whose error is concentrated at a point, where
+bisection narrows one panel after another, and <code>max_panels</code> ends a row whose
+error is spread over its whole interval, from rounding or from an
+oscillation faster than the panels resolve. In the second case every panel
+carries a share of the error, half the panels are split at every pass, and
+the count doubles long before any panel reaches <code>max_depth</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="the-floor-of-the-rule">The floor of the rule<a class="anchor" aria-label="anchor" href="#the-floor-of-the-rule"></a></h2>
+    <p>On a constant integrand the two rules of the pair differ by half the
+difference of their weight sums on every panel, so no refinement brings a
+row's relative error estimate below that value plus the rounding of the
+sums. For <code><a href="gauss_kronrod15.html">gauss_kronrod15()</a></code> it is one unit in the last place, about
+\(2.2 \times 10^{-16}\). A relative budget below it with <code>atol = 0</code>
+could never be met, and the call signals an error naming the floor before
+the integrand is evaluated.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -156,12 +187,12 @@ the default rule.</p></div>
 <span class="r-in"><span><span class="va">shp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">15</span>, length.out <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/GammaDist.html" class="external-link">dgamma</a></span><span class="op">(</span><span class="va">x</span>, shape <span class="op">=</span> <span class="va">shp</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, rate <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="fu">quad_vec</span><span class="op">(</span><span class="va">f</span>, lower <span class="op">=</span> <span class="fl">0</span>, upper <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">Inf</span>, <span class="fl">30</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -4.344782e-09  4.634579e-10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -4.344779e-09  4.634610e-10</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Their means, against the closed form.</span></span></span>
 <span class="r-in"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="va">x</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/GammaDist.html" class="external-link">dgamma</a></span><span class="op">(</span><span class="va">x</span>, shape <span class="op">=</span> <span class="va">shp</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, rate <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="fu">quad_vec</span><span class="op">(</span><span class="va">g</span>, <span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">Inf</span>, <span class="fl">30</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="va">shp</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -1.889955e-11  2.317291e-10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -1.889533e-11  2.317305e-10</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># A shape below one puts an integrable singularity at the origin. The</span></span></span>
 <span class="r-in"><span><span class="co"># sum-judged budget reaches shape 0.5 at the default depth, and a harsher</span></span></span>
@@ -178,6 +209,19 @@ the default rule.</p></div>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># A divergent integral is refused, not estimated.</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="fu">quad_vec</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="fl">1</span> <span class="op">/</span> <span class="va">x</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] NA</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># A relative budget below the floor of the rule cannot be met, and with no</span></span></span>
+<span class="r-in"><span><span class="co"># absolute budget beside it the call is refused before anything is evaluated.</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span><span class="fu">quad_vec</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>, <span class="fl">0</span>, <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>             atol <span class="op">=</span> <span class="fl">0</span>, rtol <span class="op">=</span> <span class="fl">1e-17</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Error : quad_vec: rtol = 1e-17 is below the floor of the quadrature rule, 2.22e-16,</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   and atol = 0 leaves no absolute budget to stop at instead.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Ask for rtol &gt;= 2.22e-16, or give a positive atol.</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># An oscillation far faster than the panels resolve stops at max_panels.</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="fu">quad_vec</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">1e9</span> <span class="op">*</span> <span class="va">x</span><span class="op">)</span>, <span class="fl">0</span>, <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>                          max_panels <span class="op">=</span> <span class="fl">256L</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] NA</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

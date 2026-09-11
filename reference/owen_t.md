@@ -61,7 +61,7 @@ Owen, D. B. (1956). Tables for computing bivariate normal probabilities.
 # At h = 0 the integral is elementary: T(0, a) = atan(a) / (2 pi).
 a <- c(0.5, 1, 4)
 max(abs(owen_t(0, a) - atan(a) / (2 * pi)))
-#> [1] 6.106227e-16
+#> [1] 2.775558e-17
 
 # Odd in the second argument, and the infinite case is a normal tail.
 owen_t(1, 2) + owen_t(1, -2)

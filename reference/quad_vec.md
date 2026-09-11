@@ -17,6 +17,7 @@ quad_vec(
   atol = 1e-10,
   rtol = 1e-08,
   max_depth = 48L,
+  max_panels = 4096L,
   rule = gauss_kronrod15()
 )
 ```
@@ -37,7 +38,9 @@ quad_vec(
 
   The absolute and relative error budgets per row, defaulting to `1e-10`
   and `1e-8`. A row is judged against the larger of the two, so `atol`
-  governs an integral near zero and `rtol` a large one.
+  governs an integral near zero and `rtol` a large one. With `atol = 0`
+  an `rtol` below the floor of the rule signals an error; with a
+  positive `atol` any `rtol` is accepted, `rtol = 0` included.
 
 - max_depth:
 
@@ -47,6 +50,16 @@ quad_vec(
   density of shape 0.5 converges and one of shape 0.45 does not, while
   `max_depth = 200` reaches shape 0.2 and still not 0.1. A row past the
   budget returns `NA`.
+
+- max_panels:
+
+  The greatest number of panels one row may hold, `4096` by default. A
+  row still over its budget once it holds that many returns `NA`. It
+  bounds the memory of a row whose error estimate does not fall with
+  bisection, which at the default costs about 40 MB at the peak, and it
+  still admits `cos(16000 x)` on the unit interval, which needs between
+  2048 and 4096 panels. The count is per row, so a row's result does not
+  depend on the other rows of the call.
 
 - rule:
 
@@ -58,7 +71,8 @@ quad_vec(
 
 A numeric vector of integrals, one per row, of the recycled length of
 `lower` and `upper`. `NA` in any row that did not reach the requested
-accuracy, with a warning naming those rows.
+accuracy within `max_depth` and `max_panels`, with a warning naming
+those rows.
 
 ## The integrand contract
 
@@ -100,9 +114,29 @@ endpoints mixing finite and infinite costs nothing extra.
 
 ## A failure is reported as one
 
-A row whose panels still exceed their budget at `max_depth` returns
-`NA`, and one warning names every such row. An `NA` says the accuracy
-was not reached; a plausible number would say nothing and be believed.
+A row whose panels still exceed their budget at `max_depth`, or once it
+holds `max_panels` panels, returns `NA`, and one warning names every
+such row. An `NA` says the accuracy was not reached; a plausible number
+would say nothing and be believed.
+
+`max_depth` ends a row whose error is concentrated at a point, where
+bisection narrows one panel after another, and `max_panels` ends a row
+whose error is spread over its whole interval, from rounding or from an
+oscillation faster than the panels resolve. In the second case every
+panel carries a share of the error, half the panels are split at every
+pass, and the count doubles long before any panel reaches `max_depth`.
+
+## The floor of the rule
+
+On a constant integrand the two rules of the pair differ by half the
+difference of their weight sums on every panel, so no refinement brings
+a row's relative error estimate below that value plus the rounding of
+the sums. For
+[`gauss_kronrod15()`](https://statmodels7.github.io/numericals7/reference/gauss_kronrod15.md)
+it is one unit in the last place, about \\2.2 \times 10^{-16}\\. A
+relative budget below it with `atol = 0` could never be met, and the
+call signals an error naming the floor before the integrand is
+evaluated.
 
 ## See also
 
@@ -118,12 +152,12 @@ for the default rule.
 shp <- seq(0.5, 15, length.out = 30)
 f <- function(x, i) dgamma(x, shape = shp[i], rate = 1)
 range(quad_vec(f, lower = 0, upper = rep(Inf, 30)) - 1)
-#> [1] -4.344782e-09  4.634579e-10
+#> [1] -4.344779e-09  4.634610e-10
 
 # Their means, against the closed form.
 g <- function(x, i) x * dgamma(x, shape = shp[i], rate = 1)
 range(quad_vec(g, 0, rep(Inf, 30)) - shp)
-#> [1] -1.889955e-11  2.317291e-10
+#> [1] -1.889533e-11  2.317305e-10
 
 # A shape below one puts an integrable singularity at the origin. The
 # sum-judged budget reaches shape 0.5 at the default depth, and a harsher
@@ -140,5 +174,18 @@ quad_vec(function(x, i) dnorm(x), c(-Inf, -1, 0), c(0, 1, Inf))
 
 # A divergent integral is refused, not estimated.
 suppressWarnings(quad_vec(function(x, i) 1 / x, 0, 1))
+#> [1] NA
+
+# A relative budget below the floor of the rule cannot be met, and with no
+# absolute budget beside it the call is refused before anything is evaluated.
+try(quad_vec(function(x, i) matrix(1, nrow(x), ncol(x)), 0, 1,
+             atol = 0, rtol = 1e-17))
+#> Error : quad_vec: rtol = 1e-17 is below the floor of the quadrature rule, 2.22e-16,
+#>   and atol = 0 leaves no absolute budget to stop at instead.
+#>   Ask for rtol >= 2.22e-16, or give a positive atol.
+
+# An oscillation far faster than the panels resolve stops at max_panels.
+suppressWarnings(quad_vec(function(x, i) sin(1e9 * x), 0, 1,
+                          max_panels = 256L))
 #> [1] NA
 ```
