@@ -133,15 +133,43 @@ to apply one for the duration of a fit.
 ``` r
 # The default is sequential, and says so.
 n_threads()
-#> n_threads(1)  [sequential]
+#> $threads
+#> [1] 1
+#> 
+#> $workers
+#> [1] 1
+#> 
+#> attr(,"class")
+#> [1] "n_threads"
 
 # Threads within a fit, worker processes across folds, or both.
 n_threads(4)
-#> n_threads(4)
+#> $threads
+#> [1] 4
+#> 
+#> $workers
+#> [1] 1
+#> 
+#> attr(,"class")
+#> [1] "n_threads"
 n_threads(1, workers = 4)
-#> n_threads(1, workers = 4)
+#> $threads
+#> [1] 1
+#> 
+#> $workers
+#> [1] 4
+#> 
+#> attr(,"class")
+#> [1] "n_threads"
 n_threads(4, workers = 2)
-#> n_threads(4, workers = 2)
+#> $threads
+#> [1] 4
+#> 
+#> $workers
+#> [1] 2
+#> 
+#> attr(,"class")
+#> [1] "n_threads"
 
 # The counts come back out through the two readers.
 p <- n_threads(4, workers = 2)

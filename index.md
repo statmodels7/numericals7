@@ -145,3 +145,39 @@ bessel_i_ratio(1000)      # the unscaled ratio overflows past 700
 bessel_i_ratio(bessel_i_ratio_inverse(0.7)$kappa)
 #> [1] 0.7
 ```
+
+## Smoothers of the absolute value
+
+An `abs_smoother` replaces $`\lvert u \rvert`$ with a smooth $`s(u)`$
+carrying its derivatives to fifth order as functions, which is what a
+term with a break-point needs to become an ordinary differentiable
+model.
+[`smooth_probit()`](https://statmodels7.github.io/numericals7/reference/smooth_probit.md)
+is the one to reach for first: its tails are exact and the convolution
+it performs against a Gaussian is corrected in closed form.
+
+``` r
+
+sm <- smooth_probit(h = 0.2)
+u  <- c(-1, -0.1, 0, 0.1, 1)
+rbind(abs = abs(u), smooth = smoother_deriv(sm, u, order = 0))
+#>        [,1]      [,2]      [,3]      [,4] [,5]
+#> abs       1 0.1000000 0.0000000 0.1000000    1
+#> smooth    1 0.1791186 0.1595769 0.1791186    1
+```
+
+The width cannot be made arbitrarily small.
+[`smoother_width_floor()`](https://statmodels7.github.io/numericals7/reference/smoother_width_floor.md)
+derives the smallest one the design can carry, from the observation that
+the Jacobian column near the kink is of order $`1/h`$ against columns of
+order the range of the data.
+
+``` r
+
+smoother_width_floor(sm, scale = 10)   # a covariate spanning ten units
+#> [1] 1.490116e-07
+```
+
+[`check_abs_smoother()`](https://statmodels7.github.io/numericals7/reference/check_abs_smoother.md)
+validates a smoother of one’s own, each order against one numerical
+differentiation of the analytical order below it.

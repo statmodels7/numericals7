@@ -32,7 +32,7 @@
 
     <a class="navbar-brand me-2" href="index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.12.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.13.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -149,6 +149,23 @@
 <span><span class="co">#&gt; [1] 0.9994999</span></span>
 <span><span class="fu"><a href="reference/bessel_i_ratio.html">bessel_i_ratio</a></span><span class="op">(</span><span class="fu"><a href="reference/bessel_i_ratio_inverse.html">bessel_i_ratio_inverse</a></span><span class="op">(</span><span class="fl">0.7</span><span class="op">)</span><span class="op">$</span><span class="va">kappa</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.7</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="smoothers-of-the-absolute-value">Smoothers of the absolute value<a class="anchor" aria-label="anchor" href="#smoothers-of-the-absolute-value"></a>
+</h2>
+<p>An <code>abs_smoother</code> replaces <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">|</mo><mi>u</mi><mo stretchy="false" form="postfix">|</mo></mrow><annotation encoding="application/x-tex">\lvert u \rvert</annotation></semantics></math> with a smooth <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo stretchy="false" form="prefix">(</mo><mi>u</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">s(u)</annotation></semantics></math> carrying its derivatives to fifth order as functions, which is what a term with a break-point needs to become an ordinary differentiable model. <code><a href="reference/smooth_probit.html">smooth_probit()</a></code> is the one to reach for first: its tails are exact and the convolution it performs against a Gaussian is corrected in closed form.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sm</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/smooth_probit.html">smooth_probit</a></span><span class="op">(</span>h <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
+<span><span class="va">u</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">0.1</span>, <span class="fl">0</span>, <span class="fl">0.1</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span>abs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">u</span><span class="op">)</span>, smooth <span class="op">=</span> <span class="fu"><a href="reference/smoother_deriv.html">smoother_deriv</a></span><span class="op">(</span><span class="va">sm</span>, <span class="va">u</span>, order <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;        [,1]      [,2]      [,3]      [,4] [,5]</span></span>
+<span><span class="co">#&gt; abs       1 0.1000000 0.0000000 0.1000000    1</span></span>
+<span><span class="co">#&gt; smooth    1 0.1791186 0.1595769 0.1791186    1</span></span></code></pre></div>
+<p>The width cannot be made arbitrarily small. <code><a href="reference/smoother_width_floor.html">smoother_width_floor()</a></code> derives the smallest one the design can carry, from the observation that the Jacobian column near the kink is of order <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mi>/</mi><mi>h</mi></mrow><annotation encoding="application/x-tex">1/h</annotation></semantics></math> against columns of order the range of the data.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/smoother_width_floor.html">smoother_width_floor</a></span><span class="op">(</span><span class="va">sm</span>, scale <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>   <span class="co"># a covariate spanning ten units</span></span>
+<span><span class="co">#&gt; [1] 1.490116e-07</span></span></code></pre></div>
+<p><code><a href="reference/check_abs_smoother.html">check_abs_smoother()</a></code> validates a smoother of one’s own, each order against one numerical differentiation of the analytical order below it.</p>
 </div>
 </div>
 

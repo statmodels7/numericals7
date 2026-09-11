@@ -78,3 +78,27 @@ depend on the count, bit for bit.
   : Derivatives of the Bessel Ratio
 - [`bessel_i_ratio_inverse()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_inverse.md)
   : The Inverse of the Bessel Ratio
+
+## Smoothers of the absolute value
+
+A smooth replacement for the absolute value with its derivatives up to
+order five, from which the smooth sign, step and hinge follow by
+composition. A break-point term smoothed this way has a true Jacobian
+block, and the validator checks a smoother written outside the package.
+
+- [`abs_smoother()`](https://statmodels7.github.io/numericals7/reference/abs_smoother.md)
+  : S7 Class for Smoothers of the Absolute Value
+- [`smooth_probit()`](https://statmodels7.github.io/numericals7/reference/smooth_probit.md)
+  : The Probit Smoother of the Absolute Value
+- [`smooth_hyperbolic()`](https://statmodels7.github.io/numericals7/reference/smooth_hyperbolic.md)
+  : The Hyperbolic Smoother of the Absolute Value
+- [`smooth_quintic()`](https://statmodels7.github.io/numericals7/reference/smooth_quintic.md)
+  : The Quintic Smoother of the Absolute Value
+- [`smoother_deriv()`](https://statmodels7.github.io/numericals7/reference/smoother_deriv.md)
+  : Evaluate a Smoother or One of Its Derivatives
+- [`smoother_width()`](https://statmodels7.github.io/numericals7/reference/smoother_width.md)
+  : Resolve a Smoother's Width from a Spacing
+- [`smoother_width_floor()`](https://statmodels7.github.io/numericals7/reference/smoother_width_floor.md)
+  : The Smallest Width a Consumer May Use
+- [`check_abs_smoother()`](https://statmodels7.github.io/numericals7/reference/check_abs_smoother.md)
+  : Check a Smoother of the Absolute Value Numerically

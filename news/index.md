@@ -1,5 +1,68 @@
 # Changelog
 
+## numericals7 0.13.0
+
+- **The smoothers of the absolute value live here now, moved from
+  `penalties7`.**
+  [`abs_smoother()`](https://statmodels7.github.io/numericals7/reference/abs_smoother.md),
+  the three smoothers that ship
+  ([`smooth_probit()`](https://statmodels7.github.io/numericals7/reference/smooth_probit.md),
+  [`smooth_hyperbolic()`](https://statmodels7.github.io/numericals7/reference/smooth_hyperbolic.md)
+  and
+  [`smooth_quintic()`](https://statmodels7.github.io/numericals7/reference/smooth_quintic.md)),
+  [`smoother_deriv()`](https://statmodels7.github.io/numericals7/reference/smoother_deriv.md),
+  [`smoother_width()`](https://statmodels7.github.io/numericals7/reference/smoother_width.md),
+  [`smoother_width_floor()`](https://statmodels7.github.io/numericals7/reference/smoother_width_floor.md)
+  and
+  [`check_abs_smoother()`](https://statmodels7.github.io/numericals7/reference/check_abs_smoother.md)
+  are exported by this package, and `penalties7` 0.23.0 no longer
+  exports them. The reason is the dependency graph: the smoothed
+  families planned for `distributions7` will need the class, and
+  `distributions7` cannot import `penalties7`, which imports it, while
+  every package of the toolkit can import this one. The move is a clean
+  cut and not a re-export, so the class has one home and one name.
+
+- The code moved unchanged. The R file differs from its last version in
+  `penalties7` in two places, both in its documentation: the `@include`
+  of a `penalties7` file is gone, and the link to `check_penalty()` is
+  plain text, because this package cannot declare the package that holds
+  it. The test file moved byte for byte and passes here, within a suite
+  of 593 expectations in 67 blocks with none failing or skipped. What an
+  object shows differently is its class,
+  [`numericals7::abs_smoother`](https://statmodels7.github.io/numericals7/reference/abs_smoother.md)
+  where it was `penalties7::abs_smoother`.
+
+- This is the package’s first S7 class, so `S7` joins `Imports` and the
+  namespace imports it, as `distributions7`, `linkfunctions7` and
+  `optimizers7` already do; none of the 57 names S7 exports collides
+  with `base`, `stats`, `utils` or this package. The print method sits
+  on a base generic, and
+  [`S7::methods_register()`](https://rconsortium.github.io/S7/reference/methods_register.html)
+  in `.onLoad()` registers it for an installed package. That was checked
+  on the installed copy, where
+  [`print()`](https://rdrr.io/r/base/print.html) of a smoother reaches
+  its own method: loading from source registers the method whether or
+  not `.onLoad()` does, so a check under `pkgload` could not have
+  failed.
+
+- What a smoother computes and prints is unchanged, and that is
+  measured. A net of 529 quantities was captured with the smoothers in
+  `penalties7` 0.22.1 and re-run with them here: the six derivatives on
+  a 17-point grid at three widths for each smoother, the width
+  resolution and its floor,
+  [`check_abs_smoother()`](https://statmodels7.github.io/numericals7/reference/check_abs_smoother.md)’s
+  tables and printed text, the blocks and the first and second block
+  derivatives `modelterms7` builds for `seg()`, `jump()` and `jseg()`
+  under each smoother, and ten fits with their log-likelihoods,
+  coefficients, variances, certificates and summary notes. All 529
+  compare [`identical()`](https://rdrr.io/r/base/identical.html). The
+  comparison is on numbers and printed text and not on objects, the
+  class having changed package by construction. A re-run before the move
+  was identical as well, so the battery is deterministic, and a one-ulp
+  or one-character change injected at 18 of the quantities is each time
+  refused at the quantity it touched. The 168 comparisons that pin the
+  rest of the toolkit’s fits are identical too.
+
 ## numericals7 0.12.0
 
 - [`set_partitions()`](https://statmodels7.github.io/numericals7/reference/set_partitions.md)
