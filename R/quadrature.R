@@ -162,8 +162,10 @@ gauss_kronrod15 <- function() {
 #' On a constant integrand the two rules of the pair differ by half the
 #' difference of their weight sums on every panel, so no refinement brings a
 #' row's relative error estimate below that value plus the rounding of the
-#' sums. For [gauss_kronrod15()] it is one unit in the last place, about
-#' \eqn{2.2 \times 10^{-16}}. A relative budget below it with `atol = 0`
+#' sums. For [gauss_kronrod15()] it is \eqn{2.2 \times 10^{-16}} where the two
+#' computed sums agree to the last bit, as on x86_64, and
+#' \eqn{4.4 \times 10^{-16}} where they differ by one unit in the last place of
+#' 2, as on arm64. A relative budget below it with `atol = 0`
 #' could never be met, and the call signals an error naming the floor before
 #' the integrand is evaluated.
 #'
@@ -435,9 +437,12 @@ quad_vec <- function(f, lower, upper, atol = 1e-10, rtol = 1e-8,
 #' difference of the two estimates, which an adaptive routine reads as the
 #' error, is the difference of the sums scaled by the panel's half-width.
 #' Relative to the integral it is the same on every panel, and bisection does
-#' not lower it. For [gauss_kronrod15()] the two sums are 2 and the value is
-#' about \eqn{2.2 \times 10^{-16}}; with the fifteen-decimal constants this
-#' package carried before 0.14.0 it was \eqn{3.7 \times 10^{-15}}.
+#' not lower it. For [gauss_kronrod15()] the two sums are 2 up to their
+#' rounding, and the value is \eqn{2.2 \times 10^{-16}} where the computed sums
+#' agree to the last bit, as on x86_64, and \eqn{4.4 \times 10^{-16}} where
+#' they differ by one unit in the last place of 2, as on arm64; with the
+#' fifteen-decimal constants this package carried before 0.14.0 it was
+#' \eqn{3.7 \times 10^{-15}}.
 #'
 #' @param rule An embedded pair: a list of `nodes`, `wk` and `wg` of equal
 #'   length, as [gauss_kronrod15()] returns.

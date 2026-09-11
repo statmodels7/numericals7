@@ -25,9 +25,12 @@ On a constant integrand both rules are exact up to their weight sums, so the
 difference of the two estimates, which an adaptive routine reads as the
 error, is the difference of the sums scaled by the panel's half-width.
 Relative to the integral it is the same on every panel, and bisection does
-not lower it. For \code{\link[=gauss_kronrod15]{gauss_kronrod15()}} the two sums are 2 and the value is
-about \eqn{2.2 \times 10^{-16}}; with the fifteen-decimal constants this
-package carried before 0.14.0 it was \eqn{3.7 \times 10^{-15}}.
+not lower it. For \code{\link[=gauss_kronrod15]{gauss_kronrod15()}} the two sums are 2 up to their
+rounding, and the value is \eqn{2.2 \times 10^{-16}} where the computed sums
+agree to the last bit, as on x86_64, and \eqn{4.4 \times 10^{-16}} where
+they differ by one unit in the last place of 2, as on arm64; with the
+fifteen-decimal constants this package carried before 0.14.0 it was
+\eqn{3.7 \times 10^{-15}}.
 }
 \seealso{
 \code{\link[=quad_vec]{quad_vec()}}, \code{\link[=gauss_kronrod15]{gauss_kronrod15()}}

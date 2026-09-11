@@ -165,9 +165,14 @@ test_that("a relative budget below the rule's floor is refused before anything i
     matrix(1, nrow(x), ncol(x))
   }
   fl <- quad_floor(gauss_kronrod15())
-  # the default rule's two weight sums agree, so its floor is the rounding of
-  # the sums alone
-  expect_lt(fl, 2 * .Machine$double.eps)
+  # the default rule's two weight sums agree up to their rounding, so its floor
+  # is one or two units in the last place: the computed sums agree to the last
+  # bit on x86_64 (2.2e-16) and differ by one unit in the last place of 2 on
+  # the arm64 macOS runner (4.4e-16). A bound between that floor and the
+  # 3.7e-15 of the fifteen-decimal table below asserts the rule, not the bit.
+  bound <- 1e-15
+  expect_lt(fl, bound)
+  expect_lt(2 * .Machine$double.eps, bound)
 
   # with no absolute budget the call is refused, the floor is named, and the
   # integrand is never evaluated
@@ -196,7 +201,7 @@ test_that("a relative budget below the rule's floor is refused before anything i
          wg = c(wgh[1:7], wgh[8], rev(wgh[1:7])))
   })
   fl_old <- quad_floor(old_rule)
-  expect_gt(fl_old, 1e-15)
+  expect_gt(fl_old, bound)
   expect_error(quad_vec(f, 0, 1, atol = 0, rtol = 1e-15, rule = old_rule),
                sprintf("%.3g", fl_old), fixed = TRUE)
   expect_equal(quad_vec(f, 0, 1, atol = 0, rtol = 1e-15), 1, tolerance = 1e-15)
