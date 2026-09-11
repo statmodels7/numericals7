@@ -135,9 +135,10 @@ the sums. For
 [`gauss_kronrod15()`](https://statmodels7.github.io/numericals7/reference/gauss_kronrod15.md)
 it is \\2.2 \times 10^{-16}\\ where the two computed sums agree to the
 last bit, as on x86_64, and \\4.4 \times 10^{-16}\\ where they differ by
-one unit in the last place of 2, as on arm64. A relative budget below it
-with `atol = 0` could never be met, and the call signals an error naming
-the floor before the integrand is evaluated.
+one unit in the last place of 2, as on the arm64 build of R for macOS. A
+relative budget below it with `atol = 0` could never be met, and the
+call signals an error naming the floor before the integrand is
+evaluated.
 
 ## See also
 

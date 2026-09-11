@@ -34,11 +34,12 @@
   budget is given.** The floor is the relative error estimate the rule
   returns on a constant integrand, `|sum(wk) - sum(wg)| / 2`, plus one
   unit in the last place: 2.2e-16 for the default rule on x86_64 and
-  4.4e-16 on arm64, and 3.7e-15 for the fifteen-decimal table. Asked for
-  less with `atol = 0`, a row could never converge; the call now signals
-  an error naming the floor, before the integrand is evaluated. A
-  positive `atol` can still end the refinement, so `rtol = 0` beside one
-  stays valid, which is the condition QUADPACK applies.
+  4.4e-16 on the arm64 build of R for macOS, and 3.7e-15 for the
+  fifteen-decimal table. Asked for less with `atol = 0`, a row could
+  never converge; the call now signals an error naming the floor, before
+  the integrand is evaluated. A positive `atol` can still end the
+  refinement, so `rtol = 0` beside one stays valid, which is the
+  condition QUADPACK applies.
 
 - **`quad_vec(max_panels = 4096)`**, the greatest number of panels one
   row may hold. A row still over its budget once it holds that many
