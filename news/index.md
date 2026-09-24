@@ -1,5 +1,47 @@
 # Changelog
 
+## numericals7 0.15.0
+
+- **[`bessel_i_ratio_derivs()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_derivs.md)
+  keeps its digits at a large concentration.** The four derivatives of
+  A(kappa) = I1(kappa)/I0(kappa) came from differentiating A’ = 1 -
+  A/kappa - A^2 repeatedly, and at a large kappa that identity is three
+  terms of order one summing to order kappa^-2, each order above it
+  losing a further factor. Measured against the asymptotic series of A
+  differentiated term by term, the third derivative was out by 3.7e-06
+  at kappa = 300, 3.0e-04 at 1e3 and 0.61 at 1e4, and the second by
+  9.1e-05 at 1e4. From kappa = 20 the four derivatives are that series,
+  the quotient of the asymptotic series of I1 and I0 in 1/kappa with 21
+  terms, whose coefficients are dyadic rationals; the internal
+  [`bessel_ratio_series_derivs()`](https://statmodels7.github.io/numericals7/reference/bessel_ratio_series_derivs.md)
+  evaluates it. The crossover is where the two routes agree best, 5e-13
+  to 4e-11 over the four orders, the recursion degrading as kappa^2
+  above it and the series’ truncation below it. The value A itself is
+  unchanged, and so is every derivative below kappa = 20. ⚠️ Every von
+  Mises derivative that reads these moves above kappa = 20 by the
+  recursion’s error there: 1e-10 or less at kappa = 100, the whole value
+  past 1e4.
+
+- **[`bessel_i_ratio_inverse()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_inverse.md)
+  is Newton’s method vectorized over `rho`, where it was one
+  [`uniroot()`](https://rdrr.io/r/stats/uniroot.html) per element.** A
+  is increasing and concave, so after the first step every iterate lies
+  on the left of the root and rises to it, and a step falling below 2
+  rho, which A(kappa) \< kappa/2 puts on the same side, is replaced by
+  it. Three things move. The time: 0.38 s against 0.012 s over 4000
+  values, and a `vonmises2_distrib()` smooth at n = 4000, which spent 95
+  per cent of its fit in this function, goes from 54.7 s to 5.0 s with
+  the coefficients within 6.7e-16 and the smoothing parameter within
+  3.7e-16 relative. The accuracy: the root is located to the spacing of
+  the doubles, where [`uniroot()`](https://rdrr.io/r/stats/uniroot.html)
+  stopped at a tolerance of eps^0.75 – the residual of the forward map
+  is at most 4.4e-16 against 2.2e-13. And the range: a `rho` below about
+  5e-11 raised an error, the bracket stopping at 1e-10 above a root of 2
+  rho; it is answered now. Near rho = 1 the two disagree by up to 2e-4
+  relative, at kappa = 5e12, and both are right: one unit in the last
+  place of `rho` moves kappa by that much there, and both send `rho`
+  back to itself exactly.
+
 ## numericals7 0.14.1
 
 - **The test of the rule’s floor asserts the rule and not the last

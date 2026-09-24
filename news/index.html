@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.14.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.15.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,6 +32,11 @@
       <small>Source: <a href="https://github.com/statmodels7/numericals7/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.15.0" id="numericals7-0150">numericals7 0.15.0<a class="anchor" aria-label="anchor" href="#numericals7-0150"></a></h2>
+<ul><li><p><strong><code><a href="../reference/bessel_i_ratio_derivs.html">bessel_i_ratio_derivs()</a></code> keeps its digits at a large concentration.</strong> The four derivatives of A(kappa) = I1(kappa)/I0(kappa) came from differentiating A’ = 1 - A/kappa - A^2 repeatedly, and at a large kappa that identity is three terms of order one summing to order kappa^-2, each order above it losing a further factor. Measured against the asymptotic series of A differentiated term by term, the third derivative was out by 3.7e-06 at kappa = 300, 3.0e-04 at 1e3 and 0.61 at 1e4, and the second by 9.1e-05 at 1e4. From kappa = 20 the four derivatives are that series, the quotient of the asymptotic series of I1 and I0 in 1/kappa with 21 terms, whose coefficients are dyadic rationals; the internal <code><a href="../reference/bessel_ratio_series_derivs.html">bessel_ratio_series_derivs()</a></code> evaluates it. The crossover is where the two routes agree best, 5e-13 to 4e-11 over the four orders, the recursion degrading as kappa^2 above it and the series’ truncation below it. The value A itself is unchanged, and so is every derivative below kappa = 20. ⚠️ Every von Mises derivative that reads these moves above kappa = 20 by the recursion’s error there: 1e-10 or less at kappa = 100, the whole value past 1e4.</p></li>
+<li><p><strong><code><a href="../reference/bessel_i_ratio_inverse.html">bessel_i_ratio_inverse()</a></code> is Newton’s method vectorized over <code>rho</code>, where it was one <code><a href="https://rdrr.io/r/stats/uniroot.html" class="external-link">uniroot()</a></code> per element.</strong> A is increasing and concave, so after the first step every iterate lies on the left of the root and rises to it, and a step falling below 2 rho, which A(kappa) &lt; kappa/2 puts on the same side, is replaced by it. Three things move. The time: 0.38 s against 0.012 s over 4000 values, and a <code>vonmises2_distrib()</code> smooth at n = 4000, which spent 95 per cent of its fit in this function, goes from 54.7 s to 5.0 s with the coefficients within 6.7e-16 and the smoothing parameter within 3.7e-16 relative. The accuracy: the root is located to the spacing of the doubles, where <code><a href="https://rdrr.io/r/stats/uniroot.html" class="external-link">uniroot()</a></code> stopped at a tolerance of eps^0.75 – the residual of the forward map is at most 4.4e-16 against 2.2e-13. And the range: a <code>rho</code> below about 5e-11 raised an error, the bracket stopping at 1e-10 above a root of 2 rho; it is answered now. Near rho = 1 the two disagree by up to 2e-4 relative, at kappa = 5e12, and both are right: one unit in the last place of <code>rho</code> moves kappa by that much there, and both send <code>rho</code> back to itself exactly.</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.14.1" id="numericals7-0141">numericals7 0.14.1<a class="anchor" aria-label="anchor" href="#numericals7-0141"></a></h2>
 <ul><li>

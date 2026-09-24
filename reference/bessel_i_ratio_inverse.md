@@ -1,6 +1,6 @@
 # The Inverse of the Bessel Ratio
 
-Computes \\\kappa = A^{-1}(\rho)\\ by root finding, together with the
+Computes \\\kappa = A^{-1}(\rho)\\ by Newton's method, together with the
 four derivatives of the inverse in \\\rho\\. This is the map a von Mises
 method of moments runs: it turns an observed mean resultant length back
 into the concentration that produced it.
@@ -27,12 +27,18 @@ the concentration, and `d1` to `d4`, the derivatives of the inverse in
 
 ## Details
 
-\\A\\ has no elementary inverse, so \\\kappa\\ is found by root finding
-from a bracket built around the standard series approximation and
-widened until it straddles the root; the asymptotic branch of
-[`bessel_i_ratio()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio.md)
-keeps the function evaluable over the whole bracket, however
-concentrated. The derivatives come from the inverse function rule on
+\\A\\ has no elementary inverse, so \\\kappa\\ is found by Newton's
+method, vectorized over `rho`, from the standard series approximation.
+\\A\\ is increasing and concave, so after the first step every iterate
+lies on the left of the root and rises to it; a step that would fall
+below \\2\rho\\ is replaced by it, which is still on the left since
+\\A(\kappa) \< \kappa/2\\. The iteration ends where a step is no larger
+than the spacing of the doubles at the iterate. Near \\\rho = 1\\ the
+inverse is ill conditioned, \\d\kappa = 2\kappa^2 d\rho\\, so one unit
+in the last place of `rho` moves \\\kappa\\ by a relative \\10^{-3}\\ at
+\\\kappa = 5 \times 10^{12}\\: the answer there is one of the
+concentrations the forward map sends to `rho`. The derivatives come from
+the inverse function rule on
 [`bessel_i_ratio_derivs()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_derivs.md):
 \$\$\kappa' = \dfrac{1}{A'}, \qquad \kappa'' = -\dfrac{A''}{(A')^3},
 \qquad \kappa''' = \dfrac{3(A'')^2 - A'A'''}{(A')^5},\$\$ and the fourth
@@ -52,7 +58,7 @@ for the derivatives it inverts.
 # The round trip closes to machine precision across the range.
 rho <- c(0.1, 0.5, 0.99)
 bessel_i_ratio(bessel_i_ratio_inverse(rho)$kappa) - rho
-#> [1] 9.714451e-17 1.110223e-16 1.110223e-16
+#> [1] -1.387779e-17 -1.110223e-16 -1.110223e-16
 
 # The first derivative is the reciprocal of A', the inverse function rule.
 inv <- bessel_i_ratio_inverse(0.7)

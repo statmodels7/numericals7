@@ -28,11 +28,24 @@ is strictly positive, being a variance.
 Each order is written in the orders below it, so the whole table costs
 the two Bessel evaluations of
 [`bessel_i_ratio()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio.md)
-and nothing more. The first identity follows from \\I_0' = I_1\\ and
-\\I_1' = I_0 - I_1/\kappa\\; the alternative, a Bessel function of
-higher order per derivative, costs more and is less accurate at large
-\\\kappa\\, where the functions themselves overflow and only their ratio
-does not. \\A'\\ is the variance of a cosine and therefore positive.
+and nothing more.
+
+**At a large concentration the recursion cancels**, \\A'\\ being \\1 -
+A/\kappa - A^2\\, three terms of order one whose sum is of order
+\\\kappa^{-2}\\, and each derivative above it losing a further factor.
+Measured against the asymptotic series, the third derivative is out by
+3.7e-06 at \\\kappa = 300\\, 3.0e-04 at \\10^3\\ and 0.61 at \\10^4\\.
+From \\\kappa = 20\\ the four derivatives are therefore taken from the
+series of \\A = I_1/I_0\\ in \\1/\kappa\\, the quotient of the two
+asymptotic series of \\I_1\\ and \\I_0\\, differentiated term by term
+with 21 terms. The crossover is where the two routes agree best, 5e-13
+to 4e-11 over the four orders; the value \\A\\ itself stays
+[`bessel_i_ratio()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio.md)'s.
+The first identity follows from \\I_0' = I_1\\ and \\I_1' = I_0 -
+I_1/\kappa\\; the alternative, a Bessel function of higher order per
+derivative, costs more and is less accurate at large \\\kappa\\, where
+the functions themselves overflow and only their ratio does not. \\A'\\
+is the variance of a cosine and therefore positive.
 
 ## See also
 

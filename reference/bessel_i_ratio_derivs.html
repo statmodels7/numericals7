@@ -13,7 +13,7 @@ derivatives in its concentration."><meta property="og:image" content="https://st
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.14.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.15.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,7 +68,18 @@ derivatives in its concentration.</p>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Each order is written in the orders below it, so the whole table costs the
-two Bessel evaluations of <code><a href="bessel_i_ratio.html">bessel_i_ratio()</a></code> and nothing more.
+two Bessel evaluations of <code><a href="bessel_i_ratio.html">bessel_i_ratio()</a></code> and nothing more.</p>
+<p><strong>At a large concentration the recursion cancels</strong>, \(A'\) being
+\(1 - A/\kappa - A^2\), three terms of order one whose sum is of order
+\(\kappa^{-2}\), and each derivative above it losing a further factor.
+Measured against the asymptotic series, the third derivative is out by
+3.7e-06 at \(\kappa = 300\), 3.0e-04 at \(10^3\) and 0.61 at
+\(10^4\). From \(\kappa = 20\) the four derivatives are therefore
+taken from the series of \(A = I_1/I_0\) in \(1/\kappa\), the quotient
+of the two asymptotic series of \(I_1\) and \(I_0\), differentiated
+term by term with 21 terms. The crossover is where the two routes agree
+best, 5e-13 to 4e-11 over the four orders; the value \(A\) itself stays
+<code><a href="bessel_i_ratio.html">bessel_i_ratio()</a></code>'s.
 The first identity follows from \(I_0' = I_1\) and
 \(I_1' = I_0 - I_1/\kappa\); the alternative, a Bessel function of
 higher order per derivative, costs more and is less accurate at large
