@@ -17,17 +17,24 @@ A named list of five numeric vectors, each the length of \code{rho}:
 inverse in \eqn{\rho}. \code{NA} wherever \code{rho} left \eqn{(0, 1)}.
 }
 \description{
-Computes \eqn{\kappa = A^{-1}(\rho)} by root finding, together with the four
+Computes \eqn{\kappa = A^{-1}(\rho)} by Newton's method, together with the
+four
 derivatives of the inverse in \eqn{\rho}. This is the map a von Mises method
 of moments runs: it turns an observed mean resultant length back into the
 concentration that produced it.
 }
 \details{
-\eqn{A} has no elementary inverse, so \eqn{\kappa} is found by root
-finding from a bracket built around the standard series approximation and
-widened until it straddles the root; the asymptotic branch of
-\code{\link[=bessel_i_ratio]{bessel_i_ratio()}} keeps the function evaluable over the whole
-bracket, however concentrated. The derivatives come from the inverse
+\eqn{A} has no elementary inverse, so \eqn{\kappa} is found by Newton's
+method, vectorized over \code{rho}, from the standard series approximation.
+\eqn{A} is increasing and concave, so after the first step every iterate
+lies on the left of the root and rises to it; a step that would fall
+below \eqn{2\rho} is replaced by it, which is still on the left since
+\eqn{A(\kappa) < \kappa/2}. The iteration ends where a step is no larger
+than the spacing of the doubles at the iterate. Near \eqn{\rho = 1} the
+inverse is ill conditioned, \eqn{d\kappa = 2\kappa^2 d\rho}, so one unit in
+the last place of \code{rho} moves \eqn{\kappa} by a relative \eqn{10^{-3}} at
+\eqn{\kappa = 5 \times 10^{12}}: the answer there is one of the
+concentrations the forward map sends to \code{rho}. The derivatives come from the inverse
 function rule on \code{\link[=bessel_i_ratio_derivs]{bessel_i_ratio_derivs()}}:
 \deqn{\kappa' = \dfrac{1}{A'}, \qquad
       \kappa'' = -\dfrac{A''}{(A')^3}, \qquad

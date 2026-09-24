@@ -23,6 +23,18 @@ derivatives in its concentration.
 \details{
 Each order is written in the orders below it, so the whole table costs the
 two Bessel evaluations of \code{\link[=bessel_i_ratio]{bessel_i_ratio()}} and nothing more.
+
+\strong{At a large concentration the recursion cancels}, \eqn{A'} being
+\eqn{1 - A/\kappa - A^2}, three terms of order one whose sum is of order
+\eqn{\kappa^{-2}}, and each derivative above it losing a further factor.
+Measured against the asymptotic series, the third derivative is out by
+3.7e-06 at \eqn{\kappa = 300}, 3.0e-04 at \eqn{10^3} and 0.61 at
+\eqn{10^4}. From \eqn{\kappa = 20} the four derivatives are therefore
+taken from the series of \eqn{A = I_1/I_0} in \eqn{1/\kappa}, the quotient
+of the two asymptotic series of \eqn{I_1} and \eqn{I_0}, differentiated
+term by term with 21 terms. The crossover is where the two routes agree
+best, 5e-13 to 4e-11 over the four orders; the value \eqn{A} itself stays
+\code{\link[=bessel_i_ratio]{bessel_i_ratio()}}'s.
 The first identity follows from \eqn{I_0' = I_1} and
 \eqn{I_1' = I_0 - I_1/\kappa}; the alternative, a Bessel function of
 higher order per derivative, costs more and is less accurate at large

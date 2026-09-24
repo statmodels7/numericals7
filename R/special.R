@@ -277,6 +277,18 @@ bessel_i_ratios <- function(kappa, m) {
 #' @details
 #' Each order is written in the orders below it, so the whole table costs the
 #' two Bessel evaluations of [bessel_i_ratio()] and nothing more.
+#'
+#' **At a large concentration the recursion cancels**, \eqn{A'} being
+#' \eqn{1 - A/\kappa - A^2}, three terms of order one whose sum is of order
+#' \eqn{\kappa^{-2}}, and each derivative above it losing a further factor.
+#' Measured against the asymptotic series, the third derivative is out by
+#' 3.7e-06 at \eqn{\kappa = 300}, 3.0e-04 at \eqn{10^3} and 0.61 at
+#' \eqn{10^4}. From \eqn{\kappa = 20} the four derivatives are therefore
+#' taken from the series of \eqn{A = I_1/I_0} in \eqn{1/\kappa}, the quotient
+#' of the two asymptotic series of \eqn{I_1} and \eqn{I_0}, differentiated
+#' term by term with 21 terms. The crossover is where the two routes agree
+#' best, 5e-13 to 4e-11 over the four orders; the value \eqn{A} itself stays
+#' [bessel_i_ratio()]'s.
 #' The first identity follows from \eqn{I_0' = I_1} and
 #' \eqn{I_1' = I_0 - I_1/\kappa}; the alternative, a Bessel function of
 #' higher order per derivative, costs more and is less accurate at large
@@ -312,23 +324,79 @@ bessel_i_ratio_derivs <- function(kappa) {
   d3 <- -d2 / k + 2 * d1 / k^2 - 2 * A / k^3 - 2 * d1^2 - 2 * A * d2
   d4 <- -d3 / k + 3 * d2 / k^2 - 6 * d1 / k^3 + 6 * A / k^4 -
     6 * d1 * d2 - 2 * A * d3
+  big <- !is.na(k) & k >= 20
+  if (any(big)) {
+    s <- bessel_ratio_series_derivs(k[big])
+    d1[big] <- s[, 1L]; d2[big] <- s[, 2L]; d3[big] <- s[, 3L]; d4[big] <- s[, 4L]
+  }
   list(A = A, d1 = d1, d2 = d2, d3 = d3, d4 = d4)
+}
+
+#' The Bessel Ratio's Derivatives From Its Asymptotic Series
+#'
+#' @description
+#' The first four derivatives of \eqn{A(\kappa) = I_1(\kappa)/I_0(\kappa)}
+#' from \eqn{A \sim \sum_{n=0}^{20} q_n \kappa^{-n}}, the quotient of the
+#' asymptotic series of \eqn{I_1} and \eqn{I_0}, differentiated term by term:
+#' \eqn{d^m \kappa^{-n}/d\kappa^m = (-1)^m n(n+1)\cdots(n+m-1)\kappa^{-n-m}}.
+#'
+#' @details
+#' The coefficients are dyadic rationals, \eqn{q_n 2^{2n+1}} an integer through
+#' \eqn{n = 13}: 1, -1/2, -1/8, -1/8, -25/128, ... They are the ones
+#' \eqn{\sum_k (-1)^k a_k(\nu)\kappa^{-k}} gives for \eqn{\nu = 1} divided by
+#' \eqn{\nu = 0}, with
+#' \eqn{a_k(\nu) = \prod_{j=1}^k (4\nu^2 - (2j-1)^2) / (k!\,8^k)}.
+#'
+#' @param kappa A numeric vector of concentrations, at least 20.
+#'
+#' @return A matrix with one row per concentration and four columns, the
+#'   first to fourth derivatives.
+#'
+#' @seealso [bessel_i_ratio_derivs()]
+#'
+#' @keywords internal
+bessel_ratio_series_derivs <- function(kappa) {
+  q <- c(1, -0.5, -0.125, -0.125, -0.1953125, -0.40625, -1.0478515625,
+         -3.21875, -11.466461181640625, -46.478515625, -211.27614974975586,
+         -1064.67822265625, -5892.0457146167755, -35528.87744140625,
+         -231884.63595631713, -1628749.4532470701, -12251067.632866153,
+         -98252781.815467879, -836956449.77997613, -7546911569.3669949,
+         -71816112232.683289)
+  n <- seq_along(q) - 1L
+  u <- 1 / kappa
+  out <- matrix(0, length(kappa), 4L)
+  for (m in 1:4) {
+    fac <- (-1)^m * vapply(n, function(j) prod(j + 0:(m - 1)), 0)
+    cf <- q * fac
+    # Horner in u over the powers n + m, the coefficient of u^(n+m)
+    acc <- numeric(length(u))
+    for (j in rev(seq_along(cf))) acc <- acc * u + cf[j]
+    out[, m] <- acc * u^m
+  }
+  out
 }
 
 #' The Inverse of the Bessel Ratio
 #'
 #' @description
-#' Computes \eqn{\kappa = A^{-1}(\rho)} by root finding, together with the four
+#' Computes \eqn{\kappa = A^{-1}(\rho)} by Newton's method, together with the
+#' four
 #' derivatives of the inverse in \eqn{\rho}. This is the map a von Mises method
 #' of moments runs: it turns an observed mean resultant length back into the
 #' concentration that produced it.
 #'
 #' @details
-#' \eqn{A} has no elementary inverse, so \eqn{\kappa} is found by root
-#' finding from a bracket built around the standard series approximation and
-#' widened until it straddles the root; the asymptotic branch of
-#' [bessel_i_ratio()] keeps the function evaluable over the whole
-#' bracket, however concentrated. The derivatives come from the inverse
+#' \eqn{A} has no elementary inverse, so \eqn{\kappa} is found by Newton's
+#' method, vectorized over `rho`, from the standard series approximation.
+#' \eqn{A} is increasing and concave, so after the first step every iterate
+#' lies on the left of the root and rises to it; a step that would fall
+#' below \eqn{2\rho} is replaced by it, which is still on the left since
+#' \eqn{A(\kappa) < \kappa/2}. The iteration ends where a step is no larger
+#' than the spacing of the doubles at the iterate. Near \eqn{\rho = 1} the
+#' inverse is ill conditioned, \eqn{d\kappa = 2\kappa^2 d\rho}, so one unit in
+#' the last place of `rho` moves \eqn{\kappa} by a relative \eqn{10^{-3}} at
+#' \eqn{\kappa = 5 \times 10^{12}}: the answer there is one of the
+#' concentrations the forward map sends to `rho`. The derivatives come from the inverse
 #' function rule on [bessel_i_ratio_derivs()]:
 #' \deqn{\kappa' = \dfrac{1}{A'}, \qquad
 #'       \kappa'' = -\dfrac{A''}{(A')^3}, \qquad
@@ -362,32 +430,35 @@ bessel_i_ratio_derivs <- function(kappa) {
 #'
 #' @export
 bessel_i_ratio_inverse <- function(rho) {
-  one <- function(r) {
-    if (!is.finite(r) || r <= 0 || r >= 1) return(NA_real_)
-    g <- if (r < 0.53) {
-      2 * r + r^3 + 5 * r^5 / 6
-    } else if (r < 0.85) {
-      -0.4 + 1.39 * r + 0.43 / (1 - r)
-    } else {
-      1 / (r^3 - 4 * r^2 + 3 * r)
+  n <- length(rho)
+  k <- rep(NA_real_, n)
+  ok <- which(is.finite(rho) & rho > 0 & rho < 1)
+  if (length(ok)) {
+    r <- rho[ok]
+    g <- ifelse(r < 0.53, 2 * r + r^3 + 5 * r^5 / 6,
+                ifelse(r < 0.85, -0.4 + 1.39 * r + 0.43 / (1 - r),
+                       1 / (r^3 - 4 * r^2 + 3 * r)))
+    # A(k) < k/2, so the root lies above 2 rho: a step landing below that is
+    # replaced by it, which is still on the left of the root
+    lo <- 2 * r
+    g <- pmax(g, lo)
+    act <- seq_along(r)
+    for (it in seq_len(200L)) {
+      kk <- g[act]
+      a <- bessel_i_ratio_derivs(kk)
+      kn <- kk - (a$A - r[act]) / a$d1
+      bad <- !is.finite(kn) | kn < lo[act]
+      kn[bad] <- lo[act][bad]
+      g[act] <- kn
+      # after the first step every iterate sits on the left of the root and
+      # rises to it, A being increasing and concave; a step no larger than
+      # the spacing of the doubles there is the end
+      done <- abs(kn - kk) <= 4 * .Machine$double.eps * kn | (it > 1L & kn <= kk)
+      act <- act[!done]
+      if (!length(act)) break
     }
-    g <- min(max(g, 1e-8), 1e12)
-    f <- function(k) bessel_i_ratio(k) - r
-    lo <- g / 2
-    hi <- g * 2
-    it <- 0L
-    while (f(lo) > 0 && lo > 1e-10 && it < 60L) {
-      lo <- lo / 2
-      it <- it + 1L
-    }
-    it <- 0L
-    while (f(hi) < 0 && hi < 1e13 && it < 60L) {
-      hi <- hi * 2
-      it <- it + 1L
-    }
-    stats::uniroot(f, c(lo, hi), tol = .Machine$double.eps^0.75)$root
+    k[ok] <- g
   }
-  k <- vapply(rho, one, numeric(1))
   a <- bessel_i_ratio_derivs(k)
   p1 <- a$d1
   list(

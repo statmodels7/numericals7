@@ -90,6 +90,29 @@ test_that("the ratio's derivatives match one numerical pass each", {
 })
 
 
+test_that("the ratio's derivatives keep their digits at a large concentration", {
+  # Past kappa = 20 they come from the asymptotic series; the recursion on
+  # A' = 1 - A/kappa - A^2 cancels terms of order one down to kappa^-2 and
+  # beyond, and read its third derivative 0.61 out at kappa = 1e4. Where both
+  # routes still hold, just past the crossover, they agree ...
+  for (k in c(25, 40, 60)) {
+    s <- bessel_ratio_series_derivs(k)
+    A <- bessel_i_ratio(k)
+    d1 <- 1 - A / k - A * A
+    d2 <- -d1 / k + A / k^2 - 2 * A * d1
+    d3 <- -d2 / k + 2 * d1 / k^2 - 2 * A / k^3 - 2 * d1^2 - 2 * A * d2
+    expect_equal(s[1, 1:3], c(d1, d2, d3), tolerance = 1e-8)
+  }
+  # ... and far past it the derivatives reach their leading terms
+  # 1/(2 k^2), -1/k^3, 3/k^4, -12/k^5 at the rate 1/k
+  for (k in c(1e3, 1e4, 1e6)) {
+    a <- bessel_i_ratio_derivs(k)
+    lead <- c(a$d1 * 2 * k^2, -a$d2 * k^3, a$d3 * k^4 / 3, -a$d4 * k^5 / 12)
+    expect_true(all(abs(lead - 1) < 5 / k))
+  }
+})
+
+
 test_that("the inverse round-trips and refuses the boundary", {
   rho <- c(1e-6, 0.1, 0.53, 0.7, 0.85, 0.99, 0.999999)
   k <- bessel_i_ratio_inverse(rho)$kappa
@@ -157,4 +180,16 @@ test_that("bessel_i_ratios rejects what it cannot answer", {
   expect_error(bessel_i_ratios(-1, 3), "must be positive")
   expect_identical(dim(bessel_i_ratios(numeric(0), 4L)), c(0L, 4L))
   expect_true(all(is.na(bessel_i_ratios(NA_real_, 3L))))
+})
+
+test_that("the inverse is located to the rounding of rho, down to tiny rho", {
+  # the residual of the forward map is at the spacing of the doubles near rho
+  # wherever kappa is well conditioned, and a vector is answered as its
+  # elements are: the Newton iteration is vectorized, not approximated
+  rho <- c(1e-15, 1e-12, 1e-8, seq(0.02, 0.98, by = 0.04))
+  k <- bessel_i_ratio_inverse(rho)$kappa
+  expect_true(all(abs(bessel_i_ratio(k) - rho) <= 4 * .Machine$double.eps * rho))
+  expect_equal(k[1:2], 2 * rho[1:2], tolerance = 1e-12)
+  one <- vapply(rho, function(r) bessel_i_ratio_inverse(r)$kappa, numeric(1))
+  expect_equal(k, one, tolerance = 1e-15)
 })
