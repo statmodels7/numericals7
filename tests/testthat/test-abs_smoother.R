@@ -66,6 +66,21 @@ test_that("a width the smoother holds wins over the spacing", {
   expect_error(smoother_width(smooth_probit(), -1), "positive")
 })
 
+test_that("the quintic resolves its width at 5/(2 log 2) spacings", {
+  # A median spacing g of a uniform covariate is log(2) mean spacings, so
+  # h = 5 g / (2 log 2) puts five observations inside [-h, h] on average.
+  k <- 5 / (2 * log(2))
+  expect_equal(smoother_width(smooth_quintic(), 0.3), 0.3 * k)
+  expect_equal(smoother_width(smooth_quintic(), c(0.1, 0.4)), c(0.1, 0.4) * k)
+  expect_equal(smoother_width(smooth_quintic(h = 0.3), 0.1), 0.3)
+  set.seed(1)
+  x <- sort(runif(20000, 0, 10))
+  h <- smoother_width(smooth_quintic(), stats::median(diff(x)))
+  inside <- vapply(seq(1, 9, by = 0.01), function(p) sum(abs(x - p) < h),
+                   numeric(1))
+  expect_equal(mean(inside), 5, tolerance = 0.05)
+})
+
 test_that("the width floor is sqrt(eps) times the scale, on the width's own
           scale", {
   D <- 10

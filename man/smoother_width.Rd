@@ -26,9 +26,10 @@ its covariate, the smallest transition the data can tell from a step.
 \details{
 A smoother constructed with an explicit width keeps it, and \code{spacing} is
 then not even looked at. A smoother constructed with \code{NULL} takes the
-spacing through its own \code{width_from_spacing}, which is the identity for
-\code{\link[=smooth_probit]{smooth_probit()}} and \code{\link[=smooth_quintic]{smooth_quintic()}}, whose parameter is a length, and
-the square for \code{\link[=smooth_hyperbolic]{smooth_hyperbolic()}}, whose parameter is a squared one.
+spacing through its own \code{width_from_spacing}: the identity for
+\code{\link[=smooth_probit]{smooth_probit()}}, the square for \code{\link[=smooth_hyperbolic]{smooth_hyperbolic()}}, whose parameter is
+a squared length, and \eqn{5/(2\log 2)} times the spacing for
+\code{\link[=smooth_quintic]{smooth_quintic()}}, for the reason its page gives.
 
 The result is nothing about whether the width is large enough for the
 arithmetic; \code{\link[=smoother_width_floor]{smoother_width_floor()}} answers that separately, and a consumer

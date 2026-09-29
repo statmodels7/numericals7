@@ -365,13 +365,34 @@ smooth_hyperbolic <- function(c = NULL) {
 #'
 #' There is no convolution identity here, so `tau_correction` is `NULL`.
 #'
+#' # The width resolved from data
+#'
+#' Exactness outside the transition has a cost for a break-point. The
+#' derivative of \eqn{s} in the break-point is \eqn{s''}, which is zero outside
+#' \eqn{[-h, h]}, so where no observation falls within \eqn{h} of the fitted
+#' break-point the break-point has no curvature at all and is not identified.
+#' At a width of one median spacing this happens in 25 to 55 per cent of fits
+#' of a discontinuous break-point on a uniform covariate, because a quarter of
+#' the gaps are wider than \eqn{2h}. The width resolved from a spacing \eqn{g}
+#' is therefore
+#'
+#' \deqn{h = \frac{5}{2\log 2}\,g \approx 3.61\,g,}
+#'
+#' which puts five observations inside \eqn{[-h, h]} on average for a uniform
+#' covariate, whose median spacing is \eqn{\log 2} times its mean spacing.
+#' Measured on the same fits, this removes the unidentified break-point and
+#' brings its error to that of [smooth_probit()], at a fit error on a true
+#' sharp step 10 to 15 per cent above the probit's. It does not guarantee an
+#' observation inside the width for a covariate with large gaps. A width
+#' supplied as `h` is used as it stands.
+#'
 #' @param h The transition half-width, a single positive number, or `NULL` (the
 #'   default) to be resolved at build from the covariate's spacing through
-#'   [smoother_width()].
+#'   [smoother_width()], as \eqn{5/(2\log 2)} times the spacing.
 #'
-#' @return An [abs_smoother()] named `"quintic"`, with `width_name` `"h"`, no
-#'   `width_from_spacing`, no `tau_correction`, and an `exact_radius` equal to
-#'   the width.
+#' @return An [abs_smoother()] named `"quintic"`, with `width_name` `"h"`, a
+#'   `width_from_spacing` multiplying the spacing by \eqn{5/(2\log 2)}, no
+#'   `tau_correction`, and an `exact_radius` equal to the width.
 #'
 #' @examples
 #' sm <- smooth_quintic(h = 0.5)
@@ -424,7 +445,7 @@ smooth_quintic <- function(h = NULL) {
         ifelse(inside(u, width), 45 * t / width^4, 0)
       }
     ),
-    width_from_spacing = NULL,
+    width_from_spacing = function(gap) gap * 5 / (2 * log(2)),
     tau_correction = NULL,
     exact_radius = function(width) width
   )
@@ -496,9 +517,10 @@ smoother_deriv <- function(smoother, u, width = NULL, order = 0L) {
 #' @details
 #' A smoother constructed with an explicit width keeps it, and `spacing` is
 #' then not even looked at. A smoother constructed with `NULL` takes the
-#' spacing through its own `width_from_spacing`, which is the identity for
-#' [smooth_probit()] and [smooth_quintic()], whose parameter is a length, and
-#' the square for [smooth_hyperbolic()], whose parameter is a squared one.
+#' spacing through its own `width_from_spacing`: the identity for
+#' [smooth_probit()], the square for [smooth_hyperbolic()], whose parameter is
+#' a squared length, and \eqn{5/(2\log 2)} times the spacing for
+#' [smooth_quintic()], for the reason its page gives.
 #'
 #' The result is nothing about whether the width is large enough for the
 #' arithmetic; [smoother_width_floor()] answers that separately, and a consumer
@@ -562,6 +584,9 @@ smoother_width <- function(smoother, spacing) {
 #' carried onto the width parameter's own scale for a smoother parametrized by
 #' a squared length. At a covariate range of 10 that is `1.49e-07` for
 #' [smooth_probit()] and its square, `2.22e-14`, for [smooth_hyperbolic()].
+#' The floor goes through the same `width_from_spacing` as a spacing does, so
+#' for [smooth_quintic()] it is \eqn{5/(2\log 2)} times larger, which only
+#' makes it more conservative.
 #'
 #' The bound is derived, which is the toolkit's rule for a guard constant, and
 #' it is the same argument the break-point schedule's own scaling floor rests

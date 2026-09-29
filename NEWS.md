@@ -1,3 +1,20 @@
+# numericals7 0.16.0
+
+* **`smooth_quintic()` resolves its width at 5/(2 log 2) spacings**, about
+  3.61, where it took one. The quintic is exact outside [-h, h], so its second
+  derivative, which is the curvature a smoothed break-point carries, is zero
+  there, and where no observation falls within h of a fitted break-point that
+  break-point is not identified. At one median spacing this happened in 25 to
+  55 per cent of fits of `jump()` and `jseg()` on a uniform covariate, and the
+  break-point's error did not shrink with n (0.037 at n = 200 and at 1000).
+  At the new width, which puts five observations inside [-h, h] on average
+  for a uniform covariate, none of 80 such fits left it unidentified and the
+  error is the probit's (0.0035 against 0.004), at a fit error on a true
+  sharp step 10 to 15 per cent above the probit's. `seg()` was never
+  affected. A width supplied as `h` is used as it stands, and
+  `smoother_width_floor()` is multiplied by the same factor, which only makes
+  it more conservative.
+
 # numericals7 0.15.0
 
 * **`bessel_i_ratio_derivs()` keeps its digits at a large concentration.**
