@@ -4,7 +4,7 @@
 \alias{smoother_width}
 \title{Resolve a Smoother's Width from a Spacing}
 \usage{
-smoother_width(smoother, spacing)
+smoother_width(smoother, spacing, max_gap = NULL)
 }
 \arguments{
 \item{smoother}{An \code{\link[=abs_smoother]{abs_smoother()}}. Anything else is rejected.}
@@ -12,6 +12,11 @@ smoother_width(smoother, spacing)
 \item{spacing}{A spacing in covariate units, one value or one per group.
 Every entry must be positive and none may be missing; a smoother that
 already carries a width never reaches the check.}
+
+\item{max_gap}{\code{NULL} (the default), or the largest gap between consecutive
+distinct values of the covariate over the range a break-point may take,
+one value or one per entry of \code{spacing}. Read only by a smoother with an
+\code{exact_radius}.}
 }
 \value{
 The width, on the smoother's own scale. The same length as \code{spacing}
@@ -31,6 +36,18 @@ spacing through its own \code{width_from_spacing}: the identity for
 a squared length, and \eqn{5/(2\log 2)} times the spacing for
 \code{\link[=smooth_quintic]{smooth_quintic()}}, for the reason its page gives.
 
+A smoother that declares an \code{exact_radius} is equal to \eqn{\lvert u\rvert}
+beyond that radius, so a break-point smoothed with it has no curvature where
+no observation falls within the radius, and a gap in the covariate wider
+than twice the radius can hold such a break-point. Where \code{max_gap} is given,
+the width is therefore raised until the radius is at least
+\eqn{0.55} times it, the radius being taken to grow in proportion to the
+width, which holds for \code{\link[=smooth_quintic]{smooth_quintic()}}, whose radius is its width. The
+median spacing does not bound the largest gap: among \eqn{n} uniform points
+the largest gap is about \eqn{\log_2 n} median spacings, 8.6 at
+\eqn{n = 400}, against the 3.61 the quintic's width covers. A smoother
+without an \code{exact_radius} ignores \code{max_gap}.
+
 The result is nothing about whether the width is large enough for the
 arithmetic; \code{\link[=smoother_width_floor]{smoother_width_floor()}} answers that separately, and a consumer
 takes the larger of the two.
@@ -47,6 +64,10 @@ smoother_width(smooth_probit(h = 0.5), 0.3)
 
 # One width per group.
 smoother_width(smooth_probit(per_group = TRUE), c(0.2, 0.4, 0.35))
+
+# The quintic is raised to cover half of a large gap; the probit is not.
+smoother_width(smooth_quintic(), 0.01, max_gap = 0.1)
+smoother_width(smooth_probit(), 0.01, max_gap = 0.1)
 
 }
 \seealso{

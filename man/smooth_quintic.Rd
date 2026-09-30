@@ -66,8 +66,25 @@ covariate, whose median spacing is \eqn{\log 2} times its mean spacing.
 Measured on the same fits, this removes the unidentified break-point and
 brings its error to that of \code{\link[=smooth_probit]{smooth_probit()}}, at a fit error on a true
 sharp step 10 to 15 per cent above the probit's. It does not guarantee an
-observation inside the width for a covariate with large gaps. A width
-supplied as \code{h} is used as it stands.
+observation inside the width for a covariate with large gaps, since the
+largest of \eqn{n} gaps is about \eqn{\log_2 n} median spacings, so a
+consumer that passes the largest gap to \code{\link[=smoother_width]{smoother_width()}} also has the
+width raised to at least \eqn{0.55} times it. A width supplied as \code{h} is
+used as it stands.
+}
+
+\section{Under an outer criterion}{
+The fourth derivative jumps at \eqn{\pm h} and the fifth is a point mass
+there. An exact outer gradient of a marginal criterion reads the fourth
+derivative of \eqn{s} through a break-point term and an exact outer Hessian
+reads the fifth, so over the hyperparameters the criterion is smooth only
+between the values at which an observation crosses \eqn{\psi \pm h}, and the
+Hessian leaves out the point masses. Measured on a random break-point under
+REML, the jump of the gradient at such a crossing is below the resolution of
+a step of \eqn{10^{-4}} in the hyperparameter, and the exact gradient agrees
+with a difference of the criterion to \eqn{2.7 \times 10^{-7}}.
+\code{\link[=smooth_probit]{smooth_probit()}}, which is analytic, has neither effect and is the choice
+where a criterion is estimated over a smoothed break-point.
 }
 
 \examples{

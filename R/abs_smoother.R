@@ -383,8 +383,25 @@ smooth_hyperbolic <- function(c = NULL) {
 #' Measured on the same fits, this removes the unidentified break-point and
 #' brings its error to that of [smooth_probit()], at a fit error on a true
 #' sharp step 10 to 15 per cent above the probit's. It does not guarantee an
-#' observation inside the width for a covariate with large gaps. A width
-#' supplied as `h` is used as it stands.
+#' observation inside the width for a covariate with large gaps, since the
+#' largest of \eqn{n} gaps is about \eqn{\log_2 n} median spacings, so a
+#' consumer that passes the largest gap to [smoother_width()] also has the
+#' width raised to at least \eqn{0.55} times it. A width supplied as `h` is
+#' used as it stands.
+#'
+#' # Under an outer criterion
+#'
+#' The fourth derivative jumps at \eqn{\pm h} and the fifth is a point mass
+#' there. An exact outer gradient of a marginal criterion reads the fourth
+#' derivative of \eqn{s} through a break-point term and an exact outer Hessian
+#' reads the fifth, so over the hyperparameters the criterion is smooth only
+#' between the values at which an observation crosses \eqn{\psi \pm h}, and the
+#' Hessian leaves out the point masses. Measured on a random break-point under
+#' REML, the jump of the gradient at such a crossing is below the resolution of
+#' a step of \eqn{10^{-4}} in the hyperparameter, and the exact gradient agrees
+#' with a difference of the criterion to \eqn{2.7 \times 10^{-7}}.
+#' [smooth_probit()], which is analytic, has neither effect and is the choice
+#' where a criterion is estimated over a smoothed break-point.
 #'
 #' @param h The transition half-width, a single positive number, or `NULL` (the
 #'   default) to be resolved at build from the covariate's spacing through
@@ -522,6 +539,18 @@ smoother_deriv <- function(smoother, u, width = NULL, order = 0L) {
 #' a squared length, and \eqn{5/(2\log 2)} times the spacing for
 #' [smooth_quintic()], for the reason its page gives.
 #'
+#' A smoother that declares an `exact_radius` is equal to \eqn{\lvert u\rvert}
+#' beyond that radius, so a break-point smoothed with it has no curvature where
+#' no observation falls within the radius, and a gap in the covariate wider
+#' than twice the radius can hold such a break-point. Where `max_gap` is given,
+#' the width is therefore raised until the radius is at least
+#' \eqn{0.55} times it, the radius being taken to grow in proportion to the
+#' width, which holds for [smooth_quintic()], whose radius is its width. The
+#' median spacing does not bound the largest gap: among \eqn{n} uniform points
+#' the largest gap is about \eqn{\log_2 n} median spacings, 8.6 at
+#' \eqn{n = 400}, against the 3.61 the quintic's width covers. A smoother
+#' without an `exact_radius` ignores `max_gap`.
+#'
 #' The result is nothing about whether the width is large enough for the
 #' arithmetic; [smoother_width_floor()] answers that separately, and a consumer
 #' takes the larger of the two.
@@ -530,6 +559,10 @@ smoother_deriv <- function(smoother, u, width = NULL, order = 0L) {
 #' @param spacing A spacing in covariate units, one value or one per group.
 #'   Every entry must be positive and none may be missing; a smoother that
 #'   already carries a width never reaches the check.
+#' @param max_gap `NULL` (the default), or the largest gap between consecutive
+#'   distinct values of the covariate over the range a break-point may take,
+#'   one value or one per entry of `spacing`. Read only by a smoother with an
+#'   `exact_radius`.
 #'
 #' @return The width, on the smoother's own scale. The same length as `spacing`
 #'   when resolved from it, and a single number when the smoother carries one.
@@ -547,10 +580,14 @@ smoother_deriv <- function(smoother, u, width = NULL, order = 0L) {
 #' # One width per group.
 #' smoother_width(smooth_probit(per_group = TRUE), c(0.2, 0.4, 0.35))
 #'
+#' # The quintic is raised to cover half of a large gap; the probit is not.
+#' smoother_width(smooth_quintic(), 0.01, max_gap = 0.1)
+#' smoother_width(smooth_probit(), 0.01, max_gap = 0.1)
+#'
 #' @seealso [smoother_width_floor()] for the lower bound the arithmetic
 #'   imposes, [abs_smoother()] for what a width means.
 #' @export
-smoother_width <- function(smoother, spacing) {
+smoother_width <- function(smoother, spacing, max_gap = NULL) {
   if (!S7::S7_inherits(smoother, abs_smoother)) {
     stop("'smoother' must be an abs_smoother.", call. = FALSE)
   }
@@ -560,7 +597,21 @@ smoother_width <- function(smoother, spacing) {
     stop("'spacing' must be positive.", call. = FALSE)
   }
   f <- smoother@width_from_spacing
-  if (is.null(f)) spacing else f(spacing)
+  w <- if (is.null(f)) spacing else f(spacing)
+  if (is.null(max_gap) || is.null(smoother@exact_radius)) return(w)
+  max_gap <- as.numeric(max_gap)
+  if (!(length(max_gap) %in% c(1L, length(spacing))) || anyNA(max_gap) ||
+      any(max_gap < 0)) {
+    stop(paste("'max_gap' must be non-negative, one value or one per",
+               "spacing."), call. = FALSE)
+  }
+  # a smoother exact outside a radius gives a break-point no curvature where
+  # no observation falls within that radius, which a gap wider than twice
+  # the radius allows; the radius is taken to grow in proportion to the
+  # width, which holds for the quintic, where it IS the width
+  need <- 0.55 * max_gap
+  r <- smoother@exact_radius(w)
+  ifelse(r < need, w * need / r, w)
 }
 
 #' The Smallest Width a Consumer May Use

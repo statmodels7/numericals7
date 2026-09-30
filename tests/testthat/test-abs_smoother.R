@@ -158,3 +158,23 @@ test_that("a user-written smoother passes through the same validator", {
   res <- check_abs_smoother(sm, verbose = FALSE)
   expect_true(all(res$status == "OK"))
 })
+
+test_that("a smoother exact outside its radius covers half of the largest gap", {
+  q <- smooth_quintic()
+  g <- 0.01
+  base <- 5 * g / (2 * log(2))
+  # a gap the spacing already covers leaves the width alone
+  expect_equal(smoother_width(q, g, max_gap = base), base)
+  # a wider one raises it to 0.55 of the gap
+  expect_equal(smoother_width(q, g, max_gap = 0.1), 0.055)
+  # per group, each against its own gap
+  expect_equal(smoother_width(q, c(g, g), max_gap = c(0.02, 0.2)),
+               c(base, 0.11))
+  # without an exact radius the gap is not read
+  expect_equal(smoother_width(smooth_probit(), g, max_gap = 0.1), g)
+  expect_equal(smoother_width(smooth_hyperbolic(), g, max_gap = 0.1), g^2)
+  # a width supplied as h is used as it stands
+  expect_equal(smoother_width(smooth_quintic(h = 0.02), g, max_gap = 0.1), 0.02)
+  expect_error(smoother_width(q, c(g, g), max_gap = c(0.1, 0.1, 0.1)),
+               "max_gap")
+})

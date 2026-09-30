@@ -1,3 +1,26 @@
+# numericals7 0.17.0
+
+* **`smoother_width()` takes `max_gap`**, the largest gap between consecutive
+  distinct values of the covariate over the range a break-point may take. A
+  smoother that declares an `exact_radius`, which is `smooth_quintic()`, then
+  has its width raised until the radius is at least 0.55 times that gap. The
+  quintic is exactly |u| beyond its radius, so a break-point sitting in a gap
+  wider than twice the radius has no curvature and is not identified, and
+  the median spacing of 0.16.0 does not bound the largest gap: among n uniform
+  points the largest gap is about log2(n) median spacings, 8.6 at n = 400,
+  against the 3.61 the quintic's width covers. Measured on 400 uniform
+  points, a `jump()` whose fitted break-point landed in a gap of 0.0155
+  against 2h = 0.0129 had its column exactly zero. Other smoothers ignore
+  `max_gap`, and a width supplied as `h` is used as it stands.
+
+* `smooth_quintic()`'s page states what its C^3 costs under an outer
+  criterion: the fourth derivative jumps at +-h and the fifth is a point
+  mass there, so the criterion over the hyperparameters is smooth only
+  between the values at which an observation crosses psi +- h, and an exact
+  outer Hessian leaves out the point masses. Measured on a random
+  break-point under REML, the jump of the gradient at a crossing is below the
+  resolution of a step of 1e-4 in the hyperparameter.
+
 # numericals7 0.16.0
 
 * **`smooth_quintic()` resolves its width at 5/(2 log 2) spacings**, about
