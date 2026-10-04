@@ -151,3 +151,10 @@ test_that("edges and recycling behave", {
   expect_length(log_bessel_i(1:5, 2), 5L)
   expect_length(log_bessel_k(2, 1:7), 7L)
 })
+
+test_that("the C entry point n7_log_bessel_i returns the kernel's values", {
+  # resolved and called through the test helper of the package's own DLL
+  x <- c(0, 1e-3, 0.5, 3, 40, 900, 1e6)
+  nu <- c(0, 0.5, 1, 2.5, 30, 0, 2)
+  expect_identical(n7_log_bessel_i_probe(x, nu), log_bessel_i(x, nu))
+})

@@ -53,6 +53,10 @@ log_bessel_i_cpp <- function(x, nu, threads = 1L) {
     .Call(`_numericals7_log_bessel_i_cpp`, x, nu, threads)
 }
 
+n7_log_bessel_i_probe <- function(x, nu) {
+    .Call(`_numericals7_n7_log_bessel_i_probe`, x, nu)
+}
+
 log_bessel_k_cpp <- function(x, nu) {
     .Call(`_numericals7_log_bessel_k_cpp`, x, nu)
 }

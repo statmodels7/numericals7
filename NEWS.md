@@ -1,3 +1,9 @@
+# numericals7 0.21.0
+
+* `log_bessel_i()`'s compiled kernel is registered as the C entry point
+  `n7_log_bessel_i`, taking the argument and the order, for the compiled
+  code of other packages. It never calls the R API.
+
 # numericals7 0.20.0
 
 * `bessel_k()` computes the modified Bessel function of the third kind

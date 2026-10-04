@@ -3,6 +3,7 @@
 // per element. The u_k polynomial coefficients are injected once from the
 // R table at load, so the two routes share the table and nothing else.
 #include <Rcpp.h>
+#include <R_ext/Rdynload.h>
 #include "n7_par.h"
 #include <cmath>
 using namespace Rcpp;
@@ -169,6 +170,30 @@ NumericVector log_bessel_i_cpp(NumericVector x, NumericVector nu,
       ? NA_REAL : lbi_one(xi, vi);
   });
   return out;
+}
+
+// log I_nu(x) for one argument, as log_bessel_i() returns it, for the
+// compiled code of other packages: R_GetCCallable("numericals7",
+// "n7_log_bessel_i"). The u_k table it reads is filled when the package is
+// loaded, so a call from a worker thread reads it only.
+extern "C" double n7_log_bessel_i(double x, double nu) {
+  return (ISNAN(x) || ISNAN(nu) || x < 0 || nu < 0) ? NA_REAL : lbi_one(x, nu);
+}
+
+// the entry point resolved as other packages resolve it, for the tests
+// [[Rcpp::export]]
+NumericVector n7_log_bessel_i_probe(NumericVector x, NumericVector nu) {
+  typedef double (*Fn)(double, double);
+  Fn f = (Fn) R_GetCCallable("numericals7", "n7_log_bessel_i");
+  R_xlen_t n = std::max(x.size(), nu.size());
+  NumericVector out(n);
+  for (R_xlen_t i = 0; i < n; ++i) out[i] = f(x[i % x.size()], nu[i % nu.size()]);
+  return out;
+}
+
+// [[Rcpp::init]]
+void n7_register_log_bessel(DllInfo* dll) {
+  R_RegisterCCallable("numericals7", "n7_log_bessel_i", (DL_FUNC) n7_log_bessel_i);
 }
 
 // This one is NOT threaded and takes no count: lbk_one()'s hybrid branch

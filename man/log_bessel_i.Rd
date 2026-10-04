@@ -48,6 +48,11 @@ Two switching guards are tightened relative to the paper, measured on the
 Wronskian identity \eqn{I_\nu K_{\nu+1} + I_{\nu+1} K_\nu = 1/x}: the
 large-argument expansions are used only where their truncation error is
 below \eqn{10^{-11}}, the uniform expansion taking over otherwise.
+
+The compiled kernel never calls the R API. It is also registered as the C
+entry point \code{n7_log_bessel_i}, resolved with
+\code{R_GetCCallable("numericals7", "n7_log_bessel_i")} and taking the argument
+and the order.
 }
 \examples{
 # It agrees with R's own function wherever that one still evaluates.

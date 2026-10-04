@@ -167,6 +167,11 @@ NULL
 #' large-argument expansions are used only where their truncation error is
 #' below \eqn{10^{-11}}, the uniform expansion taking over otherwise.
 #'
+#' The compiled kernel never calls the R API. It is also registered as the C
+#' entry point `n7_log_bessel_i`, resolved with
+#' `R_GetCCallable("numericals7", "n7_log_bessel_i")` and taking the argument
+#' and the order.
+#'
 #' @param x A numeric vector of non-negative arguments, recycled against
 #'   `nu`.
 #' @param nu A numeric vector of non-negative orders.

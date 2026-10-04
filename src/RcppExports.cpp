@@ -167,6 +167,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// n7_log_bessel_i_probe
+NumericVector n7_log_bessel_i_probe(NumericVector x, NumericVector nu);
+RcppExport SEXP _numericals7_n7_log_bessel_i_probe(SEXP xSEXP, SEXP nuSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type nu(nuSEXP);
+    rcpp_result_gen = Rcpp::wrap(n7_log_bessel_i_probe(x, nu));
+    return rcpp_result_gen;
+END_RCPP
+}
 // log_bessel_k_cpp
 NumericVector log_bessel_k_cpp(NumericVector x, NumericVector nu);
 RcppExport SEXP _numericals7_log_bessel_k_cpp(SEXP xSEXP, SEXP nuSEXP) {
@@ -209,6 +221,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_numericals7_bessel_ratio_inverse_d4_cpp", (DL_FUNC) &_numericals7_bessel_ratio_inverse_d4_cpp, 2},
     {"_numericals7_lb_set_uk_cpp", (DL_FUNC) &_numericals7_lb_set_uk_cpp, 1},
     {"_numericals7_log_bessel_i_cpp", (DL_FUNC) &_numericals7_log_bessel_i_cpp, 3},
+    {"_numericals7_n7_log_bessel_i_probe", (DL_FUNC) &_numericals7_n7_log_bessel_i_probe, 2},
     {"_numericals7_log_bessel_k_cpp", (DL_FUNC) &_numericals7_log_bessel_k_cpp, 2},
     {"_numericals7_student_t_cdf_cpp", (DL_FUNC) &_numericals7_student_t_cdf_cpp, 5},
     {NULL, NULL, 0}
@@ -216,11 +229,13 @@ static const R_CallMethodDef CallEntries[] = {
 
 void n7_register_bessel_k(DllInfo* dll);
 void n7_register_bessel_ratio(DllInfo* dll);
+void n7_register_log_bessel(DllInfo* dll);
 void n7_register_student_t(DllInfo* dll);
 RcppExport void R_init_numericals7(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
     n7_register_bessel_k(dll);
     n7_register_bessel_ratio(dll);
+    n7_register_log_bessel(dll);
     n7_register_student_t(dll);
 }
