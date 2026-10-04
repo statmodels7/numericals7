@@ -1,5 +1,5 @@
-/* What R's src/nmath/nmath.h and dpq.h give toms708.c, for the copy of it
- * in n7_toms708.c. The warnings R raises from these sources are compiled to
+/* What R's src/nmath/nmath.h and dpq.h give toms708.c and bessel_k.c, for
+ * the copies of them in n7_toms708.c and n7_bessel_k.c. The warnings R raises from these sources are compiled to
  * nothing here: a warning calls into the R API, and the point of the copy
  * is a distribution function a worker thread may call. The status codes the
  * algorithm reports are kept and read by the caller. Adapted from R
@@ -24,6 +24,8 @@
 #define R_FINITE(x) isfinite(x)
 
 #define ML_WARN_return_NAN { return ML_NAN; }
+#define ML_WARNING(x, s) ((void) 0)
+#define _(String) (String)
 #define MATHLIB_WARNING(fmt, x) ((void) 0)
 #define MATHLIB_WARNING2(fmt, x, x2) ((void) 0)
 #define MATHLIB_WARNING3(fmt, x, x2, x3) ((void) 0)
@@ -68,6 +70,7 @@ extern "C" {
 #endif
 void n7_bratio(double a, double b, double x, double y, double *w, double *w1,
                int *ierr, int log_p);
+double n7_bessel_k_ex(double x, double alpha, double expo, double *bk);
 #ifdef __cplusplus
 }
 #endif

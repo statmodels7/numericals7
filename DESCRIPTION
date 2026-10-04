@@ -1,6 +1,6 @@
 Package: numericals7
 Title: Numerical Kernels for Statistical Modeling
-Version: 0.19.0
+Version: 0.20.0
 Authors@R:
     c(person("Giovanni", "Tinervia", , "giovannitinervia9@gmail.com", role = c("aut", "cre")),
       person("Robert", "Gentleman", role = c("ctb", "cph"),
@@ -8,7 +8,11 @@ Authors@R:
       person("Ross", "Ihaka", role = c("ctb", "cph"),
              comment = "R's Student t distribution function"),
       person("R Core Team", role = c("ctb", "cph"),
-             comment = "the Student t distribution function and the incomplete beta ratio, from R's mathematical library"),
+             comment = "the Student t distribution function, the incomplete beta ratio and the Bessel K function, from R's mathematical library"),
+      person("The R Foundation", role = "cph",
+             comment = "the Bessel K function, from R's mathematical library"),
+      person("William J.", "Cody", role = "ctb",
+             comment = "the Bessel K routine RKBESL"),
       person("Armido R.", "Didonato", role = "ctb",
              comment = "ACM TOMS Algorithm 708"),
       person("Alfred H.", "Morris", role = "ctb",
@@ -55,6 +59,7 @@ RoxygenNote: 7.3.3
 Collate: 
     'RcppExports.R'
     'abs_smoother.R'
+    'bessel_k.R'
     'bessel_uk_table.R'
     'enumerate.R'
     'stencil.R'

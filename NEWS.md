@@ -1,3 +1,13 @@
+# numericals7 0.20.0
+
+* `bessel_k()` computes the modified Bessel function of the third kind
+  K_nu(x), or its exponentially scaled form, with the values of
+  `base::besselK()`. The code is R's `bessel_k()` (the routine RKBESL)
+  copied with the warnings removed and with its work array on the stack, so
+  that it never calls the R API and may run on a worker thread. It is
+  threaded through `threads` and registered as the C entry point
+  `n7_bessel_k`, with the arguments of R's C function `bessel_k()`.
+
 # numericals7 0.19.0
 
 * `student_t_cdf()` computes the Student t distribution function with real

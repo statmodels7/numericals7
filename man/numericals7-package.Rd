@@ -26,7 +26,9 @@ Other contributors:
 \itemize{
   \item Robert Gentleman (R's Student t distribution function) [contributor, copyright holder]
   \item Ross Ihaka (R's Student t distribution function) [contributor, copyright holder]
-  \item R Core Team (the Student t distribution function and the incomplete beta ratio, from R's mathematical library) [contributor, copyright holder]
+  \item R Core Team (the Student t distribution function, the incomplete beta ratio and the Bessel K function, from R's mathematical library) [contributor, copyright holder]
+  \item The R Foundation (the Bessel K function, from R's mathematical library) [copyright holder]
+  \item William J. Cody (the Bessel K routine RKBESL) [contributor]
   \item Armido R. Didonato (ACM TOMS Algorithm 708) [contributor]
   \item Alfred H. Morris (ACM TOMS Algorithm 708) [contributor]
 }

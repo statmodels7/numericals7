@@ -73,6 +73,7 @@ reference:
   contents:
   - log_bessel_i
   - log_bessel_k
+  - bessel_k
   - log_bessel_i_derivs
   - log_bessel_k_derivs
   - mills_ratio

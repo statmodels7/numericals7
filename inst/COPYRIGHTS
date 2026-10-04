@@ -8,6 +8,17 @@ Alfred H. Morris, Jr. (ACM Transactions on Mathematical Software 18,
 360-373, 1992), with changes by the R Core Team, and is distributed with R
 under the GNU General Public License, version 2 or any later version.
 
+src/n7_bessel_k.c is R's src/nmath/bessel_k.c (R 4.6.0), with bessel_k()
+removed, bessel_k_ex() renamed n7_bessel_k_ex() and the R headers replaced
+by src/n7_nmath.h and the constants of R's src/nmath/bessel.h. It is the
+routine RKBESL of W. J. Cody and L. Stoltz (netlib specfun), after J. B.
+Campbell, translated to C by Martin Maechler:
+  Copyright (C) 1998-2014 Ross Ihaka and the R Core Team
+  Copyright (C) 2002-3 The R Foundation
+  Copyright (C) 2001-2026 R Core Team (the constants of bessel.h)
+src/bessel_k.cpp's n7_bessel_k() is R's bessel_k() with its work array on
+the stack.
+
 src/student_t.cpp contains n7_pt() and n7_pbeta(), adapted from R's
 src/nmath/pt.c and src/nmath/pbeta.c (R 4.6.0):
   Copyright (C) 1995, 1996 Robert Gentleman and Ross Ihaka
