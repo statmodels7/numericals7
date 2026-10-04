@@ -1,3 +1,17 @@
+# numericals7 0.19.0
+
+* `student_t_cdf()` computes the Student t distribution function with real
+  degrees of freedom, on the natural or the log scale. Its values are those
+  of `stats::pt()`: the code is R's `pt()` and its incomplete beta ratio
+  (ACM TOMS Algorithm 708), copied with the warnings removed, so that it
+  never calls the R API and may run on a worker thread. It is threaded
+  through `threads` and registered as the C entry point `n7_pt`, with the
+  arguments of R's C function `pt()`.
+
+* The license is GPL (>= 2), which the copied R sources require. The
+  copyright holders of those sources are listed in `inst/COPYRIGHTS` and in
+  `Authors@R`.
+
 # numericals7 0.18.0
 
 * **The derivatives of the Bessel ratio A(kappa) = I1(kappa)/I0(kappa) are

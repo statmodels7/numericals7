@@ -165,6 +165,21 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// student_t_cdf_cpp
+NumericVector student_t_cdf_cpp(NumericVector q, NumericVector df, bool lower_tail, bool log_p, int threads);
+RcppExport SEXP _numericals7_student_t_cdf_cpp(SEXP qSEXP, SEXP dfSEXP, SEXP lower_tailSEXP, SEXP log_pSEXP, SEXP threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type q(qSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type df(dfSEXP);
+    Rcpp::traits::input_parameter< bool >::type lower_tail(lower_tailSEXP);
+    Rcpp::traits::input_parameter< bool >::type log_p(log_pSEXP);
+    Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(student_t_cdf_cpp(q, df, lower_tail, log_p, threads));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_numericals7_bessel_ratio_cpp", (DL_FUNC) &_numericals7_bessel_ratio_cpp, 2},
@@ -180,12 +195,15 @@ static const R_CallMethodDef CallEntries[] = {
     {"_numericals7_lb_set_uk_cpp", (DL_FUNC) &_numericals7_lb_set_uk_cpp, 1},
     {"_numericals7_log_bessel_i_cpp", (DL_FUNC) &_numericals7_log_bessel_i_cpp, 3},
     {"_numericals7_log_bessel_k_cpp", (DL_FUNC) &_numericals7_log_bessel_k_cpp, 2},
+    {"_numericals7_student_t_cdf_cpp", (DL_FUNC) &_numericals7_student_t_cdf_cpp, 5},
     {NULL, NULL, 0}
 };
 
 void n7_register_bessel_ratio(DllInfo* dll);
+void n7_register_student_t(DllInfo* dll);
 RcppExport void R_init_numericals7(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
     n7_register_bessel_ratio(dll);
+    n7_register_student_t(dll);
 }

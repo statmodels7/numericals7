@@ -77,6 +77,7 @@ reference:
   - log_bessel_k_derivs
   - mills_ratio
   - owen_t
+  - student_t_cdf
   - bessel_i_ratio
   - bessel_i_ratios
   - bessel_i_ratio_d1

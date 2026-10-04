@@ -1,0 +1,22 @@
+numericals7 is licensed under the GNU General Public License, version 2 or
+any later version. Copyright (C) 2026 Giovanni Tinervia, except as follows.
+
+src/n7_toms708.c is R's src/nmath/toms708.c (R 4.6.0), with bratio()
+renamed n7_bratio() and the R headers replaced by src/n7_nmath.h. It is
+R's C translation of ACM TOMS Algorithm 708 by Armido R. Didonato and
+Alfred H. Morris, Jr. (ACM Transactions on Mathematical Software 18,
+360-373, 1992), with changes by the R Core Team, and is distributed with R
+under the GNU General Public License, version 2 or any later version.
+
+src/student_t.cpp contains n7_pt() and n7_pbeta(), adapted from R's
+src/nmath/pt.c and src/nmath/pbeta.c (R 4.6.0):
+  Copyright (C) 1995, 1996 Robert Gentleman and Ross Ihaka
+  Copyright (C) 2000-2007 The R Core Team
+  Copyright (C) 2024 The R Core Team
+
+src/n7_nmath.h adapts definitions from R's src/nmath/nmath.h and dpq.h:
+  Copyright (C) 1998-2025 The R Core Team
+  Copyright (C) 2000-2021 The R Core Team
+
+R is distributed under the GNU General Public License, version 2 or any
+later version.

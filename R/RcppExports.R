@@ -53,3 +53,7 @@ log_bessel_k_cpp <- function(x, nu) {
     .Call(`_numericals7_log_bessel_k_cpp`, x, nu)
 }
 
+student_t_cdf_cpp <- function(q, df, lower_tail, log_p, threads = 1L) {
+    .Call(`_numericals7_student_t_cdf_cpp`, q, df, lower_tail, log_p, threads)
+}
+
