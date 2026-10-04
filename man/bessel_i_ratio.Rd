@@ -4,14 +4,17 @@
 \alias{bessel_i_ratio}
 \title{The Ratio of Modified Bessel Functions}
 \usage{
-bessel_i_ratio(kappa)
+bessel_i_ratio(kappa, threads = 1L)
 }
 \arguments{
-\item{kappa}{A numeric vector of concentrations, positive and of any size.
-Zero returns 0, the limit. A negative value returns \code{NaN}.}
+\item{kappa}{A numeric vector of concentrations, non-negative and of any
+size. Zero returns 0, the limit, and \code{Inf} returns 1. A negative value
+returns \code{NaN}.}
+
+\item{threads}{The number of threads, a positive whole number.}
 }
 \value{
-A numeric vector the length of \code{kappa}, in \eqn{(0, 1)} and
+A numeric vector the length of \code{kappa}, in \eqn{[0, 1]} and
 increasing in its argument.
 }
 \description{
@@ -22,15 +25,16 @@ deviation from the mean direction, so it is the map between a concentration
 and the moment a method of moments estimates.
 }
 \details{
-Both Bessel functions are taken exponentially scaled, so the factor
-\eqn{e^{\kappa}} they share cancels in the ratio where the unscaled
-functions would overflow, from about \eqn{\kappa = 700}. The scaled
-functions themselves underflow to an exact zero between \eqn{10^5} and
-\eqn{10^6}, so past \eqn{\kappa = 10^4} the ratio is taken from its
-asymptotic expansion
-\eqn{1 - 1/(2\kappa) - 1/(8\kappa^2) - 1/(8\kappa^3)}, whose next term is
-already below the resolution of a double at the switch point; the result
-is therefore finite and accurate for an argument of any size.
+The ratio is evaluated in compiled code without the Bessel functions
+themselves, which overflow from about \eqn{\kappa = 700} and, exponentially
+scaled, underflow between \eqn{10^5} and \eqn{10^6}. Below
+\eqn{\kappa = 0.5} it is the power series of \eqn{A} at zero; from there to
+\eqn{\kappa = 30} it is the continued fraction
+\eqn{A = \kappa/(2 + \kappa^2/(4 + \kappa^2/(6 + \cdots)))}, evaluated
+backwards from the index \eqn{\lfloor\kappa\rfloor + 20}; above, it is the
+asymptotic series of \eqn{A} in \eqn{1/\kappa} with 30 terms, the quotient
+of the asymptotic series of \eqn{I_1} and \eqn{I_0}. The result is finite
+and accurate to the last bits for an argument of any size.
 }
 \examples{
 bessel_i_ratio(c(0.5, 2, 1000))
@@ -40,13 +44,13 @@ k <- c(0.5, 2, 1e3, 1e4)
 max(abs(bessel_i_ratio(k) - besselI(k, 1, TRUE) / besselI(k, 0, TRUE)))
 
 # Past that the scaled functions underflow to zero and their ratio is NaN,
-# while the asymptotic branch carries the answer to any concentration.
+# while the asymptotic series carries the answer to any concentration.
 suppressWarnings(besselI(1e6, 1, TRUE) / besselI(1e6, 0, TRUE))
 bessel_i_ratio(c(1e6, 1e12))
 
 }
 \seealso{
-\code{\link[=bessel_i_ratio_derivs]{bessel_i_ratio_derivs()}} for its derivatives,
+\code{\link[=bessel_i_ratio_d1]{bessel_i_ratio_d1()}} for its derivatives,
 \code{\link[=bessel_i_ratio_inverse]{bessel_i_ratio_inverse()}} for the map back, \code{\link[=bessel_i_ratios]{bessel_i_ratios()}} for the
 sequence of higher orders.
 }

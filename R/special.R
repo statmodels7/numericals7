@@ -3,8 +3,8 @@ NULL
 
 # Special functions the toolkit's distributions are written in, each carrying
 # the overflow discipline learned on it: the Mills ratio on the log scale,
-# Owen's T through one batched quadrature, the Bessel ratio through the
-# exponentially scaled Bessel functions.
+# Owen's T through one batched quadrature, the Bessel ratio through its
+# series and continued fraction (src/bessel_ratio.cpp).
 
 #' The Mills Ratio and Its Derivative
 #'
@@ -129,23 +129,26 @@ owen_t <- function(h, a) {
 #' and the moment a method of moments estimates.
 #'
 #' @details
-#' Both Bessel functions are taken exponentially scaled, so the factor
-#' \eqn{e^{\kappa}} they share cancels in the ratio where the unscaled
-#' functions would overflow, from about \eqn{\kappa = 700}. The scaled
-#' functions themselves underflow to an exact zero between \eqn{10^5} and
-#' \eqn{10^6}, so past \eqn{\kappa = 10^4} the ratio is taken from its
-#' asymptotic expansion
-#' \eqn{1 - 1/(2\kappa) - 1/(8\kappa^2) - 1/(8\kappa^3)}, whose next term is
-#' already below the resolution of a double at the switch point; the result
-#' is therefore finite and accurate for an argument of any size.
+#' The ratio is evaluated in compiled code without the Bessel functions
+#' themselves, which overflow from about \eqn{\kappa = 700} and, exponentially
+#' scaled, underflow between \eqn{10^5} and \eqn{10^6}. Below
+#' \eqn{\kappa = 0.5} it is the power series of \eqn{A} at zero; from there to
+#' \eqn{\kappa = 30} it is the continued fraction
+#' \eqn{A = \kappa/(2 + \kappa^2/(4 + \kappa^2/(6 + \cdots)))}, evaluated
+#' backwards from the index \eqn{\lfloor\kappa\rfloor + 20}; above, it is the
+#' asymptotic series of \eqn{A} in \eqn{1/\kappa} with 30 terms, the quotient
+#' of the asymptotic series of \eqn{I_1} and \eqn{I_0}. The result is finite
+#' and accurate to the last bits for an argument of any size.
 #'
-#' @param kappa A numeric vector of concentrations, positive and of any size.
-#'   Zero returns 0, the limit. A negative value returns `NaN`.
+#' @param kappa A numeric vector of concentrations, non-negative and of any
+#'   size. Zero returns 0, the limit, and `Inf` returns 1. A negative value
+#'   returns `NaN`.
+#' @param threads The number of threads, a positive whole number.
 #'
-#' @return A numeric vector the length of `kappa`, in \eqn{(0, 1)} and
+#' @return A numeric vector the length of `kappa`, in \eqn{[0, 1]} and
 #'   increasing in its argument.
 #'
-#' @seealso [bessel_i_ratio_derivs()] for its derivatives,
+#' @seealso [bessel_i_ratio_d1()] for its derivatives,
 #'   [bessel_i_ratio_inverse()] for the map back, [bessel_i_ratios()] for the
 #'   sequence of higher orders.
 #'
@@ -157,26 +160,15 @@ owen_t <- function(h, a) {
 #' max(abs(bessel_i_ratio(k) - besselI(k, 1, TRUE) / besselI(k, 0, TRUE)))
 #'
 #' # Past that the scaled functions underflow to zero and their ratio is NaN,
-#' # while the asymptotic branch carries the answer to any concentration.
+#' # while the asymptotic series carries the answer to any concentration.
 #' suppressWarnings(besselI(1e6, 1, TRUE) / besselI(1e6, 0, TRUE))
 #' bessel_i_ratio(c(1e6, 1e12))
 #'
 #' @export
-bessel_i_ratio <- function(kappa) {
-  out <- rep(NA_real_, length(kappa))
-  small <- !is.na(kappa) & kappa < 1e4
-  large <- !is.na(kappa) & kappa >= 1e4
-  if (any(small)) {
-    k <- kappa[small]
-    out[small] <- besselI(k, 1, expon.scaled = TRUE) /
-      besselI(k, 0, expon.scaled = TRUE)
-  }
-  if (any(large)) {
-    k <- kappa[large]
-    out[large] <- 1 - 1 / (2 * k) - 1 / (8 * k^2) - 1 / (8 * k^3)
-  }
-  out
+bessel_i_ratio <- function(kappa, threads = 1L) {
+  bessel_ratio_cpp(as.numeric(kappa), as.integer(threads))
 }
+
 
 
 #' The Sequence of Modified Bessel Ratios
@@ -208,9 +200,9 @@ bessel_i_ratio <- function(kappa) {
 #' observation, which is why the von Mises distribution function stopped being
 #' one.
 #'
-#' [bessel_i_ratio()] is the first of them and carries an asymptotic branch past
-#' \eqn{\kappa = 10^4}, where the scaled Bessel functions underflow. There is no
-#' such branch here, and none is wanted: the recurrence needs a starting index
+#' [bessel_i_ratio()] is the first of them and carries an asymptotic series
+#' from \eqn{\kappa = 30}. There is no such branch here, and none is
+#' wanted: the recurrence needs a starting index
 #' above \eqn{\kappa}, so its cost grows with the concentration, and a caller
 #' that far out is already past the point where a series in these ratios
 #' converges in any useful number of terms.
@@ -269,203 +261,190 @@ bessel_i_ratios <- function(kappa, m) {
 #' Derivatives of the Bessel Ratio
 #'
 #' @description
-#' Computes \eqn{A(\kappa) = I_1(\kappa)/I_0(\kappa)} and its first four
-#' derivatives, by differentiating the identity \eqn{A' = 1 - A/\kappa - A^2}
-#' repeatedly. A von Mises family needs all five to reach fourth-order
-#' derivatives in its concentration.
+#' Compute the derivatives of \eqn{A(\kappa) = I_1(\kappa)/I_0(\kappa)} in
+#' \eqn{\kappa}, one function per order: `bessel_i_ratio_d1()` returns
+#' \eqn{A'}, `bessel_i_ratio_d2()` \eqn{A''}, and so on to the fourth. Each
+#' computes its own order and the orders below it that the computation
+#' needs, and nothing above.
 #'
 #' @details
-#' Each order is written in the orders below it, so the whole table costs the
-#' two Bessel evaluations of [bessel_i_ratio()] and nothing more.
+#' The derivatives follow from the identity \eqn{A' = 1 - A/\kappa - A^2},
+#' a consequence of \eqn{I_0' = I_1} and \eqn{I_1' = I_0 - I_1/\kappa},
+#' differentiated repeatedly:
+#' \deqn{A'' = -\frac{A'}{\kappa} + \frac{A}{\kappa^2} - 2AA', \qquad
+#'       A''' = -\frac{A''}{\kappa} + \frac{2A'}{\kappa^2} -
+#'       \frac{2A}{\kappa^3} - 2(A')^2 - 2AA'',}
+#' and the fourth in the same pattern. In double precision this identity
+#' cancels at both ends of the range: at small \eqn{\kappa} its terms are of
+#' order \eqn{\kappa^{-n}} at derivative \eqn{n} while the result is of order
+#' one or \eqn{\kappa}, and at large \eqn{\kappa} the derivative \eqn{A'} is
+#' of order \eqn{\kappa^{-2}} against terms of order one. The functions
+#' therefore use three regimes, as [bessel_i_ratio()] does: below
+#' \eqn{\kappa = 0.5} the power series of \eqn{A} at zero differentiated term
+#' by term; from 0.5 to 30 the continued fraction for \eqn{A} and the
+#' identity above, both in double-double arithmetic (about 32 digits); from 30
+#' the asymptotic series in \eqn{1/\kappa} differentiated term by term. Each
+#' order is accurate to the last bits over the whole range.
 #'
-#' **At a large concentration the recursion cancels**, \eqn{A'} being
-#' \eqn{1 - A/\kappa - A^2}, three terms of order one whose sum is of order
-#' \eqn{\kappa^{-2}}, and each derivative above it losing a further factor.
-#' Measured against the asymptotic series, the third derivative is out by
-#' 3.7e-06 at \eqn{\kappa = 300}, 3.0e-04 at \eqn{10^3} and 0.61 at
-#' \eqn{10^4}. From \eqn{\kappa = 20} the four derivatives are therefore
-#' taken from the series of \eqn{A = I_1/I_0} in \eqn{1/\kappa}, the quotient
-#' of the two asymptotic series of \eqn{I_1} and \eqn{I_0}, differentiated
-#' term by term with 21 terms. The crossover is where the two routes agree
-#' best, 5e-13 to 4e-11 over the four orders; the value \eqn{A} itself stays
-#' [bessel_i_ratio()]'s.
-#' The first identity follows from \eqn{I_0' = I_1} and
-#' \eqn{I_1' = I_0 - I_1/\kappa}; the alternative, a Bessel function of
-#' higher order per derivative, costs more and is less accurate at large
-#' \eqn{\kappa}, where the functions themselves overflow and only their ratio
-#' does not. \eqn{A'} is the variance of a cosine and therefore positive.
+#' \eqn{A'} is the variance of \eqn{\cos(\Theta - \mu)} under a von Mises
+#' distribution and is therefore positive; the higher derivatives are its
+#' cumulants of order three to five.
 #'
-#' @param kappa A numeric vector of concentrations, positive.
+#' @inheritParams bessel_i_ratio
 #'
-#' @return A named list of five numeric vectors, each the length of `kappa`:
-#'   `A`, the ratio itself, and `d1` to `d4`, its derivatives in \eqn{\kappa}.
-#'   `d1` is strictly positive, being a variance.
+#' @return A numeric vector the length of `kappa`. `bessel_i_ratio_d1()` is
+#'   strictly positive at every finite concentration and tends to 1/2 at zero.
 #'
-#' @seealso [bessel_i_ratio()] for the value alone,
-#'   [bessel_i_ratio_inverse()] for the derivatives of the inverse map.
+#' @seealso [bessel_i_ratio()] for the value,
+#'   [bessel_i_ratio_inverse_d1()] for the derivatives of the inverse map.
 #'
 #' @examples
-#' str(bessel_i_ratio_derivs(2))
+#' bessel_i_ratio_d1(c(0.1, 1, 100))
 #'
-#' # The first derivative is the variance of a cosine, so it is positive at
-#' # every concentration and vanishes as the distribution concentrates.
-#' bessel_i_ratio_derivs(c(0.1, 1, 100))$d1
+#' # The first derivative satisfies the identity the others are built from.
+#' k <- 2
+#' bessel_i_ratio_d1(k) - (1 - bessel_i_ratio(k) / k - bessel_i_ratio(k)^2)
 #'
-#' # It satisfies the identity the whole table is built from.
-#' d <- bessel_i_ratio_derivs(2)
-#' d$d1 - (1 - d$A / 2 - d$A^2)
+#' # At a small concentration the series keeps every digit: A''' tends to
+#' # -3/8 and A'''' to 5 kappa / 4.
+#' c(bessel_i_ratio_d3(1e-6), bessel_i_ratio_d4(1e-6) / 1e-6)
 #'
+#' @name bessel_i_ratio_d1
+NULL
+
+#' @rdname bessel_i_ratio_d1
 #' @export
-bessel_i_ratio_derivs <- function(kappa) {
-  k <- kappa
-  A <- bessel_i_ratio(k)
-  d1 <- 1 - A / k - A * A
-  d2 <- -d1 / k + A / k^2 - 2 * A * d1
-  d3 <- -d2 / k + 2 * d1 / k^2 - 2 * A / k^3 - 2 * d1^2 - 2 * A * d2
-  d4 <- -d3 / k + 3 * d2 / k^2 - 6 * d1 / k^3 + 6 * A / k^4 -
-    6 * d1 * d2 - 2 * A * d3
-  big <- !is.na(k) & k >= 20
-  if (any(big)) {
-    s <- bessel_ratio_series_derivs(k[big])
-    d1[big] <- s[, 1L]; d2[big] <- s[, 2L]; d3[big] <- s[, 3L]; d4[big] <- s[, 4L]
-  }
-  list(A = A, d1 = d1, d2 = d2, d3 = d3, d4 = d4)
+bessel_i_ratio_d1 <- function(kappa, threads = 1L) {
+  bessel_ratio_d1_cpp(as.numeric(kappa), as.integer(threads))
 }
 
-#' The Bessel Ratio's Derivatives From Its Asymptotic Series
-#'
-#' @description
-#' The first four derivatives of \eqn{A(\kappa) = I_1(\kappa)/I_0(\kappa)}
-#' from \eqn{A \sim \sum_{n=0}^{20} q_n \kappa^{-n}}, the quotient of the
-#' asymptotic series of \eqn{I_1} and \eqn{I_0}, differentiated term by term:
-#' \eqn{d^m \kappa^{-n}/d\kappa^m = (-1)^m n(n+1)\cdots(n+m-1)\kappa^{-n-m}}.
-#'
-#' @details
-#' The coefficients are dyadic rationals, \eqn{q_n 2^{2n+1}} an integer through
-#' \eqn{n = 13}: 1, -1/2, -1/8, -1/8, -25/128, ... They are the ones
-#' \eqn{\sum_k (-1)^k a_k(\nu)\kappa^{-k}} gives for \eqn{\nu = 1} divided by
-#' \eqn{\nu = 0}, with
-#' \eqn{a_k(\nu) = \prod_{j=1}^k (4\nu^2 - (2j-1)^2) / (k!\,8^k)}.
-#'
-#' @param kappa A numeric vector of concentrations, at least 20.
-#'
-#' @return A matrix with one row per concentration and four columns, the
-#'   first to fourth derivatives.
-#'
-#' @seealso [bessel_i_ratio_derivs()]
-#'
-#' @keywords internal
-bessel_ratio_series_derivs <- function(kappa) {
-  q <- c(1, -0.5, -0.125, -0.125, -0.1953125, -0.40625, -1.0478515625,
-         -3.21875, -11.466461181640625, -46.478515625, -211.27614974975586,
-         -1064.67822265625, -5892.0457146167755, -35528.87744140625,
-         -231884.63595631713, -1628749.4532470701, -12251067.632866153,
-         -98252781.815467879, -836956449.77997613, -7546911569.3669949,
-         -71816112232.683289)
-  n <- seq_along(q) - 1L
-  u <- 1 / kappa
-  out <- matrix(0, length(kappa), 4L)
-  for (m in 1:4) {
-    fac <- (-1)^m * vapply(n, function(j) prod(j + 0:(m - 1)), 0)
-    cf <- q * fac
-    # Horner in u over the powers n + m, the coefficient of u^(n+m)
-    acc <- numeric(length(u))
-    for (j in rev(seq_along(cf))) acc <- acc * u + cf[j]
-    out[, m] <- acc * u^m
-  }
-  out
+#' @rdname bessel_i_ratio_d1
+#' @export
+bessel_i_ratio_d2 <- function(kappa, threads = 1L) {
+  bessel_ratio_d2_cpp(as.numeric(kappa), as.integer(threads))
+}
+
+#' @rdname bessel_i_ratio_d1
+#' @export
+bessel_i_ratio_d3 <- function(kappa, threads = 1L) {
+  bessel_ratio_d3_cpp(as.numeric(kappa), as.integer(threads))
+}
+
+#' @rdname bessel_i_ratio_d1
+#' @export
+bessel_i_ratio_d4 <- function(kappa, threads = 1L) {
+  bessel_ratio_d4_cpp(as.numeric(kappa), as.integer(threads))
 }
 
 #' The Inverse of the Bessel Ratio
 #'
 #' @description
-#' Computes \eqn{\kappa = A^{-1}(\rho)} by Newton's method, together with the
-#' four
-#' derivatives of the inverse in \eqn{\rho}. This is the map a von Mises method
-#' of moments runs: it turns an observed mean resultant length back into the
-#' concentration that produced it.
+#' Computes \eqn{\kappa = A^{-1}(\rho)}, the concentration whose ratio
+#' \eqn{A(\kappa) = I_1(\kappa)/I_0(\kappa)} equals \eqn{\rho}. This is the map
+#' a von Mises method of moments runs: it turns an observed mean resultant
+#' length back into the concentration that produced it.
 #'
 #' @details
 #' \eqn{A} has no elementary inverse, so \eqn{\kappa} is found by Newton's
-#' method, vectorized over `rho`, from the standard series approximation.
-#' \eqn{A} is increasing and concave, so after the first step every iterate
-#' lies on the left of the root and rises to it; a step that would fall
-#' below \eqn{2\rho} is replaced by it, which is still on the left since
+#' method from the standard series approximation, in compiled code. \eqn{A}
+#' is increasing and concave, so after the first step every iterate lies on
+#' the left of the root and rises to it; a step that would fall below
+#' \eqn{2\rho} is replaced by it, which is still on the left since
 #' \eqn{A(\kappa) < \kappa/2}. The iteration ends where a step is no larger
-#' than the spacing of the doubles at the iterate. Near \eqn{\rho = 1} the
-#' inverse is ill conditioned, \eqn{d\kappa = 2\kappa^2 d\rho}, so one unit in
-#' the last place of `rho` moves \eqn{\kappa} by a relative \eqn{10^{-3}} at
-#' \eqn{\kappa = 5 \times 10^{12}}: the answer there is one of the
-#' concentrations the forward map sends to `rho`. The derivatives come from the inverse
-#' function rule on [bessel_i_ratio_derivs()]:
-#' \deqn{\kappa' = \dfrac{1}{A'}, \qquad
-#'       \kappa'' = -\dfrac{A''}{(A')^3}, \qquad
-#'       \kappa''' = \dfrac{3(A'')^2 - A'A'''}{(A')^5},}
-#' and the fourth in the same pattern; \eqn{A' > 0} keeps every denominator
-#' away from zero in the interior. A `rho` outside \eqn{(0, 1)} returns
-#' `NA`.
+#' than the spacing of the doubles at the iterate.
+#'
+#' For \eqn{\rho \ge 1/2} the residual \eqn{A(\kappa) - \rho} is formed as
+#' \eqn{(1 - \rho) - (1 - A(\kappa))}, where \eqn{1 - \rho} is exact and
+#' \eqn{1 - A} is computed without forming \eqn{A}. Near \eqn{\rho = 1} the
+#' inverse behaves as \eqn{\kappa \approx 1/(2(1 - \rho))}, so its relative
+#' error is that of \eqn{1 - \rho}: the result is the concentration whose
+#' ratio is the double `rho`, to the last bits, at any concentration.
 #'
 #' @param rho A numeric vector of mean resultant lengths, strictly inside
 #'   \eqn{(0, 1)}. Anything outside, the endpoints included, returns `NA`
 #'   without a warning, the inverse having no finite value there.
+#' @inheritParams bessel_i_ratio
 #'
-#' @return A named list of five numeric vectors, each the length of `rho`:
-#'   `kappa`, the concentration, and `d1` to `d4`, the derivatives of the
-#'   inverse in \eqn{\rho}. `NA` wherever `rho` left \eqn{(0, 1)}.
+#' @return A numeric vector of concentrations the length of `rho`, `NA`
+#'   wherever `rho` left \eqn{(0, 1)}.
 #'
 #' @seealso [bessel_i_ratio()] for the forward map,
-#'   [bessel_i_ratio_derivs()] for the derivatives it inverts.
+#'   [bessel_i_ratio_inverse_d1()] for the derivatives of the inverse.
 #'
 #' @examples
 #' # The round trip closes to machine precision across the range.
 #' rho <- c(0.1, 0.5, 0.99)
-#' bessel_i_ratio(bessel_i_ratio_inverse(rho)$kappa) - rho
-#'
-#' # The first derivative is the reciprocal of A', the inverse function rule.
-#' inv <- bessel_i_ratio_inverse(0.7)
-#' inv$d1 - 1 / bessel_i_ratio_derivs(inv$kappa)$d1
+#' bessel_i_ratio(bessel_i_ratio_inverse(rho)) - rho
 #'
 #' # Outside the open unit interval there is no concentration to return.
-#' bessel_i_ratio_inverse(c(0, 0.5, 1))$kappa
+#' bessel_i_ratio_inverse(c(0, 0.5, 1))
 #'
 #' @export
-bessel_i_ratio_inverse <- function(rho) {
-  n <- length(rho)
-  k <- rep(NA_real_, n)
-  ok <- which(is.finite(rho) & rho > 0 & rho < 1)
-  if (length(ok)) {
-    r <- rho[ok]
-    g <- ifelse(r < 0.53, 2 * r + r^3 + 5 * r^5 / 6,
-                ifelse(r < 0.85, -0.4 + 1.39 * r + 0.43 / (1 - r),
-                       1 / (r^3 - 4 * r^2 + 3 * r)))
-    # A(k) < k/2, so the root lies above 2 rho: a step landing below that is
-    # replaced by it, which is still on the left of the root
-    lo <- 2 * r
-    g <- pmax(g, lo)
-    act <- seq_along(r)
-    for (it in seq_len(200L)) {
-      kk <- g[act]
-      a <- bessel_i_ratio_derivs(kk)
-      kn <- kk - (a$A - r[act]) / a$d1
-      bad <- !is.finite(kn) | kn < lo[act]
-      kn[bad] <- lo[act][bad]
-      g[act] <- kn
-      # after the first step every iterate sits on the left of the root and
-      # rises to it, A being increasing and concave; a step no larger than
-      # the spacing of the doubles there is the end
-      done <- abs(kn - kk) <= 4 * .Machine$double.eps * kn | (it > 1L & kn <= kk)
-      act <- act[!done]
-      if (!length(act)) break
-    }
-    k[ok] <- g
-  }
-  a <- bessel_i_ratio_derivs(k)
-  p1 <- a$d1
-  list(
-    kappa = k,
-    d1 = 1 / p1,
-    d2 = -a$d2 / p1^3,
-    d3 = (3 * a$d2^2 - p1 * a$d3) / p1^5,
-    d4 = (-15 * a$d2^3 + 10 * p1 * a$d2 * a$d3 - p1^2 * a$d4) / p1^7
-  )
+bessel_i_ratio_inverse <- function(rho, threads = 1L) {
+  bessel_ratio_inverse_cpp(as.numeric(rho), as.integer(threads))
+}
+
+#' Derivatives of the Inverse Bessel Ratio
+#'
+#' @description
+#' Compute the derivatives of the inverse map \eqn{\kappa(\rho) =
+#' A^{-1}(\rho)} in \eqn{\rho}, one function per order, evaluated at
+#' \eqn{\rho = A(\kappa)}. They take the concentration rather than \eqn{\rho},
+#' so a caller that has already inverted \eqn{\rho} does not invert it again.
+#'
+#' @details
+#' The derivatives come from the inverse function rule on the derivatives of
+#' \eqn{A} ([bessel_i_ratio_d1()] and the following orders):
+#' \deqn{\kappa' = \frac{1}{A'}, \qquad
+#'       \kappa'' = -\frac{A''}{(A')^3}, \qquad
+#'       \kappa''' = \frac{3(A'')^2 - A'A'''}{(A')^5},}
+#' \deqn{\kappa'''' = \frac{-15(A'')^3 + 10A'A''A''' - (A')^2A''''}{(A')^7}.}
+#' The derivative of order \eqn{n} needs \eqn{A'} to \eqn{A^{(n)}}, which are
+#' computed together at the cost of one evaluation of the continued fraction.
+#' \eqn{A' > 0} keeps every denominator away from zero.
+#'
+#' @inheritParams bessel_i_ratio
+#'
+#' @return A numeric vector the length of `kappa`: the derivative of the
+#'   inverse map at \eqn{\rho = A(\kappa)}.
+#'
+#' @seealso [bessel_i_ratio_inverse()] for the inverse itself.
+#'
+#' @examples
+#' k <- bessel_i_ratio_inverse(0.7)
+#'
+#' # The first derivative is the reciprocal of A', the inverse function rule.
+#' bessel_i_ratio_inverse_d1(k) - 1 / bessel_i_ratio_d1(k)
+#'
+#' # The second against a central difference of the first in rho.
+#' h <- 1e-5
+#' c(bessel_i_ratio_inverse_d2(k),
+#'   (bessel_i_ratio_inverse_d1(bessel_i_ratio_inverse(0.7 + h)) -
+#'      bessel_i_ratio_inverse_d1(bessel_i_ratio_inverse(0.7 - h))) / (2 * h))
+#'
+#' @name bessel_i_ratio_inverse_d1
+NULL
+
+#' @rdname bessel_i_ratio_inverse_d1
+#' @export
+bessel_i_ratio_inverse_d1 <- function(kappa, threads = 1L) {
+  bessel_ratio_inverse_d1_cpp(as.numeric(kappa), as.integer(threads))
+}
+
+#' @rdname bessel_i_ratio_inverse_d1
+#' @export
+bessel_i_ratio_inverse_d2 <- function(kappa, threads = 1L) {
+  bessel_ratio_inverse_d2_cpp(as.numeric(kappa), as.integer(threads))
+}
+
+#' @rdname bessel_i_ratio_inverse_d1
+#' @export
+bessel_i_ratio_inverse_d3 <- function(kappa, threads = 1L) {
+  bessel_ratio_inverse_d3_cpp(as.numeric(kappa), as.integer(threads))
+}
+
+#' @rdname bessel_i_ratio_inverse_d1
+#' @export
+bessel_i_ratio_inverse_d4 <- function(kappa, threads = 1L) {
+  bessel_ratio_inverse_d4_cpp(as.numeric(kappa), as.integer(threads))
 }

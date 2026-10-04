@@ -46,105 +46,129 @@ test_that("Owen's T matches its closed identities", {
   expect_equal(owen_t(hh, aa), ref, tolerance = 1e-11)
 })
 
+test_that("the Bessel ratio and its derivatives match 150-digit values", {
+  # columns: kappa, A, A', A'', A''', A''''; computed with mpmath at 150
+  # digits from I1/I0 and the Riccati identity (stabilita/
+  # bessel_ratio_reference.py). The rows sit in each regime and on both
+  # sides of the switches at 0.5 and 30.
+  ref <- rbind(
+    c(1e-08, 5.0e-9, 4.9999999999999998e-1, -3.7499999999999999e-9, -3.7499999999999994e-1, 1.2499999999999999e-8),
+    c(0.001, 4.9999993750001043e-4, 4.9999981250005208e-1, -3.7499979166674187e-4, -3.7499937500037598e-1, 1.2499984960946852e-3),
+    c(0.3, 1.4833742694087526e-1, 4.8353791796564295e-1, -1.0705296836782769e-1, -3.2168516985297446e-1, 3.3657739069179652e-1),
+    c(0.49, 2.37929523394175e-1, 4.5781908599094114e-1, -1.6122190505394156e-1, -2.4461853007867078e-1, 4.5935026960722952e-1),
+    c(0.51, 2.4705333764769773e-1, 4.5454633924399987e-1, -1.6602189051206942e-1, -2.3535514502028998e-1, 4.6681155264285959e-1),
+    c(5.0, 8.9338313704408522e-1, 2.31899430364522e-2, -1.0337671241085641e-2, 7.0240549085431692e-3, -6.2939350554317247e-3),
+    c(19.0, 9.7331803639515719e-1, 1.424734954446128e-3, -1.5225466075414019e-4, 2.4423784403210615e-5, -5.2280061689460967e-6),
+    c(29.9, 9.8313283326580569e-1, 5.6913539000685184e-4, -3.8417150398757939e-5, 3.8907845283066981e-6, -5.2553861312592275e-7),
+    c(30.1, 9.8324589715371098e-1, 5.6152908076906912e-4, -3.7649387110457785e-5, 3.787428243384775e-6, -5.0814139990910202e-7),
+    c(1000.0, 9.9949987487480428e-1, 5.0025037578328756e-7, -1.0007515039184817e-9, 3.0030075235231662e-12, -1.2015045164748185e-14),
+    c(100000000.0, 9.9999999499999999e-1, 5.0000000250000004e-17, -1.0000000075000001e-24, 3.0000000300000007e-32, -1.2000000150000005e-39))
+  k <- ref[, 1]
+  got <- cbind(bessel_i_ratio(k), bessel_i_ratio_d1(k), bessel_i_ratio_d2(k),
+               bessel_i_ratio_d3(k), bessel_i_ratio_d4(k))
+  rel <- abs(got / ref[, -1] - 1)
+  expect_lt(max(rel), 4e-15)
+})
+
+test_that("the derivatives match one numerical pass of the order below", {
+  skip_if_not_installed("numDeriv")
+  f <- list(bessel_i_ratio, bessel_i_ratio_d1, bessel_i_ratio_d2,
+            bessel_i_ratio_d3, bessel_i_ratio_d4)
+  for (k in c(0.2, 2, 20, 60)) {
+    for (m in 1:4) {
+      expect_equal(f[[m + 1]](k), numDeriv::grad(f[[m]], k), tolerance = 1e-8,
+                   info = sprintf("kappa %g, order %d", k, m))
+    }
+  }
+})
 
 test_that("the Bessel ratio is finite at any argument and correct where naive is", {
   k <- c(0.01, 0.5, 2, 50, 600)
   a <- bessel_i_ratio(k)
   expect_true(all(a > 0 & a < 1))
   expect_true(all(diff(a) > 0))
-
   # against the unscaled ratio where that one does not overflow
-  naive <- besselI(k, 1) / besselI(k, 0)
-  expect_equal(a, naive, tolerance = 1e-12)
-
-  # the two branches agree where both are exact: below the switch the
-  # implementation is the Bessel ratio, and the test-side asymptotic series
-  # must match it to machine precision
-  for (kk in c(5e3, 9.99e3)) {
-    expect_equal(bessel_i_ratio(kk),
-                 1 - 1 / (2 * kk) - 1 / (8 * kk^2) - 1 / (8 * kk^3),
-                 tolerance = 1e-15)
-  }
-
+  expect_equal(a, besselI(k, 1) / besselI(k, 0), tolerance = 1e-14)
   # far past the scaled Bessel underflow the ratio stays finite and ordered
   big <- bessel_i_ratio(c(1e5, 1e6, 1e9))
   expect_true(all(is.finite(big) & big > 0 & big < 1))
   expect_true(all(diff(big) > 0))
+  # A' is the variance of a cosine, positive across the range
+  expect_true(all(bessel_i_ratio_d1(c(0, 1e-6, 1, 100, 1e8)) > 0))
 })
 
+test_that("the ratio's limits and invalid arguments", {
+  expect_identical(bessel_i_ratio(c(0, Inf)), c(0, 1))
+  expect_identical(bessel_i_ratio_d1(c(0, Inf)), c(0.5, 0))
+  expect_equal(c(bessel_i_ratio_d2(0), bessel_i_ratio_d3(0), bessel_i_ratio_d4(0)),
+               c(0, -3 / 8, 0))
+  for (f in list(bessel_i_ratio, bessel_i_ratio_d1, bessel_i_ratio_d4,
+                 bessel_i_ratio_inverse_d2)) {
+    out <- f(c(NA, NaN, -1))
+    expect_true(is.na(out[1]) && !is.nan(out[1]))
+    expect_true(all(is.nan(out[2:3])))
+  }
+  expect_identical(bessel_i_ratio(numeric(0)), numeric(0))
+})
 
-test_that("the ratio's derivatives match one numerical pass each", {
+test_that("the kernels give the same bits at any thread count", {
+  k <- 10^seq(-6, 6, length.out = 2000)
+  for (f in list(bessel_i_ratio, bessel_i_ratio_d3, bessel_i_ratio_inverse_d4)) {
+    expect_identical(f(k, threads = 2L), f(k))
+  }
+  r <- seq(0.0005, 0.9995, length.out = 2000)
+  expect_identical(bessel_i_ratio_inverse(r, threads = 2L),
+                   bessel_i_ratio_inverse(r))
+})
+
+test_that("the inverse matches 150-digit preimages and rejects the boundary", {
+  # columns: rho (a double), the exact kappa with A(kappa) = rho (mpmath)
+  inv <- rbind(
+    c(1e-12, 2.0e-12),
+    c(0.3, 6.292153761056903e-1),
+    c(0.97, 1.6928871205888453e+1),
+    c(0.999, 5.0025037594098552e+2),
+    c(0.9999999999990905, 5.4975581388825e+11))
+  expect_lt(max(abs(bessel_i_ratio_inverse(inv[, 1]) / inv[, 2] - 1)), 4e-15)
+  expect_true(all(is.na(bessel_i_ratio_inverse(c(0, 1, -0.5, 2, NA)))))
+})
+
+test_that("the inverse is located to the rounding of rho, down to tiny rho", {
+  rho <- c(1e-15, 1e-12, 1e-8, seq(0.02, 0.98, by = 0.04))
+  k <- bessel_i_ratio_inverse(rho)
+  expect_true(all(abs(bessel_i_ratio(k) - rho) <= 4 * .Machine$double.eps * rho))
+  expect_equal(k[1:2], 2 * rho[1:2], tolerance = 1e-12)
+  one <- vapply(rho, bessel_i_ratio_inverse, numeric(1))
+  expect_identical(k, one)
+})
+
+test_that("the inverse's derivatives match one numerical pass each", {
   skip_if_not_installed("numDeriv")
-  for (k in c(0.3, 2, 20)) {
-    a <- bessel_i_ratio_derivs(k)
-    expect_equal(a$d1, numDeriv::grad(bessel_i_ratio, k), tolerance = 1e-8)
-    expect_equal(a$d2, numDeriv::grad(function(z) bessel_i_ratio_derivs(z)$d1, k),
-                 tolerance = 1e-7)
-    expect_equal(a$d3, numDeriv::grad(function(z) bessel_i_ratio_derivs(z)$d2, k),
-                 tolerance = 1e-6)
-    expect_equal(a$d4, numDeriv::grad(function(z) bessel_i_ratio_derivs(z)$d3, k),
-                 tolerance = 1e-5)
+  d <- list(function(r) bessel_i_ratio_inverse(r),
+            function(r) bessel_i_ratio_inverse_d1(bessel_i_ratio_inverse(r)),
+            function(r) bessel_i_ratio_inverse_d2(bessel_i_ratio_inverse(r)),
+            function(r) bessel_i_ratio_inverse_d3(bessel_i_ratio_inverse(r)),
+            function(r) bessel_i_ratio_inverse_d4(bessel_i_ratio_inverse(r)))
+  for (r in c(0.2, 0.6, 0.9, 0.99)) {
+    for (m in 1:4) {
+      expect_equal(d[[m + 1]](r), numDeriv::grad(d[[m]], r), tolerance = 1e-7,
+                   info = sprintf("rho %g, order %d", r, m))
+    }
   }
-  # d1 is the variance of a cosine, so positive across the range
-  expect_true(all(bessel_i_ratio_derivs(c(0.01, 1, 100))$d1 > 0))
+  # at a small rho numDeriv is the weak side (4e-7 at the fourth order);
+  # there the four derivatives against mpmath's at 60 digits
+  k <- bessel_i_ratio_inverse(0.001)
+  got <- c(bessel_i_ratio_inverse_d1(k), bessel_i_ratio_inverse_d2(k),
+           bessel_i_ratio_inverse_d3(k), bessel_i_ratio_inverse_d4(k))
+  expect_equal(got, c(2.0000030000041667, 0.0060000166666999168,
+                      6.0000500001662504, 0.10000066500240241),
+               tolerance = 1e-13)
+  # the first is the reciprocal of A'
+  k <- c(1e-5, 0.7, 25, 1e5)
+  expect_equal(bessel_i_ratio_inverse_d1(k), 1 / bessel_i_ratio_d1(k),
+               tolerance = 1e-15)
 })
 
-
-test_that("the ratio's derivatives keep their digits at a large concentration", {
-  # Past kappa = 20 they come from the asymptotic series; the recursion on
-  # A' = 1 - A/kappa - A^2 cancels terms of order one down to kappa^-2 and
-  # beyond, and read its third derivative 0.61 out at kappa = 1e4. Where both
-  # routes still hold, just past the crossover, they agree ...
-  for (k in c(25, 40, 60)) {
-    s <- bessel_ratio_series_derivs(k)
-    A <- bessel_i_ratio(k)
-    d1 <- 1 - A / k - A * A
-    d2 <- -d1 / k + A / k^2 - 2 * A * d1
-    d3 <- -d2 / k + 2 * d1 / k^2 - 2 * A / k^3 - 2 * d1^2 - 2 * A * d2
-    expect_equal(s[1, 1:3], c(d1, d2, d3), tolerance = 1e-8)
-  }
-  # ... and far past it the derivatives reach their leading terms
-  # 1/(2 k^2), -1/k^3, 3/k^4, -12/k^5 at the rate 1/k
-  for (k in c(1e3, 1e4, 1e6)) {
-    a <- bessel_i_ratio_derivs(k)
-    lead <- c(a$d1 * 2 * k^2, -a$d2 * k^3, a$d3 * k^4 / 3, -a$d4 * k^5 / 12)
-    expect_true(all(abs(lead - 1) < 5 / k))
-  }
-})
-
-
-test_that("the inverse round-trips and refuses the boundary", {
-  rho <- c(1e-6, 0.1, 0.53, 0.7, 0.85, 0.99, 0.999999)
-  k <- bessel_i_ratio_inverse(rho)$kappa
-  expect_equal(bessel_i_ratio(k), rho, tolerance = 1e-10)
-
-  expect_true(is.na(bessel_i_ratio_inverse(0)$kappa))
-  expect_true(is.na(bessel_i_ratio_inverse(1)$kappa))
-
-  # the inverse function rule against the analytic forward derivative
-  inv <- bessel_i_ratio_inverse(0.7)
-  expect_equal(inv$d1, 1 / bessel_i_ratio_derivs(inv$kappa)$d1, tolerance = 1e-12)
-})
-
-
-test_that("the inverse's higher derivatives match one numerical pass each", {
-  skip_if_not_installed("numDeriv")
-  for (r in c(0.2, 0.6, 0.9)) {
-    kd <- bessel_i_ratio_inverse(r)
-    expect_equal(kd$d1,
-                 numDeriv::grad(function(z) bessel_i_ratio_inverse(z)$kappa, r),
-                 tolerance = 1e-7)
-    expect_equal(kd$d2,
-                 numDeriv::grad(function(z) bessel_i_ratio_inverse(z)$d1, r),
-                 tolerance = 1e-6)
-    expect_equal(kd$d3,
-                 numDeriv::grad(function(z) bessel_i_ratio_inverse(z)$d2, r),
-                 tolerance = 1e-5)
-    expect_equal(kd$d4,
-                 numDeriv::grad(function(z) bessel_i_ratio_inverse(z)$d3, r),
-                 tolerance = 1e-4)
-  }
-})
 
 test_that("the Bessel ratios agree with an independent evaluation", {
   # R's own besselI, which shares no arithmetic with the backward recurrence
@@ -180,16 +204,4 @@ test_that("bessel_i_ratios rejects what it cannot answer", {
   expect_error(bessel_i_ratios(-1, 3), "must be positive")
   expect_identical(dim(bessel_i_ratios(numeric(0), 4L)), c(0L, 4L))
   expect_true(all(is.na(bessel_i_ratios(NA_real_, 3L))))
-})
-
-test_that("the inverse is located to the rounding of rho, down to tiny rho", {
-  # the residual of the forward map is at the spacing of the doubles near rho
-  # wherever kappa is well conditioned, and a vector is answered as its
-  # elements are: the Newton iteration is vectorized, not approximated
-  rho <- c(1e-15, 1e-12, 1e-8, seq(0.02, 0.98, by = 0.04))
-  k <- bessel_i_ratio_inverse(rho)$kappa
-  expect_true(all(abs(bessel_i_ratio(k) - rho) <= 4 * .Machine$double.eps * rho))
-  expect_equal(k[1:2], 2 * rho[1:2], tolerance = 1e-12)
-  one <- vapply(rho, function(r) bessel_i_ratio_inverse(r)$kappa, numeric(1))
-  expect_equal(k, one, tolerance = 1e-15)
 })

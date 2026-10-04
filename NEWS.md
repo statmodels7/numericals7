@@ -1,3 +1,43 @@
+# numericals7 0.18.0
+
+* **The derivatives of the Bessel ratio A(kappa) = I1(kappa)/I0(kappa) are
+  one function per order**, `bessel_i_ratio_d1()` to `bessel_i_ratio_d4()`,
+  and `bessel_i_ratio_derivs()`, which always computed all four, is removed.
+  Each order computes only itself and the orders below it that its formula
+  needs. The inverse follows the same pattern: `bessel_i_ratio_inverse()`
+  returns the concentration alone, and `bessel_i_ratio_inverse_d1()` to
+  `bessel_i_ratio_inverse_d4()` give the derivatives of the inverse in rho,
+  taking the concentration so that a caller that has inverted rho does not
+  invert it again. All are compiled, threaded through `threads`, and also
+  registered as C entry points (`n7_bessel_ratio`, `n7_bessel_ratio_d1`, ...,
+  `n7_bessel_ratio_upto`, `n7_bessel_ratio_inverse`,
+  `n7_bessel_ratio_inverse_d1`, ...) for the compiled code of other packages.
+
+* **The ratio and its derivatives are exact to the last bits at every
+  concentration.** The Riccati identity A' = 1 - A/kappa - A^2, differentiated
+  in double precision, cancelled at both ends of the range. At a small kappa
+  its terms are of order kappa^-n at order n while the result is of order one
+  or kappa: measured against 150-digit values, the fourth derivative was out
+  by 1e-3 at kappa = 1e-3 and had no correct digit below 1e-5, and the second
+  by 8e-11 at 1e-3. Between 5 and 30 it lost up to 4e-10 at the fourth order.
+  Now the power series of A at zero is used below kappa = 0.5, the continued
+  fraction and the identity in double-double arithmetic from 0.5 to 30, and
+  the asymptotic series in 1/kappa with 30 terms above (21 terms from 20
+  before). Over 72 concentrations from 1e-8 to 1e6 the largest relative error
+  of A and of every derivative is 4.4e-16. The value no longer calls
+  `besselI()`.
+
+* **`bessel_i_ratio_inverse()` resolves the concentration to the last bits
+  near rho = 1.** Newton's residual is formed as (1 - rho) - (1 - A(kappa))
+  for rho >= 1/2, where 1 - rho is exact and 1 - A is computed without
+  forming A. The relative error of kappa against 150-digit preimages of the
+  same doubles was up to 4e-12 at kappa = 3e3 and is now 2.2e-16 everywhere;
+  the four derivatives of the inverse are within 2.4e-15.
+
+* Time per value, at kappa drawn from an exponential of mean 3: the value
+  0.04 us, any one derivative 0.4 to 0.5 us (the table of four took 0.45 us),
+  the inverse 1.6 us (2.8 before).
+
 # numericals7 0.17.0
 
 * **`smoother_width()` takes `max_gap`**, the largest gap between consecutive

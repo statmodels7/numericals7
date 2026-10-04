@@ -10,6 +10,126 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// bessel_ratio_cpp
+NumericVector bessel_ratio_cpp(NumericVector kappa, int threads);
+RcppExport SEXP _numericals7_bessel_ratio_cpp(SEXP kappaSEXP, SEXP threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type kappa(kappaSEXP);
+    Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(bessel_ratio_cpp(kappa, threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// bessel_ratio_d1_cpp
+NumericVector bessel_ratio_d1_cpp(NumericVector kappa, int threads);
+RcppExport SEXP _numericals7_bessel_ratio_d1_cpp(SEXP kappaSEXP, SEXP threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type kappa(kappaSEXP);
+    Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(bessel_ratio_d1_cpp(kappa, threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// bessel_ratio_d2_cpp
+NumericVector bessel_ratio_d2_cpp(NumericVector kappa, int threads);
+RcppExport SEXP _numericals7_bessel_ratio_d2_cpp(SEXP kappaSEXP, SEXP threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type kappa(kappaSEXP);
+    Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(bessel_ratio_d2_cpp(kappa, threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// bessel_ratio_d3_cpp
+NumericVector bessel_ratio_d3_cpp(NumericVector kappa, int threads);
+RcppExport SEXP _numericals7_bessel_ratio_d3_cpp(SEXP kappaSEXP, SEXP threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type kappa(kappaSEXP);
+    Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(bessel_ratio_d3_cpp(kappa, threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// bessel_ratio_d4_cpp
+NumericVector bessel_ratio_d4_cpp(NumericVector kappa, int threads);
+RcppExport SEXP _numericals7_bessel_ratio_d4_cpp(SEXP kappaSEXP, SEXP threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type kappa(kappaSEXP);
+    Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(bessel_ratio_d4_cpp(kappa, threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// bessel_ratio_inverse_cpp
+NumericVector bessel_ratio_inverse_cpp(NumericVector rho, int threads);
+RcppExport SEXP _numericals7_bessel_ratio_inverse_cpp(SEXP rhoSEXP, SEXP threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type rho(rhoSEXP);
+    Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(bessel_ratio_inverse_cpp(rho, threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// bessel_ratio_inverse_d1_cpp
+NumericVector bessel_ratio_inverse_d1_cpp(NumericVector kappa, int threads);
+RcppExport SEXP _numericals7_bessel_ratio_inverse_d1_cpp(SEXP kappaSEXP, SEXP threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type kappa(kappaSEXP);
+    Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(bessel_ratio_inverse_d1_cpp(kappa, threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// bessel_ratio_inverse_d2_cpp
+NumericVector bessel_ratio_inverse_d2_cpp(NumericVector kappa, int threads);
+RcppExport SEXP _numericals7_bessel_ratio_inverse_d2_cpp(SEXP kappaSEXP, SEXP threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type kappa(kappaSEXP);
+    Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(bessel_ratio_inverse_d2_cpp(kappa, threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// bessel_ratio_inverse_d3_cpp
+NumericVector bessel_ratio_inverse_d3_cpp(NumericVector kappa, int threads);
+RcppExport SEXP _numericals7_bessel_ratio_inverse_d3_cpp(SEXP kappaSEXP, SEXP threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type kappa(kappaSEXP);
+    Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(bessel_ratio_inverse_d3_cpp(kappa, threads));
+    return rcpp_result_gen;
+END_RCPP
+}
+// bessel_ratio_inverse_d4_cpp
+NumericVector bessel_ratio_inverse_d4_cpp(NumericVector kappa, int threads);
+RcppExport SEXP _numericals7_bessel_ratio_inverse_d4_cpp(SEXP kappaSEXP, SEXP threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< NumericVector >::type kappa(kappaSEXP);
+    Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(bessel_ratio_inverse_d4_cpp(kappa, threads));
+    return rcpp_result_gen;
+END_RCPP
+}
 // lb_set_uk_cpp
 void lb_set_uk_cpp(List uk);
 RcppExport SEXP _numericals7_lb_set_uk_cpp(SEXP ukSEXP) {
@@ -47,13 +167,25 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_numericals7_bessel_ratio_cpp", (DL_FUNC) &_numericals7_bessel_ratio_cpp, 2},
+    {"_numericals7_bessel_ratio_d1_cpp", (DL_FUNC) &_numericals7_bessel_ratio_d1_cpp, 2},
+    {"_numericals7_bessel_ratio_d2_cpp", (DL_FUNC) &_numericals7_bessel_ratio_d2_cpp, 2},
+    {"_numericals7_bessel_ratio_d3_cpp", (DL_FUNC) &_numericals7_bessel_ratio_d3_cpp, 2},
+    {"_numericals7_bessel_ratio_d4_cpp", (DL_FUNC) &_numericals7_bessel_ratio_d4_cpp, 2},
+    {"_numericals7_bessel_ratio_inverse_cpp", (DL_FUNC) &_numericals7_bessel_ratio_inverse_cpp, 2},
+    {"_numericals7_bessel_ratio_inverse_d1_cpp", (DL_FUNC) &_numericals7_bessel_ratio_inverse_d1_cpp, 2},
+    {"_numericals7_bessel_ratio_inverse_d2_cpp", (DL_FUNC) &_numericals7_bessel_ratio_inverse_d2_cpp, 2},
+    {"_numericals7_bessel_ratio_inverse_d3_cpp", (DL_FUNC) &_numericals7_bessel_ratio_inverse_d3_cpp, 2},
+    {"_numericals7_bessel_ratio_inverse_d4_cpp", (DL_FUNC) &_numericals7_bessel_ratio_inverse_d4_cpp, 2},
     {"_numericals7_lb_set_uk_cpp", (DL_FUNC) &_numericals7_lb_set_uk_cpp, 1},
     {"_numericals7_log_bessel_i_cpp", (DL_FUNC) &_numericals7_log_bessel_i_cpp, 3},
     {"_numericals7_log_bessel_k_cpp", (DL_FUNC) &_numericals7_log_bessel_k_cpp, 2},
     {NULL, NULL, 0}
 };
 
+void n7_register_bessel_ratio(DllInfo* dll);
 RcppExport void R_init_numericals7(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
+    n7_register_bessel_ratio(dll);
 }

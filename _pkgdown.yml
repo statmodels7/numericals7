@@ -79,8 +79,9 @@ reference:
   - owen_t
   - bessel_i_ratio
   - bessel_i_ratios
-  - bessel_i_ratio_derivs
+  - bessel_i_ratio_d1
   - bessel_i_ratio_inverse
+  - bessel_i_ratio_inverse_d1
 
 - title: Smoothers of the absolute value
   desc: >
