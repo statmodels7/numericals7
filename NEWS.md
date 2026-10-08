@@ -1,3 +1,11 @@
+# numericals7 0.21.1
+
+* The test of `bessel_i_ratio_inverse()` against 150-digit preimages writes
+  its probabilities in hexadecimal. On arm64 macOS the decimal literal of
+  1 - 2^-40 parsed to a neighbouring double, and near one a unit in the last
+  place moves the preimage by 1.2e-4 relative; the function was right on
+  every platform.
+
 # numericals7 0.21.0
 
 * `log_bessel_i()`'s compiled kernel is registered as the C entry point

@@ -122,13 +122,16 @@ test_that("the kernels give the same bits at any thread count", {
 })
 
 test_that("the inverse matches 150-digit preimages and rejects the boundary", {
-  # columns: rho (a double), the exact kappa with A(kappa) = rho (mpmath)
+  # columns: rho (a double), the exact kappa with A(kappa) = rho (mpmath).
+  # rho is written in hexadecimal: a decimal literal can parse to a different
+  # double on arm64 macOS, and near rho = 1 one unit in the last place moves
+  # kappa by 1.2e-4 relative (the last row is 1 - 2^-40).
   inv <- rbind(
-    c(1e-12, 2.0e-12),
-    c(0.3, 6.292153761056903e-1),
-    c(0.97, 1.6928871205888453e+1),
-    c(0.999, 5.0025037594098552e+2),
-    c(0.9999999999990905, 5.4975581388825e+11))
+    c(0x1.19799812dea11p-40, 2.0e-12),
+    c(0x1.3333333333333p-2, 6.292153761056903e-1),
+    c(0x1.f0a3d70a3d70ap-1, 1.6928871205888453e+1),
+    c(0x1.ff7ced916872bp-1, 5.0025037594098552e+2),
+    c(0x1.fffffffffep-1, 5.4975581388825e+11))
   expect_lt(max(abs(bessel_i_ratio_inverse(inv[, 1]) / inv[, 2] - 1)), 4e-15)
   expect_true(all(is.na(bessel_i_ratio_inverse(c(0, 1, -0.5, 2, NA)))))
 })
