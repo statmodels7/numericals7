@@ -9,36 +9,42 @@ concentration and the moment a method of moments estimates.
 ## Usage
 
 ``` r
-bessel_i_ratio(kappa)
+bessel_i_ratio(kappa, threads = 1L)
 ```
 
 ## Arguments
 
 - kappa:
 
-  A numeric vector of concentrations, positive and of any size. Zero
-  returns 0, the limit. A negative value returns `NaN`.
+  A numeric vector of concentrations, non-negative and of any size. Zero
+  returns 0, the limit, and `Inf` returns 1. A negative value returns
+  `NaN`.
+
+- threads:
+
+  The number of threads, a positive whole number.
 
 ## Value
 
-A numeric vector the length of `kappa`, in \\(0, 1)\\ and increasing in
-its argument.
+A numeric vector the length of `kappa`, in \\\[0, 1\]\\ and increasing
+in its argument.
 
 ## Details
 
-Both Bessel functions are taken exponentially scaled, so the factor
-\\e^{\kappa}\\ they share cancels in the ratio where the unscaled
-functions would overflow, from about \\\kappa = 700\\. The scaled
-functions themselves underflow to an exact zero between \\10^5\\ and
-\\10^6\\, so past \\\kappa = 10^4\\ the ratio is taken from its
-asymptotic expansion \\1 - 1/(2\kappa) - 1/(8\kappa^2) -
-1/(8\kappa^3)\\, whose next term is already below the resolution of a
-double at the switch point; the result is therefore finite and accurate
-for an argument of any size.
+The ratio is evaluated in compiled code without the Bessel functions
+themselves, which overflow from about \\\kappa = 700\\ and,
+exponentially scaled, underflow between \\10^5\\ and \\10^6\\. Below
+\\\kappa = 0.5\\ it is the power series of \\A\\ at zero; from there to
+\\\kappa = 30\\ it is the continued fraction \\A = \kappa/(2 +
+\kappa^2/(4 + \kappa^2/(6 + \cdots)))\\, evaluated backwards from the
+index \\\lfloor\kappa\rfloor + 20\\; above, it is the asymptotic series
+of \\A\\ in \\1/\kappa\\ with 30 terms, the quotient of the asymptotic
+series of \\I_1\\ and \\I_0\\. The result is finite and accurate to the
+last bits for an argument of any size.
 
 ## See also
 
-[`bessel_i_ratio_derivs()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_derivs.md)
+[`bessel_i_ratio_d1()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_d1.md)
 for its derivatives,
 [`bessel_i_ratio_inverse()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_inverse.md)
 for the map back,
@@ -57,7 +63,7 @@ max(abs(bessel_i_ratio(k) - besselI(k, 1, TRUE) / besselI(k, 0, TRUE)))
 #> [1] 1.110223e-16
 
 # Past that the scaled functions underflow to zero and their ratio is NaN,
-# while the asymptotic branch carries the answer to any concentration.
+# while the asymptotic series carries the answer to any concentration.
 suppressWarnings(besselI(1e6, 1, TRUE) / besselI(1e6, 0, TRUE))
 #> [1] NaN
 bessel_i_ratio(c(1e6, 1e12))

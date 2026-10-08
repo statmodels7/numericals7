@@ -13,7 +13,7 @@ its covariate, the smallest transition the data can tell from a step."><meta pro
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.15.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,7 +48,7 @@ its covariate, the smallest transition the data can tell from a step.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">smoother_width</span><span class="op">(</span><span class="va">smoother</span>, <span class="va">spacing</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">smoother_width</span><span class="op">(</span><span class="va">smoother</span>, <span class="va">spacing</span>, max_gap <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -64,6 +64,13 @@ its covariate, the smallest transition the data can tell from a step.</p>
 Every entry must be positive and none may be missing; a smoother that
 already carries a width never reaches the check.</p></dd>
 
+
+<dt id="arg-max-gap">max_gap<a class="anchor" aria-label="anchor" href="#arg-max-gap"></a></dt>
+<dd><p><code>NULL</code> (the default), or the largest gap between consecutive
+distinct values of the covariate over the range a break-point may take,
+one value or one per entry of <code>spacing</code>. Read only by a smoother with an
+<code>exact_radius</code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -74,9 +81,21 @@ when resolved from it, and a single number when the smoother carries one.</p>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>A smoother constructed with an explicit width keeps it, and <code>spacing</code> is
 then not even looked at. A smoother constructed with <code>NULL</code> takes the
-spacing through its own <code>width_from_spacing</code>, which is the identity for
-<code><a href="smooth_probit.html">smooth_probit()</a></code> and <code><a href="smooth_quintic.html">smooth_quintic()</a></code>, whose parameter is a length, and
-the square for <code><a href="smooth_hyperbolic.html">smooth_hyperbolic()</a></code>, whose parameter is a squared one.</p>
+spacing through its own <code>width_from_spacing</code>: the identity for
+<code><a href="smooth_probit.html">smooth_probit()</a></code>, the square for <code><a href="smooth_hyperbolic.html">smooth_hyperbolic()</a></code>, whose parameter is
+a squared length, and \(5/(2\log 2)\) times the spacing for
+<code><a href="smooth_quintic.html">smooth_quintic()</a></code>, for the reason its page gives.</p>
+<p>A smoother that declares an <code>exact_radius</code> is equal to \(\lvert u\rvert\)
+beyond that radius, so a break-point smoothed with it has no curvature where
+no observation falls within the radius, and a gap in the covariate wider
+than twice the radius can hold such a break-point. Where <code>max_gap</code> is given,
+the width is therefore raised until the radius is at least
+\(0.55\) times it, the radius being taken to grow in proportion to the
+width, which holds for <code><a href="smooth_quintic.html">smooth_quintic()</a></code>, whose radius is its width. The
+median spacing does not bound the largest gap: among \(n\) uniform points
+the largest gap is about \(\log_2 n\) median spacings, 8.6 at
+\(n = 400\), against the 3.61 the quintic's width covers. A smoother
+without an <code>exact_radius</code> ignores <code>max_gap</code>.</p>
 <p>The result is nothing about whether the width is large enough for the
 arithmetic; <code><a href="smoother_width_floor.html">smoother_width_floor()</a></code> answers that separately, and a consumer
 takes the larger of the two.</p>
@@ -104,6 +123,12 @@ imposes, <code><a href="abs_smoother.html">abs_smoother()</a></code> for what a 
 <span class="r-in"><span><span class="co"># One width per group.</span></span></span>
 <span class="r-in"><span><span class="fu">smoother_width</span><span class="op">(</span><span class="fu"><a href="smooth_probit.html">smooth_probit</a></span><span class="op">(</span>per_group <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.4</span>, <span class="fl">0.35</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.20 0.40 0.35</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># The quintic is raised to cover half of a large gap; the probit is not.</span></span></span>
+<span class="r-in"><span><span class="fu">smoother_width</span><span class="op">(</span><span class="fu"><a href="smooth_quintic.html">smooth_quintic</a></span><span class="op">(</span><span class="op">)</span>, <span class="fl">0.01</span>, max_gap <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.055</span>
+<span class="r-in"><span><span class="fu">smoother_width</span><span class="op">(</span><span class="fu"><a href="smooth_probit.html">smooth_probit</a></span><span class="op">(</span><span class="op">)</span>, <span class="fl">0.01</span>, max_gap <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.01</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

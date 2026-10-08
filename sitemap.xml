@@ -1,7 +1,5 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://statmodels7.github.io/numericals7/404.html</loc></url>
-<url><loc>https://statmodels7.github.io/numericals7/LICENSE-text.html</loc></url>
-<url><loc>https://statmodels7.github.io/numericals7/LICENSE.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/articles/index.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/articles/numerical-kernels.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/authors.html</loc></url>
@@ -9,10 +7,11 @@
 <url><loc>https://statmodels7.github.io/numericals7/news/index.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/abs_smoother.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/bessel_i_ratio.html</loc></url>
-<url><loc>https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_derivs.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_d1.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_inverse.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_inverse_d1.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/bessel_i_ratios.html</loc></url>
-<url><loc>https://statmodels7.github.io/numericals7/reference/bessel_ratio_series_derivs.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/bessel_k.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/check_abs_smoother.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/compositions.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/dot-bessel_uk.html</loc></url>
@@ -44,6 +43,7 @@
 <url><loc>https://statmodels7.github.io/numericals7/reference/smoother_deriv.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/smoother_width.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/smoother_width_floor.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/student_t_cdf.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/thread_count.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/tuple_indices.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/worker_count.html</loc></url>

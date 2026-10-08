@@ -13,7 +13,7 @@ them for the price of one matters."><meta property="og:image" content="https://s
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.15.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,9 +88,9 @@ the product starts there.</p>
 A series over these ratios therefore costs less than a quadrature per
 observation, which is why the von Mises distribution function stopped being
 one.</p>
-<p><code><a href="bessel_i_ratio.html">bessel_i_ratio()</a></code> is the first of them and carries an asymptotic branch past
-\(\kappa = 10^4\), where the scaled Bessel functions underflow. There is no
-such branch here, and none is wanted: the recurrence needs a starting index
+<p><code><a href="bessel_i_ratio.html">bessel_i_ratio()</a></code> is the first of them and carries an asymptotic series
+from \(\kappa = 30\). There is no such branch here, and none is
+wanted: the recurrence needs a starting index
 above \(\kappa\), so its cost grows with the concentration, and a caller
 that far out is already past the point where a series in these ratios
 converges in any useful number of terms.</p>

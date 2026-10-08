@@ -11,7 +11,7 @@ smoother_width()'s answer."><meta property="og:image" content="https://statmodel
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.15.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,7 +75,10 @@ of a double to a QR of the design, gives</p>
 <p>$$h \geq \sqrt{\epsilon}\,D,$$</p>
 <p>carried onto the width parameter's own scale for a smoother parametrized by
 a squared length. At a covariate range of 10 that is <code>1.49e-07</code> for
-<code><a href="smooth_probit.html">smooth_probit()</a></code> and its square, <code>2.22e-14</code>, for <code><a href="smooth_hyperbolic.html">smooth_hyperbolic()</a></code>.</p>
+<code><a href="smooth_probit.html">smooth_probit()</a></code> and its square, <code>2.22e-14</code>, for <code><a href="smooth_hyperbolic.html">smooth_hyperbolic()</a></code>.
+The floor goes through the same <code>width_from_spacing</code> as a spacing does, so
+for <code><a href="smooth_quintic.html">smooth_quintic()</a></code> it is \(5/(2\log 2)\) times larger, which only
+makes it more conservative.</p>
 <p>The bound is derived, which is the toolkit's rule for a guard constant, and
 it is the same argument the break-point schedule's own scaling floor rests
 on.</p>

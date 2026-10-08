@@ -32,7 +32,7 @@
 
     <a class="navbar-brand me-2" href="index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.15.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -139,7 +139,7 @@
 <div class="section level2">
 <h2 id="special-functions-with-their-overflow-discipline">Special functions, with their overflow discipline<a class="anchor" aria-label="anchor" href="#special-functions-with-their-overflow-discipline"></a>
 </h2>
-<p>Each of these was born inside a distribution and carries the numerical lesson learned there: the Mills ratio is formed on the log scale, where the direct quotient is 0/0 from <code>t = -38</code> on; Owen’s T batches every element into one <code><a href="reference/quad_vec.html">quad_vec()</a></code> call; the Bessel ratio goes through the exponentially scaled Bessel functions, so it is finite at any argument, and its inverse comes with the four derivatives the inverse function rule provides.</p>
+<p>Each of these was born inside a distribution and carries the numerical lesson learned there: the Mills ratio is formed on the log scale, where the direct quotient is 0/0 from <code>t = -38</code> on; Owen’s T batches every element into one <code><a href="reference/quad_vec.html">quad_vec()</a></code> call; the Bessel ratio is evaluated from its power series, its continued fraction and its asymptotic series, without the Bessel functions themselves, so it is finite at any argument, and its derivatives and those of its inverse are computed one order per function.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/mills_ratio.html">mills_ratio</a></span><span class="op">(</span><span class="op">-</span><span class="fl">40</span><span class="op">)</span><span class="op">$</span><span class="va">r</span>        <span class="co"># finite, close to 40</span></span>
 <span><span class="co">#&gt; [1] 40.02497</span></span>
@@ -147,7 +147,7 @@
 <span><span class="co">#&gt; [1] 0.7853982</span></span>
 <span><span class="fu"><a href="reference/bessel_i_ratio.html">bessel_i_ratio</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span>      <span class="co"># the unscaled ratio overflows past 700</span></span>
 <span><span class="co">#&gt; [1] 0.9994999</span></span>
-<span><span class="fu"><a href="reference/bessel_i_ratio.html">bessel_i_ratio</a></span><span class="op">(</span><span class="fu"><a href="reference/bessel_i_ratio_inverse.html">bessel_i_ratio_inverse</a></span><span class="op">(</span><span class="fl">0.7</span><span class="op">)</span><span class="op">$</span><span class="va">kappa</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/bessel_i_ratio.html">bessel_i_ratio</a></span><span class="op">(</span><span class="fu"><a href="reference/bessel_i_ratio_inverse.html">bessel_i_ratio_inverse</a></span><span class="op">(</span><span class="fl">0.7</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 0.7</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -180,8 +180,7 @@
 <div class="license">
 <h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="LICENSE.html">Full license</a></li>
-<li><small><a href="https://opensource.org/licenses/mit-license.php" class="external-link">MIT</a> + file <a href="LICENSE-text.html">LICENSE</a></small></li>
+<li>GPL (&gt;= 2)</li>
 </ul>
 </div>
 
@@ -197,6 +196,7 @@
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Giovanni Tinervia <br><small class="roles"> Author, maintainer </small>   </li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
 

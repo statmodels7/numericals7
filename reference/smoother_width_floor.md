@@ -43,6 +43,11 @@ by a squared length. At a covariate range of 10 that is `1.49e-07` for
 [`smooth_probit()`](https://statmodels7.github.io/numericals7/reference/smooth_probit.md)
 and its square, `2.22e-14`, for
 [`smooth_hyperbolic()`](https://statmodels7.github.io/numericals7/reference/smooth_hyperbolic.md).
+The floor goes through the same `width_from_spacing` as a spacing does,
+so for
+[`smooth_quintic()`](https://statmodels7.github.io/numericals7/reference/smooth_quintic.md)
+it is \\5/(2\log 2)\\ times larger, which only makes it more
+conservative.
 
 The bound is derived, which is the toolkit's rule for a guard constant,
 and it is the same argument the break-point schedule's own scaling floor

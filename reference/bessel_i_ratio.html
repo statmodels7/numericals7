@@ -15,7 +15,7 @@ and the moment a method of moments estimates."><meta property="og:image" content
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.15.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,7 +51,7 @@ and the moment a method of moments estimates.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bessel_i_ratio</span><span class="op">(</span><span class="va">kappa</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">bessel_i_ratio</span><span class="op">(</span><span class="va">kappa</span>, threads <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -59,30 +59,36 @@ and the moment a method of moments estimates.</p>
 
 
 <dl><dt id="arg-kappa">kappa<a class="anchor" aria-label="anchor" href="#arg-kappa"></a></dt>
-<dd><p>A numeric vector of concentrations, positive and of any size.
-Zero returns 0, the limit. A negative value returns <code>NaN</code>.</p></dd>
+<dd><p>A numeric vector of concentrations, non-negative and of any
+size. Zero returns 0, the limit, and <code>Inf</code> returns 1. A negative value
+returns <code>NaN</code>.</p></dd>
+
+
+<dt id="arg-threads">threads<a class="anchor" aria-label="anchor" href="#arg-threads"></a></dt>
+<dd><p>The number of threads, a positive whole number.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A numeric vector the length of <code>kappa</code>, in \((0, 1)\) and
+    <p>A numeric vector the length of <code>kappa</code>, in \([0, 1]\) and
 increasing in its argument.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Both Bessel functions are taken exponentially scaled, so the factor
-\(e^{\kappa}\) they share cancels in the ratio where the unscaled
-functions would overflow, from about \(\kappa = 700\). The scaled
-functions themselves underflow to an exact zero between \(10^5\) and
-\(10^6\), so past \(\kappa = 10^4\) the ratio is taken from its
-asymptotic expansion
-\(1 - 1/(2\kappa) - 1/(8\kappa^2) - 1/(8\kappa^3)\), whose next term is
-already below the resolution of a double at the switch point; the result
-is therefore finite and accurate for an argument of any size.</p>
+    <p>The ratio is evaluated in compiled code without the Bessel functions
+themselves, which overflow from about \(\kappa = 700\) and, exponentially
+scaled, underflow between \(10^5\) and \(10^6\). Below
+\(\kappa = 0.5\) it is the power series of \(A\) at zero; from there to
+\(\kappa = 30\) it is the continued fraction
+\(A = \kappa/(2 + \kappa^2/(4 + \kappa^2/(6 + \cdots)))\), evaluated
+backwards from the index \(\lfloor\kappa\rfloor + 20\); above, it is the
+asymptotic series of \(A\) in \(1/\kappa\) with 30 terms, the quotient
+of the asymptotic series of \(I_1\) and \(I_0\). The result is finite
+and accurate to the last bits for an argument of any size.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="bessel_i_ratio_derivs.html">bessel_i_ratio_derivs()</a></code> for its derivatives,
+    <div class="dont-index"><p><code><a href="bessel_i_ratio_d1.html">bessel_i_ratio_d1()</a></code> for its derivatives,
 <code><a href="bessel_i_ratio_inverse.html">bessel_i_ratio_inverse()</a></code> for the map back, <code><a href="bessel_i_ratios.html">bessel_i_ratios()</a></code> for the
 sequence of higher orders.</p></div>
     </div>
@@ -98,7 +104,7 @@ sequence of higher orders.</p></div>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.110223e-16</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Past that the scaled functions underflow to zero and their ratio is NaN,</span></span></span>
-<span class="r-in"><span><span class="co"># while the asymptotic branch carries the answer to any concentration.</span></span></span>
+<span class="r-in"><span><span class="co"># while the asymptotic series carries the answer to any concentration.</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Bessel.html" class="external-link">besselI</a></span><span class="op">(</span><span class="fl">1e6</span>, <span class="fl">1</span>, <span class="cn">TRUE</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/Bessel.html" class="external-link">besselI</a></span><span class="op">(</span><span class="fl">1e6</span>, <span class="fl">0</span>, <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] NaN</span>
 <span class="r-in"><span><span class="fu">bessel_i_ratio</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1e6</span>, <span class="fl">1e12</span><span class="op">)</span><span class="op">)</span></span></span>

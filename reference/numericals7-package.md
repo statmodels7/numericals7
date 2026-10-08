@@ -25,3 +25,24 @@ Useful links:
 ## Author
 
 **Maintainer**: Giovanni Tinervia <giovannitinervia9@gmail.com>
+
+Other contributors:
+
+- Robert Gentleman (R's Student t distribution function) \[contributor,
+  copyright holder\]
+
+- Ross Ihaka (R's Student t distribution function) \[contributor,
+  copyright holder\]
+
+- R Core Team (the Student t distribution function, the incomplete beta
+  ratio and the Bessel K function, from R's mathematical library)
+  \[contributor, copyright holder\]
+
+- The R Foundation (the Bessel K function, from R's mathematical
+  library) \[copyright holder\]
+
+- William J. Cody (the Bessel K routine RKBESL) \[contributor\]
+
+- Armido R. Didonato (ACM TOMS Algorithm 708) \[contributor\]
+
+- Alfred H. Morris (ACM TOMS Algorithm 708) \[contributor\]

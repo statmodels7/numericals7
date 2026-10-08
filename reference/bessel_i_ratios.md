@@ -48,12 +48,11 @@ observation, which is why the von Mises distribution function stopped
 being one.
 
 [`bessel_i_ratio()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio.md)
-is the first of them and carries an asymptotic branch past \\\kappa =
-10^4\\, where the scaled Bessel functions underflow. There is no such
-branch here, and none is wanted: the recurrence needs a starting index
-above \\\kappa\\, so its cost grows with the concentration, and a caller
-that far out is already past the point where a series in these ratios
-converges in any useful number of terms.
+is the first of them and carries an asymptotic series from \\\kappa =
+30\\. There is no such branch here, and none is wanted: the recurrence
+needs a starting index above \\\kappa\\, so its cost grows with the
+concentration, and a caller that far out is already past the point where
+a series in these ratios converges in any useful number of terms.
 
 ## See also
 

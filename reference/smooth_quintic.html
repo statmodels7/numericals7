@@ -13,7 +13,7 @@ one that is not analytic."><meta property="og:image" content="https://statmodels
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.15.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,14 +58,14 @@ one that is not analytic.</p>
 <dl><dt id="arg-h">h<a class="anchor" aria-label="anchor" href="#arg-h"></a></dt>
 <dd><p>The transition half-width, a single positive number, or <code>NULL</code> (the
 default) to be resolved at build from the covariate's spacing through
-<code><a href="smoother_width.html">smoother_width()</a></code>.</p></dd>
+<code><a href="smoother_width.html">smoother_width()</a></code>, as \(5/(2\log 2)\) times the spacing.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>An <code><a href="abs_smoother.html">abs_smoother()</a></code> named <code>"quintic"</code>, with <code>width_name</code> <code>"h"</code>, no
-<code>width_from_spacing</code>, no <code>tau_correction</code>, and an <code>exact_radius</code> equal to
-the width.</p>
+    <p>An <code><a href="abs_smoother.html">abs_smoother()</a></code> named <code>"quintic"</code>, with <code>width_name</code> <code>"h"</code>, a
+<code>width_from_spacing</code> multiplying the spacing by \(5/(2\log 2)\), no
+<code>tau_correction</code>, and an <code>exact_radius</code> equal to the width.</p>
     </div>
     <div class="section level2">
     <h2 id="the-closed-form">The closed form<a class="anchor" aria-label="anchor" href="#the-closed-form"></a></h2>
@@ -89,6 +89,42 @@ is the sharp model's.</p>
 <code><a href="https://rdrr.io/r/stats/deriv.html" class="external-link">stats::deriv()</a></code> does not read a clamp, and written out in the constructor
 the branches are ordinary code.</p>
 <p>There is no convolution identity here, so <code>tau_correction</code> is <code>NULL</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="the-width-resolved-from-data">The width resolved from data<a class="anchor" aria-label="anchor" href="#the-width-resolved-from-data"></a></h2>
+    <p>Exactness outside the transition has a cost for a break-point. The
+derivative of \(s\) in the break-point is \(s''\), which is zero outside
+\([-h, h]\), so where no observation falls within \(h\) of the fitted
+break-point the break-point has no curvature at all and is not identified.
+At a width of one median spacing this happens in 25 to 55 per cent of fits
+of a discontinuous break-point on a uniform covariate, because a quarter of
+the gaps are wider than \(2h\). The width resolved from a spacing \(g\)
+is therefore</p>
+<p>$$h = \frac{5}{2\log 2}\,g \approx 3.61\,g,$$</p>
+<p>which puts five observations inside \([-h, h]\) on average for a uniform
+covariate, whose median spacing is \(\log 2\) times its mean spacing.
+Measured on the same fits, this removes the unidentified break-point and
+brings its error to that of <code><a href="smooth_probit.html">smooth_probit()</a></code>, at a fit error on a true
+sharp step 10 to 15 per cent above the probit's. It does not guarantee an
+observation inside the width for a covariate with large gaps, since the
+largest of \(n\) gaps is about \(\log_2 n\) median spacings, so a
+consumer that passes the largest gap to <code><a href="smoother_width.html">smoother_width()</a></code> also has the
+width raised to at least \(0.55\) times it. A width supplied as <code>h</code> is
+used as it stands.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="under-an-outer-criterion">Under an outer criterion<a class="anchor" aria-label="anchor" href="#under-an-outer-criterion"></a></h2>
+    <p>The fourth derivative jumps at \(\pm h\) and the fifth is a point mass
+there. An exact outer gradient of a marginal criterion reads the fourth
+derivative of \(s\) through a break-point term and an exact outer Hessian
+reads the fifth, so over the hyperparameters the criterion is smooth only
+between the values at which an observation crosses \(\psi \pm h\), and the
+Hessian leaves out the point masses. Measured on a random break-point under
+REML, the jump of the gradient at such a crossing is below the resolution of
+a step of \(10^{-4}\) in the hyperparameter, and the exact gradient agrees
+with a difference of the criterion to \(2.7 \times 10^{-7}\).
+<code><a href="smooth_probit.html">smooth_probit()</a></code>, which is analytic, has neither effect and is the choice
+where a criterion is estimated over a smoothed break-point.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

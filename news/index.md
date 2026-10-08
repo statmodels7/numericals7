@@ -1,26 +1,160 @@
 # Changelog
 
+## numericals7 0.21.0
+
+- [`log_bessel_i()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i.md)’s
+  compiled kernel is registered as the C entry point `n7_log_bessel_i`,
+  taking the argument and the order, for the compiled code of other
+  packages. It never calls the R API.
+
+## numericals7 0.20.0
+
+- [`bessel_k()`](https://statmodels7.github.io/numericals7/reference/bessel_k.md)
+  computes the modified Bessel function of the third kind K_nu(x), or
+  its exponentially scaled form, with the values of
+  [`base::besselK()`](https://rdrr.io/r/base/Bessel.html). The code is
+  R’s
+  [`bessel_k()`](https://statmodels7.github.io/numericals7/reference/bessel_k.md)
+  (the routine RKBESL) copied with the warnings removed and with its
+  work array on the stack, so that it never calls the R API and may run
+  on a worker thread. It is threaded through `threads` and registered as
+  the C entry point `n7_bessel_k`, with the arguments of R’s C function
+  [`bessel_k()`](https://statmodels7.github.io/numericals7/reference/bessel_k.md).
+
+## numericals7 0.19.0
+
+- [`student_t_cdf()`](https://statmodels7.github.io/numericals7/reference/student_t_cdf.md)
+  computes the Student t distribution function with real degrees of
+  freedom, on the natural or the log scale. Its values are those of
+  [`stats::pt()`](https://rdrr.io/r/stats/TDist.html): the code is R’s
+  [`pt()`](https://rdrr.io/r/stats/TDist.html) and its incomplete beta
+  ratio (ACM TOMS Algorithm 708), copied with the warnings removed, so
+  that it never calls the R API and may run on a worker thread. It is
+  threaded through `threads` and registered as the C entry point
+  `n7_pt`, with the arguments of R’s C function
+  [`pt()`](https://rdrr.io/r/stats/TDist.html).
+
+- The license is GPL (\>= 2), which the copied R sources require. The
+  copyright holders of those sources are listed in `inst/COPYRIGHTS` and
+  in `Authors@R`.
+
+## numericals7 0.18.0
+
+- **The derivatives of the Bessel ratio A(kappa) = I1(kappa)/I0(kappa)
+  are one function per order**,
+  [`bessel_i_ratio_d1()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_d1.md)
+  to
+  [`bessel_i_ratio_d4()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_d1.md),
+  and `bessel_i_ratio_derivs()`, which always computed all four, is
+  removed. Each order computes only itself and the orders below it that
+  its formula needs. The inverse follows the same pattern:
+  [`bessel_i_ratio_inverse()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_inverse.md)
+  returns the concentration alone, and
+  [`bessel_i_ratio_inverse_d1()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_inverse_d1.md)
+  to
+  [`bessel_i_ratio_inverse_d4()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_inverse_d1.md)
+  give the derivatives of the inverse in rho, taking the concentration
+  so that a caller that has inverted rho does not invert it again. All
+  are compiled, threaded through `threads`, and also registered as C
+  entry points (`n7_bessel_ratio`, `n7_bessel_ratio_d1`, …,
+  `n7_bessel_ratio_upto`, `n7_bessel_ratio_inverse`,
+  `n7_bessel_ratio_inverse_d1`, …) for the compiled code of other
+  packages.
+
+- **The ratio and its derivatives are exact to the last bits at every
+  concentration.** The Riccati identity A’ = 1 - A/kappa - A^2,
+  differentiated in double precision, cancelled at both ends of the
+  range. At a small kappa its terms are of order kappa^-n at order n
+  while the result is of order one or kappa: measured against 150-digit
+  values, the fourth derivative was out by 1e-3 at kappa = 1e-3 and had
+  no correct digit below 1e-5, and the second by 8e-11 at 1e-3. Between
+  5 and 30 it lost up to 4e-10 at the fourth order. Now the power series
+  of A at zero is used below kappa = 0.5, the continued fraction and the
+  identity in double-double arithmetic from 0.5 to 30, and the
+  asymptotic series in 1/kappa with 30 terms above (21 terms from 20
+  before). Over 72 concentrations from 1e-8 to 1e6 the largest relative
+  error of A and of every derivative is 4.4e-16. The value no longer
+  calls [`besselI()`](https://rdrr.io/r/base/Bessel.html).
+
+- **[`bessel_i_ratio_inverse()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_inverse.md)
+  resolves the concentration to the last bits near rho = 1.** Newton’s
+  residual is formed as (1 - rho) - (1 - A(kappa)) for rho \>= 1/2,
+  where 1 - rho is exact and 1 - A is computed without forming A. The
+  relative error of kappa against 150-digit preimages of the same
+  doubles was up to 4e-12 at kappa = 3e3 and is now 2.2e-16 everywhere;
+  the four derivatives of the inverse are within 2.4e-15.
+
+- Time per value, at kappa drawn from an exponential of mean 3: the
+  value 0.04 us, any one derivative 0.4 to 0.5 us (the table of four
+  took 0.45 us), the inverse 1.6 us (2.8 before).
+
+## numericals7 0.17.0
+
+- **[`smoother_width()`](https://statmodels7.github.io/numericals7/reference/smoother_width.md)
+  takes `max_gap`**, the largest gap between consecutive distinct values
+  of the covariate over the range a break-point may take. A smoother
+  that declares an `exact_radius`, which is
+  [`smooth_quintic()`](https://statmodels7.github.io/numericals7/reference/smooth_quintic.md),
+  then has its width raised until the radius is at least 0.55 times that
+  gap. The quintic is exactly \|u\| beyond its radius, so a break-point
+  sitting in a gap wider than twice the radius has no curvature and is
+  not identified, and the median spacing of 0.16.0 does not bound the
+  largest gap: among n uniform points the largest gap is about log2(n)
+  median spacings, 8.6 at n = 400, against the 3.61 the quintic’s width
+  covers. Measured on 400 uniform points, a `jump()` whose fitted
+  break-point landed in a gap of 0.0155 against 2h = 0.0129 had its
+  column exactly zero. Other smoothers ignore `max_gap`, and a width
+  supplied as `h` is used as it stands.
+
+- [`smooth_quintic()`](https://statmodels7.github.io/numericals7/reference/smooth_quintic.md)’s
+  page states what its C^3 costs under an outer criterion: the fourth
+  derivative jumps at +-h and the fifth is a point mass there, so the
+  criterion over the hyperparameters is smooth only between the values
+  at which an observation crosses psi +- h, and an exact outer Hessian
+  leaves out the point masses. Measured on a random break-point under
+  REML, the jump of the gradient at a crossing is below the resolution
+  of a step of 1e-4 in the hyperparameter.
+
+## numericals7 0.16.0
+
+- **[`smooth_quintic()`](https://statmodels7.github.io/numericals7/reference/smooth_quintic.md)
+  resolves its width at 5/(2 log 2) spacings**, about 3.61, where it
+  took one. The quintic is exact outside \[-h, h\], so its second
+  derivative, which is the curvature a smoothed break-point carries, is
+  zero there, and where no observation falls within h of a fitted
+  break-point that break-point is not identified. At one median spacing
+  this happened in 25 to 55 per cent of fits of `jump()` and `jseg()` on
+  a uniform covariate, and the break-point’s error did not shrink with n
+  (0.037 at n = 200 and at 1000). At the new width, which puts five
+  observations inside \[-h, h\] on average for a uniform covariate, none
+  of 80 such fits left it unidentified and the error is the probit’s
+  (0.0035 against 0.004), at a fit error on a true sharp step 10 to 15
+  per cent above the probit’s. `seg()` was never affected. A width
+  supplied as `h` is used as it stands, and
+  [`smoother_width_floor()`](https://statmodels7.github.io/numericals7/reference/smoother_width_floor.md)
+  is multiplied by the same factor, which only makes it more
+  conservative.
+
 ## numericals7 0.15.0
 
-- **[`bessel_i_ratio_derivs()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_derivs.md)
-  keeps its digits at a large concentration.** The four derivatives of
-  A(kappa) = I1(kappa)/I0(kappa) came from differentiating A’ = 1 -
-  A/kappa - A^2 repeatedly, and at a large kappa that identity is three
-  terms of order one summing to order kappa^-2, each order above it
-  losing a further factor. Measured against the asymptotic series of A
-  differentiated term by term, the third derivative was out by 3.7e-06
-  at kappa = 300, 3.0e-04 at 1e3 and 0.61 at 1e4, and the second by
-  9.1e-05 at 1e4. From kappa = 20 the four derivatives are that series,
-  the quotient of the asymptotic series of I1 and I0 in 1/kappa with 21
-  terms, whose coefficients are dyadic rationals; the internal
-  [`bessel_ratio_series_derivs()`](https://statmodels7.github.io/numericals7/reference/bessel_ratio_series_derivs.md)
-  evaluates it. The crossover is where the two routes agree best, 5e-13
-  to 4e-11 over the four orders, the recursion degrading as kappa^2
-  above it and the series’ truncation below it. The value A itself is
-  unchanged, and so is every derivative below kappa = 20. ⚠️ Every von
-  Mises derivative that reads these moves above kappa = 20 by the
-  recursion’s error there: 1e-10 or less at kappa = 100, the whole value
-  past 1e4.
+- **`bessel_i_ratio_derivs()` keeps its digits at a large
+  concentration.** The four derivatives of A(kappa) =
+  I1(kappa)/I0(kappa) came from differentiating A’ = 1 - A/kappa - A^2
+  repeatedly, and at a large kappa that identity is three terms of order
+  one summing to order kappa^-2, each order above it losing a further
+  factor. Measured against the asymptotic series of A differentiated
+  term by term, the third derivative was out by 3.7e-06 at kappa = 300,
+  3.0e-04 at 1e3 and 0.61 at 1e4, and the second by 9.1e-05 at 1e4. From
+  kappa = 20 the four derivatives are that series, the quotient of the
+  asymptotic series of I1 and I0 in 1/kappa with 21 terms, whose
+  coefficients are dyadic rationals; the internal
+  `bessel_ratio_series_derivs()` evaluates it. The crossover is where
+  the two routes agree best, 5e-13 to 4e-11 over the four orders, the
+  recursion degrading as kappa^2 above it and the series’ truncation
+  below it. The value A itself is unchanged, and so is every derivative
+  below kappa = 20. ⚠️ Every von Mises derivative that reads these moves
+  above kappa = 20 by the recursion’s error there: 1e-10 or less at
+  kappa = 100, the whole value past 1e4.
 
 - **[`bessel_i_ratio_inverse()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_inverse.md)
   is Newton’s method vectorized over `rho`, where it was one
@@ -367,10 +501,8 @@
   call, with the closed identities at `a = 0` and `a = Inf`;
   [`bessel_i_ratio()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio.md)
   through the exponentially scaled Bessel functions, with its four
-  derivatives from the recurrence
-  ([`bessel_i_ratio_derivs()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_derivs.md))
-  and its inverse by root finding with the inverse-function-rule
-  derivatives
+  derivatives from the recurrence (`bessel_i_ratio_derivs()`) and its
+  inverse by root finding with the inverse-function-rule derivatives
   ([`bessel_i_ratio_inverse()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_inverse.md)).
 
 ## numericals7 0.3.0

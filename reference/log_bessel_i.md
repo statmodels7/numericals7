@@ -60,6 +60,11 @@ K\_\nu = 1/x\\: the large-argument expansions are used only where their
 truncation error is below \\10^{-11}\\, the uniform expansion taking
 over otherwise.
 
+The compiled kernel never calls the R API. It is also registered as the
+C entry point `n7_log_bessel_i`, resolved with
+`R_GetCCallable("numericals7", "n7_log_bessel_i")` and taking the
+argument and the order.
+
 ## References
 
 Plesner, A., Sørensen, H. H. B., and Hauberg, S. (2024). Accurate
