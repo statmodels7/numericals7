@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,6 +32,10 @@
       <small>Source: <a href="https://github.com/statmodels7/numericals7/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.21.1" id="numericals7-0211">numericals7 0.21.1<a class="anchor" aria-label="anchor" href="#numericals7-0211"></a></h2>
+<ul><li>The test of <code><a href="../reference/bessel_i_ratio_inverse.html">bessel_i_ratio_inverse()</a></code> against 150-digit preimages writes its probabilities in hexadecimal. On arm64 macOS the decimal literal of 1 - 2^-40 parsed to a neighbouring double, and near one a unit in the last place moves the preimage by 1.2e-4 relative; the function was right on every platform.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.21.0" id="numericals7-0210">numericals7 0.21.0<a class="anchor" aria-label="anchor" href="#numericals7-0210"></a></h2>
 <ul><li>

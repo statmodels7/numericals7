@@ -1,5 +1,14 @@
 # Changelog
 
+## numericals7 0.21.1
+
+- The test of
+  [`bessel_i_ratio_inverse()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_inverse.md)
+  against 150-digit preimages writes its probabilities in hexadecimal.
+  On arm64 macOS the decimal literal of 1 - 2^-40 parsed to a
+  neighbouring double, and near one a unit in the last place moves the
+  preimage by 1.2e-4 relative; the function was right on every platform.
+
 ## numericals7 0.21.0
 
 - [`log_bessel_i()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i.md)’s
