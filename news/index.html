@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.22.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.22.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,6 +32,10 @@
       <small>Source: <a href="https://github.com/statmodels7/numericals7/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.22.1" id="numericals7-0221">numericals7 0.22.1<a class="anchor" aria-label="anchor" href="#numericals7-0221"></a></h2>
+<ul><li>The test of <code><a href="../reference/owen_t.html">owen_t()</a></code> against 50-digit values writes its reference at h = 37 (2.86e-300) in hexadecimal. On arm64 macOS R parsed the 25-digit decimal literal to zero, and the relative error was Inf; the function was correct on every platform.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.22.0" id="numericals7-0220">numericals7 0.22.0<a class="anchor" aria-label="anchor" href="#numericals7-0220"></a></h2>
 <ul><li><p><code><a href="../reference/owen_t.html">owen_t()</a></code> keeps its relative accuracy at steep slopes and at large <code>h</code>. It integrated the unscaled integrand over [0, a] with an absolute tolerance of 1e-15, so for a slope well above one the first panel’s nodes could miss the peak of width 1/h near zero (<code>owen_t(2.5, 1000)</code> returned 7e-28 for 3.1e-3, and the skew normal distribution function at alpha = 1000 was off by 6e-3), and a value far below one lost its digits to the absolute tolerance (<code>owen_t(10, 1)</code> was off by 2e-8 relative). A slope above one is now reflected onto T(ah, 1/a) through Owen’s identity, with the normal tails computed as upper tails, and the integral over a slope in (0, 1] takes the factor exp(-h^2/2) out of the integrand and runs with a relative tolerance of 1e-13 and no absolute one. Against values computed to 50 digits on 168 points with h from 0 to 37 and a from 1e-6 to 1e6, the largest relative error is 6.5e-16, where 60 points were off by more than 1e-12 before; on 20000 skew-normal-like arguments the time goes from 0.35 s to 0.09 s and the values move by at most 1.1e-16. A missing argument now gives <code>NA</code>, where it gave 0.</p></li>

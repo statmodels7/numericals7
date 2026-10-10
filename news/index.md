@@ -1,5 +1,14 @@
 # Changelog
 
+## numericals7 0.22.1
+
+- The test of
+  [`owen_t()`](https://statmodels7.github.io/numericals7/reference/owen_t.md)
+  against 50-digit values writes its reference at h = 37 (2.86e-300) in
+  hexadecimal. On arm64 macOS R parsed the 25-digit decimal literal to
+  zero, and the relative error was Inf; the function was correct on
+  every platform.
+
 ## numericals7 0.22.0
 
 - [`owen_t()`](https://statmodels7.github.io/numericals7/reference/owen_t.md)
