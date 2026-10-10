@@ -51,7 +51,9 @@ test_that("Owen's T keeps its relative accuracy at steep slopes and large h", {
   # the scaled integrand with breakpoints at 1/(8h) times powers of two. A
   # steep slope puts the integrand within 1/h of zero, and a large h makes
   # T tiny: the unscaled quadrature over [0, a] missed the first and lost the
-  # second to its absolute tolerance.
+  # second to its absolute tolerance. The value at h = 37 is written in
+  # hexadecimal (2.862785611262288411341596e-300): on arm64 macOS R parses a
+  # long decimal mantissa at that exponent to zero.
   ref <- matrix(c(
     0.5, 1.01, 0.1072869530519066127348075,
     1,   1e-6, 9.653235263000563699738638e-8,
@@ -62,7 +64,7 @@ test_that("Owen's T keeps its relative accuracy at steep slopes and large h", {
     10,  100,  3.809926512080263032986672e-24,
     20,  1e6,  1.376812059303116847537811e-89,
     30,  1e6,  2.453356963574093529766905e-198,
-    37,  0.5,  2.862785611262288411341596e-300
+    37,  0.5,  0x1.eaccc6bfeb0afp-996
   ), ncol = 3, byrow = TRUE)
   got <- owen_t(ref[, 1], ref[, 2])
   expect_lt(max(abs(got / ref[, 3] - 1)), 1e-14)

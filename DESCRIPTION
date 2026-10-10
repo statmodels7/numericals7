@@ -1,6 +1,6 @@
 Package: numericals7
 Title: Numerical Kernels for Statistical Modeling
-Version: 0.22.0
+Version: 0.22.1
 Authors@R:
     c(person("Giovanni", "Tinervia", , "giovannitinervia9@gmail.com", role = c("aut", "cre")),
       person("Robert", "Gentleman", role = c("ctb", "cph"),
