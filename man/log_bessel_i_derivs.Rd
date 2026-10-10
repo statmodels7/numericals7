@@ -22,8 +22,9 @@ respect to the \emph{argument}. The first is the ratio identity
 \eqn{(\log I_\nu)' = \nu/x + I_{\nu+1}/I_\nu}, with the ratio formed as the
 exponential of a difference of logarithms and therefore finite wherever the
 logarithms are. The higher orders follow from the modified Bessel equation
-and cost no further Bessel evaluations, so the whole table is the price of
-two.
+and need no further Bessel evaluations, so the value and the four
+derivatives require two evaluations of \eqn{\log I}, at the orders \eqn{\nu}
+and \eqn{\nu + 1}.
 }
 \details{
 Derivatives with respect to the \emph{order} have no elementary form and are not

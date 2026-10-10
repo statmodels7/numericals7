@@ -9,7 +9,8 @@ bessel_i_ratio_inverse(rho, threads = 1L)
 \arguments{
 \item{rho}{A numeric vector of mean resultant lengths, strictly inside
 \eqn{(0, 1)}. Anything outside, the endpoints included, returns \code{NA}
-without a warning, the inverse having no finite value there.}
+without a warning (at \eqn{\rho = 0} the inverse is the limit 0, and at
+\eqn{\rho = 1} it diverges).}
 
 \item{threads}{The number of threads, a positive whole number.}
 }
@@ -19,22 +20,26 @@ wherever \code{rho} left \eqn{(0, 1)}.
 }
 \description{
 Computes \eqn{\kappa = A^{-1}(\rho)}, the concentration whose ratio
-\eqn{A(\kappa) = I_1(\kappa)/I_0(\kappa)} equals \eqn{\rho}. This is the map
-a von Mises method of moments runs: it turns an observed mean resultant
-length back into the concentration that produced it.
+\eqn{A(\kappa) = I_1(\kappa)/I_0(\kappa)} equals \eqn{\rho}. It is the map
+used by a von Mises method of moments, which converts an observed mean
+resultant length into the concentration that produced it.
 }
 \details{
 \eqn{A} has no elementary inverse, so \eqn{\kappa} is found by Newton's
-method from the standard series approximation, in compiled code. \eqn{A}
-is increasing and concave, so after the first step every iterate lies on
-the left of the root and rises to it; a step that would fall below
-\eqn{2\rho} is replaced by it, which is still on the left since
-\eqn{A(\kappa) < \kappa/2}. The iteration ends where a step is no larger
-than the spacing of the doubles at the iterate.
+method in compiled code, started from a piecewise approximation to the
+inverse (a short series for \eqn{\rho < 0.53} and rational forms above).
+\eqn{A} is increasing and concave, so after the first step every iterate
+lies on the left of the root and rises to it; a step that would fall below
+\eqn{2\rho} is replaced by \eqn{2\rho}, which is still on the left since
+\eqn{A(\kappa) < \kappa/2}. The iteration ends when a step is no larger
+than four times the machine epsilon times the iterate, or when an iterate
+fails to rise above the previous one, and in any case after 200 iterations.
 
 For \eqn{\rho \ge 1/2} the residual \eqn{A(\kappa) - \rho} is formed as
 \eqn{(1 - \rho) - (1 - A(\kappa))}, where \eqn{1 - \rho} is exact and
-\eqn{1 - A} is computed without forming \eqn{A}. Near \eqn{\rho = 1} the
+\eqn{1 - A} keeps its relative accuracy: it is computed from \eqn{A} in
+double-double arithmetic below \eqn{\kappa = 30}, and from its own
+asymptotic series above, without forming \eqn{A}. Near \eqn{\rho = 1} the
 inverse behaves as \eqn{\kappa \approx 1/(2(1 - \rho))}, so its relative
 error is that of \eqn{1 - \rho}: the result is the concentration whose
 ratio is the double \code{rho}, to the last bits, at any concentration.
@@ -44,7 +49,7 @@ ratio is the double \code{rho}, to the last bits, at any concentration.
 rho <- c(0.1, 0.5, 0.99)
 bessel_i_ratio(bessel_i_ratio_inverse(rho)) - rho
 
-# Outside the open unit interval there is no concentration to return.
+# Outside the open unit interval, the endpoints included, the result is NA.
 bessel_i_ratio_inverse(c(0, 0.5, 1))
 
 }

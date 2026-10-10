@@ -15,7 +15,7 @@ series_vec(
 )
 }
 \arguments{
-\item{term}{The term function, obeying the contract above.}
+\item{term}{The term function, a function of \code{k} and \code{i} as described above.}
 
 \item{n}{The number of parameter rows, a positive whole number. It fixes the
 length of the answer and the range \code{i} takes.}
@@ -28,53 +28,81 @@ indexed from one.}
 \code{atol} governs a sum near zero and \code{rtol} a large one. Both are tighter
 than \code{\link[=quad_vec]{quad_vec()}}'s, a term being cheaper than a panel.}
 
-\item{max_terms}{The greatest number of terms one row may consume, \code{100000}
-by default.}
+\item{max_terms}{The number of terms after which a row that has not
+converged returns \code{NA}, \code{100000} by default. Terms are evaluated in whole
+blocks, so a row may consume up to the first multiple of \code{block} at or
+above this number; the terms skipped after a probe and the probes
+themselves are not counted.}
 
-\item{block}{How many terms are evaluated per pass, \code{64} by default. It is
-also the window the tail guard judges growth over, so a very small block
-weakens the guard.}
+\item{block}{How many terms are evaluated per pass, a whole number of at
+least 4, \code{64} by default. Its last two quarters give the decay ratio of
+the tail estimate, so a very small block makes the estimate noisy.}
 }
 \value{
 A numeric vector of sums, one per row, of length \code{n}. \code{NA} in any row
-that did not converge within \code{max_terms}, with a warning naming those rows.
+that did not converge within \code{max_terms}, with a warning that lists the
+first eight of those rows.
 }
 \description{
 Computes \eqn{\sum_{k \ge k_0} t(k; \theta_i)} for every row \eqn{i} at once.
 Terms are evaluated in blocks as one matrix, and a row retires as soon as it
-converges, so a slow row does not keep the finished ones paying. This is the
-discrete counterpart of \code{\link[=quad_vec]{quad_vec()}} and it exists for the same reason: the
-toolkit's sums are one series at many parameter values.
+converges, so rows that have converged are not evaluated again while slower
+rows continue. This is the discrete counterpart of \code{\link[=quad_vec]{quad_vec()}}, written for
+the same reason: the toolkit's sums are one series at many parameter values.
 }
-\section{The term contract}{
+\section{The term function}{
 \code{term(k, i)} receives two integer vectors of equal length and returns the
-terms elementwise. \code{k} is the summation index and \code{i} says which parameter
-set each term belongs to. A Poisson mass at a rate vector \code{lam} is
+terms elementwise. \code{k} is the summation index and \code{i} gives the parameter
+set to which each term belongs. A Poisson mass at a rate vector \code{lam} is
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{term <- function(k, i) dpois(k, lam[i])
 }\if{html}{\out{</div>}}
 }
 
 \section{Convergence, row by row}{
-A row retires when three conditions hold together. Its last block
-contributed less than \eqn{\max(\mathrm{atol}, \mathrm{rtol}\,\lvert S_i
-\rvert)}; the final term of that block is itself below the same budget; and
-the terms are not growing across the block.
+Write \eqn{b = \max(\mathrm{atol}, \mathrm{rtol}\,\lvert S_i \rvert)} for
+the budget of row \eqn{i}, and \eqn{A_3} and \eqn{A_4} for the sums of the
+absolute terms over the third and the fourth quarter of the last block. The
+ratio \eqn{q = A_4/A_3} measures the decay of the terms at the end of the
+block, and the neglected tail is estimated by continuing that decay
+geometrically,
 
-The last two are the tail guard, and the third is the one that earns its
-place. A hump-shaped term can open with a block that sums to nearly nothing
-and ends on a term smaller still, while the whole series lies beyond it.
-\code{dpois(0:63, 300)} sums to 3.8e-62 and ends at 3.0e-62, and every series
-there is still to come. That the terms are rising is the signal that the
-block sits before the mode.
+\deqn{R = 2\,A_4\,\frac{q}{1 - q}.}
 
-Terms are assumed eventually decreasing in magnitude, which every series in
-the toolkit satisfies.
+A row retires when \eqn{q < 1} (or \eqn{A_4 = 0}), \eqn{R \le b}, and the
+last block contributed at most \eqn{b}.
+
+The estimate bounds the tail of a series whose terms decay geometrically or
+faster. For terms that decay like \eqn{k^{-p}}, geometric continuation
+underestimates the tail by a factor that tends to \eqn{(p - 1)/p}, and the
+factor 2 covers every \eqn{p \ge 2}; a slower decay, \eqn{1/k^2} included,
+does not reach its budget within the default \code{max_terms} and returns \code{NA}.
+The sum of \eqn{1/k^3} from one retires after about 75000 terms with a
+relative error below the default \code{rtol}.
+
+Rising terms give \eqn{q > 1}, so a block that lies before the mode of a
+hump-shaped term does not retire its row, however small its terms are:
+\code{dpois(0:63, 300)} sums to 3.8e-62 and is still rising.
 }
 
-\section{A failure is reported as one}{
-A row still unconverged after \code{max_terms} terms returns \code{NA}, and one warning
-names every such row.
+\section{Rows of zeros}{
+A block whose terms are all zero retires a row only after the row has seen
+a nonzero term, so the zeros past a finite support end the sum. A row that
+has seen only zeros is probed ahead on a geometric grid of relative spacing
+1/128, up to the index \eqn{2^{31}}, in one call to \code{term}. If every probe
+is zero the row is taken as identically zero and returns 0, as a
+structurally null component of an expected Hessian does; otherwise the
+summation resumes from the last zero probe, so leading terms that underflow
+to zero (\code{dpois(k, 1e4)} for \eqn{k} below about 8000) do not end the sum.
+The resumption assumes that the terms rise before the first nonzero one,
+and a head narrower than the spacing of the grid (a Poisson mass at a rate
+above about \eqn{10^8}) falls between the probes and gives 0.
+}
+
+\section{Rows that do not converge}{
+A row still unconverged after \code{max_terms} terms returns \code{NA}, and one
+warning lists the first eight such rows (followed by an ellipsis if there
+are more).
 }
 
 \examples{
@@ -86,15 +114,19 @@ series_vec(function(k, i) r[i]^k, n = 4) - 1 / (1 - r)
 lam <- c(0.5, 4, 60)
 series_vec(function(k, i) dpois(k, lam[i]), n = 3)
 
-# The tail guard at work. The first 64 terms of a Poisson at rate 300 sum
-# to almost nothing and are still rising, so the row does not retire there.
+# The first 64 terms of a Poisson at rate 300 sum to almost nothing and are
+# still rising, so the row does not retire there.
 sum(dpois(0:63, 300))
 series_vec(function(k, i) dpois(k, 300), n = 1)
 
-# A series indexed from one, against its closed form. Convergence has to be
-# geometric or better: the terms of sum 1/k^2 decay too slowly to retire a
-# row within max_terms, and that row comes back NA.
+# At rate 1e4 the first 8000 or so terms underflow to zero, and the sum
+# continues past them.
+series_vec(function(k, i) dpois(k, 1e4), n = 1)
+
+# Series indexed from one, against their closed forms: a factorial decay
+# and a polynomial one.
 series_vec(function(k, i) 1 / factorial(k), n = 1, from = 1L) - (exp(1) - 1)
+series_vec(function(k, i) 1 / k^4, n = 1, from = 1L) - pi^4 / 90
 
 # A divergent series is refused, not estimated.
 suppressWarnings(series_vec(function(k, i) 1 / (k + 1), n = 1,

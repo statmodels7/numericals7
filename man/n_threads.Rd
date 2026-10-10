@@ -11,14 +11,16 @@ n_threads(threads = 1, workers = 1)
 }
 \arguments{
 \item{threads}{A single whole number, at least 1, and the default is \code{1}.
-The count is what the kernels are given and what they run on, not a ceiling
-they may come under. Anything else throws: a value below 1, a fractional
-value, \code{Inf}, a character string and a vector of length other than one are
-all rejected with the same message.}
+The count is passed to the compiled kernels unchanged, and a kernel still
+runs sequentially on an input below its internal threshold. Any other
+value signals an error: a value below 1, a fractional value, \code{Inf}, \code{NA},
+a character string and a vector of length other than one are all rejected
+with the same message. A value above the largest integer gives a coercion
+warning followed by R's error "missing value where TRUE/FALSE needed".}
 
 \item{workers}{A single whole number, at least 1, and the default is \code{1}:
-how many R processes the independent fits of a cross-validation's folds may
-use. \code{1} runs them in this process. Validated exactly as \code{threads} is.}
+how many R processes the independent units of a fit may use. \code{1} runs
+them in this process. Validated exactly as \code{threads} is.}
 
 \item{x}{An \code{n_threads} object.}
 
@@ -40,24 +42,25 @@ Constructs the parallelism policy an entry point such as
 accepts through its \code{threads} argument. The default, one thread and
 one process, takes exactly the sequential code path; a larger
 \code{threads} lets the compiled per-observation kernels and the dense
-assembly products run in parallel, and a larger \code{workers} fans the
-independent fits of a cross-validation's folds out over separate R
-processes.
+assembly products run in parallel, and a larger \code{workers} distributes the
+independent units of a fit over separate R processes: the folds of a
+cross-validation and the combinations of a kinked path's product grid.
 }
-\section{The count does not change the answer}{
+\section{Results independent of the thread count}{
 Every parallel region in the toolkit decomposes its work over the elements
 of its output. Each accumulated value is therefore summed in full by one
-thread, no reduction is ever split across threads, and a kernel returns the
+thread, reductions are never split across threads, and a kernel returns the
 same bits at any count. A fold's fit is a complete independent computation,
 and the folds are collected in fold order however many processes ran them.
 
 Two properties of the drivers make that hold, and neither belongs to the
 kernels themselves. A worker installs the calling thread's floating-point
-environment before running its chunk: without it some of the platform's own
-math routines return per-thread last bits, and R's \code{psigamma} at higher
-orders, \code{bessel_k}, and \code{pgamma} and \code{pbeta} on the log scale were each
-measured doing so. The sequential branch also runs through the same compiled
-function the parallel one does, so a compiler cannot optimize the two apart.
+environment before running its chunk, because without it some of the
+platform's own math routines (among them R's \code{psigamma} at higher orders,
+\code{bessel_k}, and \code{pgamma} and \code{pbeta} on the log scale) can return results
+that differ in the last bits between threads. The sequential branch also
+runs through the same compiled function as the parallel one, so a compiler
+cannot optimize the two differently.
 
 One qualification. In the dense assembly products of \pkg{statmodels7},
 raising the count first \emph{engages} a threaded kernel where a BLAS expression
@@ -69,26 +72,26 @@ accumulation order is its own.
 The guarantee is a design constraint on any kernel added later.
 }
 
-\section{The sequential path is the sequential path}{
-At \code{threads = 1} nothing parallel is entered and no process-level thread
-setting is touched. The code taken is the sequential one, not a parallel path
-running on a single thread.
+\section{The sequential path}{
+At \code{threads = 1} no parallel region is entered and the process-level thread
+setting is left unchanged. The code taken is the sequential one, not a
+parallel path running on a single thread.
 
 Each kernel carries an internal threshold as well, measured where the cost of
 opening a parallel region overtakes its gain. Below it the kernel stays
-sequential whatever the count says.
+sequential regardless of the count.
 }
 
-\section{The two levels do not nest}{
+\section{Threads inside worker processes}{
 A fit running inside a worker process is sequential by construction, so
-\code{workers = 4} opens four processes each fitting on one thread, never
+\code{workers = 4} opens up to four processes, each fitting on one thread, never
 \code{4 * threads} of them.
 
 Worker processes are separate R sessions that load the installed packages,
-which makes them safe for the S7 objects a fold's fit carries; this is the
-rule \code{optimizers7::multistart} records. Starting one costs on the order of a
-second, so \code{workers} pays on a cross-validated path and is not worth asking
-for on a fit shorter than that.
+which makes them safe for the S7 objects carried by a fold's fit; this is
+the rule recorded by \code{optimizers7::multistart}. Starting a worker process
+takes on the order of a second, so \code{workers} shortens a cross-validated path
+only when each fold takes longer than that.
 }
 
 \section{Printing}{

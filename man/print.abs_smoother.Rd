@@ -19,8 +19,8 @@ break-point, and exactness outside the transition.
 \details{
 The width line reads \verb{h resolved at build} where the smoother carries none,
 and names the width parameter by its own name, so a hyperbolic smoother
-shows \code{c} where a probit shows \code{h}. \verb{per group} is appended when the width
-is to be resolved per group.
+shows \code{c} where a probit shows \code{h}. \verb{per group} is appended whenever the
+\code{per_group} property is \code{TRUE}, also when a width has been supplied.
 }
 \examples{
 smooth_probit()

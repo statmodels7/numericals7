@@ -7,8 +7,8 @@
 worker_count(x)
 }
 \arguments{
-\item{x}{An object returned by \code{\link[=n_threads]{n_threads()}}. Anything else throws, with a
-message naming the constructor.}
+\item{x}{An object returned by \code{\link[=n_threads]{n_threads()}}. Any other value signals an
+error with a message naming the constructor.}
 }
 \value{
 A single integer, at least 1. One for a policy carrying no \code{workers}
@@ -17,8 +17,8 @@ component.
 \description{
 Returns the worker-process count an \code{\link[=n_threads]{n_threads()}} object carries, as a single
 integer. A policy stored before \code{workers} existed has no such component, and
-this reader answers 1 for it, so an object saved with an old fit keeps
-meaning what it meant.
+this function returns 1 for it, so that an object saved with an earlier fit
+is read as sequential across folds.
 }
 \examples{
 worker_count(n_threads())

@@ -26,18 +26,18 @@ transition width in covariate units is \eqn{\sqrt{c}}.
   \qquad s''(u) = \frac{c}{(u^2 + c)^{3/2}},}
 
 every order a rational function of \eqn{u} over a half-integer power, so
-nothing here needs a special function or a branch.
+every order is computed without special functions or branches.
 }
 
-\section{The cost of the tails}{
+\section{The tails}{
 The excess over \eqn{\lvert u\rvert} decays only as \eqn{c/(2\lvert
-u\rvert)}, so the smoothing bias spreads well away from the kink. Measured
-at a transition width of \code{0.3}, so \eqn{c = 0.09}: the excess is \code{4.4e-02}
+u\rvert)}, so the smoothing bias spreads well away from the kink. At a
+transition width of \code{0.3}, so that \eqn{c = 0.09}, the excess is \code{4.4e-02}
 at \eqn{u = 1} and \code{1.5e-02} at \eqn{u = 3}, against \code{6.7e-05} and exactly
 \code{0} for \code{\link[=smooth_probit]{smooth_probit()}} at the same width. A fit smoothed this way is
-perturbed everywhere, not only near the break-point.
+therefore perturbed far from the break-point as well as near it.
 
-No convolution identity relates \eqn{c} to the scale of a random
+There is no convolution identity relating \eqn{c} to the scale of a random
 break-point, so \code{tau_correction} is \code{NULL} and a consumer reports the
 apparent scale alone.
 }
@@ -58,7 +58,7 @@ smoother_deriv(smooth_probit(h = 0.3), u, order = 0) - abs(u)
 
 }
 \seealso{
-\code{\link[=abs_smoother]{abs_smoother()}} for the contract, \code{\link[=smooth_probit]{smooth_probit()}} for the
+\code{\link[=abs_smoother]{abs_smoother()}} for the class, \code{\link[=smooth_probit]{smooth_probit()}} for the
 recommended default, \code{\link[=smooth_quintic]{smooth_quintic()}} for exactness outside the
 transition, \code{\link[=check_abs_smoother]{check_abs_smoother()}} to verify it.
 }

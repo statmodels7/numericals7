@@ -12,7 +12,8 @@ fd_offsets(order, accuracy = 2L)
 offsets reach it.}
 
 \item{accuracy}{The order of the error term, a positive integer, \code{2} by
-default. Zero or below throws. See above for what an odd value does.}
+default. A value below one signals an error. The section on odd
+accuracy describes the treatment of an odd value.}
 }
 \value{
 A list of four components:
@@ -22,12 +23,14 @@ A list of four components:
 \item{\code{forward}}{integer vector \verb{0:(2r)}, for the lower boundary.}
 \item{\code{backward}}{integer vector \verb{(-2r):0}, for the upper one.}
 }
-All three offset vectors have the same length, \eqn{2r + 1}, so the three
-sides cost the same number of evaluations.
+All three offset vectors have the same length, \eqn{2r + 1}. At an odd
+derivative order the central stencil has a zero weight at the origin,
+which \code{\link[=fd_derivative]{fd_derivative()}} does not evaluate, so the central side then uses
+\eqn{2r} evaluations and each one-sided side \eqn{2r + 1}.
 }
 \description{
-Sizes a stencil from the derivative order and the accuracy asked of it, and
-returns the offsets to evaluate at: the symmetric ones used away from a
+Sizes a stencil from the derivative order and the requested accuracy, and
+returns the offsets at which to evaluate: the symmetric ones used away from a
 boundary, and the one-sided ones used where a symmetric stencil would leave
 the domain. Pass them to \code{\link[=fd_weights]{fd_weights()}} for the weights and to
 \code{\link[=fd_derivative]{fd_derivative()}} to apply the whole thing.
@@ -40,15 +43,15 @@ For order \eqn{d} and accuracy \eqn{a} the half-width is
 floored at one, giving \eqn{2r + 1} nodes. At the default accuracy of two
 that is the three-point stencil for the first and second derivatives and the
 five-point one for the third and fourth. At accuracy four it is the
-five-point stencils for the first and second. Those are every stencil the
-toolkit's packages had written out by hand, from one formula.
+five-point stencils for the first and second.
 }
 
-\section{An odd accuracy is rounded, and which way depends on the order}{
+\section{Odd accuracy}{
 A central stencil is symmetric, so the odd powers cancel from its error
-expansion and the accuracy it delivers is always even. An odd request is
-therefore served by an even neighbor, and the parity of \eqn{d + a} decides
-which one. Measured on \eqn{\exp} by halving the step:
+expansion and the accuracy of the central stencil is always even. An odd
+accuracy is therefore replaced by an even neighbor, and the parity of
+\eqn{d + a} decides which one. The observed orders on \eqn{\exp}, obtained
+by halving the step, are:
 
 \tabular{lrrrr}{
 \strong{order}    \tab 1 \tab 2 \tab 3 \tab 4 \cr
@@ -57,9 +60,9 @@ accuracy 3 \tab 2 \tab 4 \tab 2 \tab 4 \cr
 accuracy 4 \tab 4 \tab 4 \tab 4 \tab 4
 }
 
-At an odd order the request rounds down and costs nothing extra; at an even
-order it rounds up and buys two more nodes. Ask for an even accuracy and the
-question does not arise.
+At an odd order the accuracy is rounded down and the stencil keeps its size;
+at an even order it is rounded up and the stencil gains two nodes. An even
+accuracy is used as given.
 }
 
 \examples{

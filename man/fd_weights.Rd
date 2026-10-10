@@ -17,7 +17,7 @@ the Vandermonde system being singular.}
 \strong{strictly smaller than \code{length(offsets)}}. Order \code{0} is legal and returns
 interpolation weights at the origin. Anything else throws: an order at or
 above the node count with a message naming both numbers, and a negative,
-fractional, missing or non-scalar order with a message naming the
+fractional, \code{NA} or non-scalar order with a message naming the
 requirement.}
 }
 \value{
@@ -67,16 +67,21 @@ first term it cannot reproduce, giving an estimate accurate to
 
 \deqn{\frac{1}{n!}\sum_{j=1}^{n} w_j\, s_j^{\,n}.}
 
-Five nodes therefore give a fourth-order first derivative and a second-order
-fourth derivative. \code{\link[=fd_offsets]{fd_offsets()}} sizes a stencil from the order and the
-accuracy asked of it.
+On a symmetric stencil the constant vanishes whenever \eqn{n - d} is odd,
+and the error is then \eqn{O(h^{\,n-d+1})}. Five nodes therefore give a
+fourth-order first derivative, and a fourth derivative that is of second
+order on the central stencil \code{-2:2} and of first order on the one-sided
+stencil \code{0:4}. \code{\link[=fd_offsets]{fd_offsets()}} sizes a stencil from the order and the
+requested accuracy.
 }
 
-\section{One stencil, never nested}{
+\section{Single stencils and nested differences}{
 Reaching a high order by composing low-order differences multiplies the error
 of each stage into the next, and a fourth derivative built from four nested
-first differences is noise. Every numerical fallback in the toolkit takes one
-stencil of the order it wants, and these weights are what it takes.
+first differences, each taken at the step chosen for a first derivative, is
+dominated by rounding error. Every numerical fallback in
+the toolkit uses one stencil of the order that it needs, with the weights
+returned by this function.
 }
 
 \examples{

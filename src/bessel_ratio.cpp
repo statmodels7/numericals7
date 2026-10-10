@@ -255,36 +255,81 @@ double n7_bessel_ratio_inverse(double rho) {
 }
 
 // The derivatives of the inverse in rho, at rho = A(k), by the inverse
-// function rule; A' > 0 keeps every denominator away from zero
+// function rule written on w = 1/A' and the ratios r_j = A^(j)/A':
+//   k'    = w
+//   k''   = -r2 w^2
+//   k'''  = (3 r2^2 - r3) w^3
+//   k'''' = (-15 r2^3 + 10 r2 r3 - r4) w^4.
+// The textbook form divides by A'^(2n-1), and A' ~ 1/(2k^2) makes that power
+// subnormal from k ~ 1e22 (n = 4), long before the derivative itself
+// overflows. Here w ~ 2k^2 and r_j ~ k^-(j-1) stay normal, and the powers of
+// w are applied one at a time to a small polynomial, so no intermediate
+// leaves the doubles before the result does. From k = 30 the ratios come
+// from the asymptotic series without its powers of u = 1/k: there
+// A^(M) = (-1)^M u^M S_M(u), so r_j = (-1)^(j-1) u^(j-1) S_j / S_1 and
+// w = -k / S_1.
+}  // extern "C"
+
+namespace {
+template <int M>
+inline double br_large_s(double k) {
+  const double u = 1.0 / k;
+  double acc = 0.0;
+  for (int n = BR_NQ - 1; n >= 0; --n) {
+    double fac = 1.0;
+    for (int j = 0; j < M; ++j) fac *= (double) (n + j);
+    acc = acc * u + BR_Q[n] * fac;
+  }
+  return acc;
+}
+
+// w and r_2 ... r_n, n from 1 to 4
+inline void br_inverse_parts(double k, int n, double* w, double* r) {
+  if (k >= BR_LARGE) {
+    const double u = 1.0 / k;
+    const double s1 = br_large_s<1>(k);
+    *w = -k / s1;
+    if (n >= 2) r[2] = -u * br_large_s<2>(k) / s1;
+    if (n >= 3) r[3] = (u * u) * br_large_s<3>(k) / s1;
+    if (n >= 4) r[4] = -(u * u * u) * br_large_s<4>(k) / s1;
+    return;
+  }
+  double a[5];
+  n7_bessel_ratio_upto(k, n, a);
+  *w = 1.0 / a[1];
+  for (int j = 2; j <= n; ++j) r[j] = a[j] / a[1];
+}
+}  // namespace
+
+extern "C" {
+
 double n7_bessel_ratio_inverse_d1(double k) {
   if (br_bad(k)) return br_badval(k);
-  return 1.0 / n7_bessel_ratio_d1(k);
+  double w, r[5];
+  br_inverse_parts(k, 1, &w, r);
+  return w;
 }
 
 double n7_bessel_ratio_inverse_d2(double k) {
   if (br_bad(k)) return br_badval(k);
-  double a[3];
-  n7_bessel_ratio_upto(k, 2, a);
-  return -a[2] / (a[1] * a[1] * a[1]);
+  double w, r[5];
+  br_inverse_parts(k, 2, &w, r);
+  return -r[2] * w * w;
 }
 
 double n7_bessel_ratio_inverse_d3(double k) {
   if (br_bad(k)) return br_badval(k);
-  double a[4];
-  n7_bessel_ratio_upto(k, 3, a);
-  const double p1 = a[1], p2 = a[2], p3 = a[3];
-  const double p12 = p1 * p1;
-  return (3.0 * p2 * p2 - p1 * p3) / (p12 * p12 * p1);
+  double w, r[5];
+  br_inverse_parts(k, 3, &w, r);
+  return (3.0 * r[2] * r[2] - r[3]) * w * w * w;
 }
 
 double n7_bessel_ratio_inverse_d4(double k) {
   if (br_bad(k)) return br_badval(k);
-  double a[5];
-  n7_bessel_ratio_upto(k, 4, a);
-  const double p1 = a[1], p2 = a[2], p3 = a[3], p4 = a[4];
-  const double p12 = p1 * p1;
-  return (-15.0 * p2 * p2 * p2 + 10.0 * p1 * p2 * p3 - p12 * p4) /
-    (p12 * p12 * p12 * p1);
+  double w, r[5];
+  br_inverse_parts(k, 4, &w, r);
+  const double r2 = r[2];
+  return (-15.0 * r2 * r2 * r2 + 10.0 * r2 * r[3] - r[4]) * w * w * w * w;
 }
 
 }  // extern "C"

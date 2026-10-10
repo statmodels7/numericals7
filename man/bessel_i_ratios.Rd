@@ -18,35 +18,35 @@ A numeric matrix of \code{length(kappa)} rows and \code{m} columns. Entry
 }
 \description{
 Computes \eqn{I_j(\kappa)/I_0(\kappa)} for \eqn{j = 1, \dots, m} by Miller's
-backward recurrence, vectorized over \eqn{\kappa}. A series in these ratios
-is what a von Mises distribution function costs, so getting all \eqn{m} of
-them for the price of one matters.
+backward recurrence, vectorized over \eqn{\kappa}. The von Mises
+distribution function is a series in these ratios, and the recurrence
+returns all \eqn{m} of them in one pass.
 }
-\section{Why the recurrence runs backwards}{
+\section{The backward recurrence}{
 The three-term recurrence \eqn{I_{j-1} - I_{j+1} = (2j/\kappa) I_j} has two
 solutions, one growing and one decaying. Run upwards it should follow the
 decaying one and instead follows rounding error into the growing one, so it
 is unstable. Run downwards the roles swap and it is stable, which is
 Miller's algorithm. The ratios \eqn{r_j = I_j/I_{j-1}} satisfy
 \eqn{r_j = 1/(2j/\kappa + r_{j+1})}, started from \eqn{r_{n_0+1} = 0} at
-an index far enough above both \eqn{m} and \eqn{\kappa}; the answer is
-their running product, and the normalization by \eqn{I_0} is free because
-the product starts there.
+an index far enough above both \eqn{m} and \eqn{\kappa}; the result is
+their running product, and the normalization by \eqn{I_0} requires no extra
+work because the product starts there.
 }
 
 \section{Cost}{
-The loop runs over the series index, never over the data, so a vector of
-\eqn{\kappa} costs the same number of vectorized steps as a single value.
-A series over these ratios therefore costs less than a quadrature per
-observation, which is why the von Mises distribution function stopped being
-one.
+The recurrence loop runs over the series index and is vectorized over the
+data, so the number of steps depends on \eqn{m} and on the largest
+\eqn{\kappa}, and not on the length of the vector. For \eqn{m > 1} the
+running products are then formed row by row. A series over these ratios
+therefore costs less than one quadrature per observation, and the von Mises
+distribution function is evaluated this way.
 
-\code{\link[=bessel_i_ratio]{bessel_i_ratio()}} is the first of them and carries an asymptotic series
-from \eqn{\kappa = 30}. There is no such branch here, and none is
-wanted: the recurrence needs a starting index
-above \eqn{\kappa}, so its cost grows with the concentration, and a caller
-that far out is already past the point where a series in these ratios
-converges in any useful number of terms.
+\code{\link[=bessel_i_ratio]{bessel_i_ratio()}} is the first of these ratios and switches to an
+asymptotic series from \eqn{\kappa = 30}. No such branch is implemented
+here: the recurrence needs a starting index above \eqn{\kappa}, so its cost
+grows with the concentration, and at such concentrations a series in these
+ratios does not converge in a useful number of terms.
 }
 
 \examples{

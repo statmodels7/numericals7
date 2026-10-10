@@ -46,6 +46,39 @@ test_that("Owen's T matches its closed identities", {
   expect_equal(owen_t(hh, aa), ref, tolerance = 1e-11)
 })
 
+test_that("Owen's T keeps its relative accuracy at steep slopes and large h", {
+  # columns: h, a, T(h, a); computed with mpmath at 50 digits by quadrature of
+  # the scaled integrand with breakpoints at 1/(8h) times powers of two. A
+  # steep slope puts the integrand within 1/h of zero, and a large h makes
+  # T tiny: the unscaled quadrature over [0, a] missed the first and lost the
+  # second to its absolute tolerance.
+  ref <- matrix(c(
+    0.5, 1.01, 0.1072869530519066127348075,
+    1,   1e-6, 9.653235263000563699738638e-8,
+    2.5, 1e3,  0.003104832662888067583489052,
+    2.5, 1e6,  0.003104832662888067583489052,
+    5,   2,    1.433257859395969558368757e-7,
+    10,  1,    3.809926512080263032986643e-24,
+    10,  100,  3.809926512080263032986672e-24,
+    20,  1e6,  1.376812059303116847537811e-89,
+    30,  1e6,  2.453356963574093529766905e-198,
+    37,  0.5,  2.862785611262288411341596e-300
+  ), ncol = 3, byrow = TRUE)
+  got <- owen_t(ref[, 1], ref[, 2])
+  expect_lt(max(abs(got / ref[, 3] - 1)), 1e-14)
+
+  # the sign follows a and not h
+  expect_equal(owen_t(-2.5, -1e3), -ref[3, 3], tolerance = 1e-14)
+
+  # the skew normal distribution function at alpha = 1000 is 2 Phi(z) - 1
+  z <- c(0.5, 2.5, 4)
+  expect_equal(pnorm(z) - 2 * owen_t(z, 1000), 2 * pnorm(z) - 1, tolerance = 1e-13)
+
+  # a missing argument gives NA, a zero slope and an infinite h give zero
+  expect_identical(owen_t(c(NA, 1, 1), c(1, NA, 0)), c(NA, NA, 0))
+  expect_identical(owen_t(Inf, 2), 0)
+})
+
 test_that("the Bessel ratio and its derivatives match 150-digit values", {
   # columns: kappa, A, A', A'', A''', A''''; computed with mpmath at 150
   # digits from I1/I0 and the Riccati identity (stabilita/
@@ -170,6 +203,35 @@ test_that("the inverse's derivatives match one numerical pass each", {
   k <- c(1e-5, 0.7, 25, 1e5)
   expect_equal(bessel_i_ratio_inverse_d1(k), 1 / bessel_i_ratio_d1(k),
                tolerance = 1e-15)
+})
+
+
+test_that("the derivatives of the inverse stay accurate at large kappa", {
+  # columns: kappa, k', k'', k''', k''''; mpmath at 120 digits, A from the
+  # Bessel functions up to 2000 and from the quotient of their asymptotic
+  # series above, differentiated with mp.diff. The textbook form divides by
+  # A'^(2n - 1) with A' ~ 1/(2 kappa^2), which went subnormal from
+  # kappa ~ 1e22 at the fourth order and returned Inf or NaN there.
+  ref <- matrix(c(
+    31.622776601683793, 1967.312491349388204180153, 246884.6267492403832851726,
+    46463050.63729059385439059, 11659091189.89248261066922,
+    100, 19898.98074620313765584129, 7939697.25266609485695402,
+    4751816904.146313841205068, 3791877538615.341282401717,
+    1e22, 1.9999999999999999999999e+44, 7.9999999999999999999994e+66,
+    4.79999999999999999999952e+89, 3.83999999999999999999952e+112,
+    1e32, 2.000000000000000214646488e+64, 8.000000000000001287878929e+96,
+    4.800000000000001030303143e+129, 3.840000000000001030303143e+162,
+    1e50, 2.000000000000000305190794e+100, 8.000000000000001831144762e+150,
+    4.800000000000001464915809e+201, 3.840000000000001464915809e+252,
+    1e60, 1.999999999999999797548541e+120, 7.999999999999998785291247e+180,
+    4.799999999999999028232998e+241, 3.839999999999999028232998e+302
+  ), ncol = 5, byrow = TRUE)
+  k <- ref[, 1]
+  got <- cbind(bessel_i_ratio_inverse_d1(k), bessel_i_ratio_inverse_d2(k),
+               bessel_i_ratio_inverse_d3(k), bessel_i_ratio_inverse_d4(k))
+  expect_lt(max(abs(got / ref[, 2:5] - 1)), 1e-14)
+  # where the true value overflows the result is Inf, not NaN
+  expect_identical(bessel_i_ratio_inverse_d4(1e100), Inf)
 })
 
 

@@ -8,11 +8,11 @@ compositions(n, k)
 }
 \arguments{
 \item{n}{The total, a non-negative whole number. Neither argument is
-validated. A negative \code{n} returns a matrix that answers no question, since
-the recursion walks \code{0:n} and that sequence runs downwards.}
+validated. A negative \code{n} returns a matrix whose rows contain negative
+parts, since the recursion walks \code{0:n} and that sequence runs downwards.}
 
 \item{k}{The number of parts, a positive whole number. Zero recurses until
-the stack overflows.}
+R signals an infinite-recursion error.}
 }
 \value{
 An integer matrix with \code{k} columns and
@@ -22,7 +22,7 @@ An integer matrix with \code{k} columns and
 Enumerates the weak compositions of \eqn{n} into \eqn{k} parts: every vector
 of \eqn{k} non-negative whole numbers summing to \eqn{n}, returned one per
 row of an integer matrix. \emph{Weak} means a part may be zero, so the set is the
-whole lattice simplex of counts and includes its faces. There are
+whole simplex of integer counts and includes its faces. There are
 \eqn{\binom{n + k - 1}{k - 1}} rows.
 }
 \section{The set}{
@@ -44,9 +44,10 @@ the practical size: \eqn{n = 20} with \eqn{k = 5} is 10626 rows, and the
 same \eqn{n} with \eqn{k = 10} is 10015005.
 }
 
-\section{Where the set turns up}{
-It is exactly the support of a multinomial with total \eqn{n} over \eqn{k}
-categories, and of any other distribution on a fixed total. An expectation
+\section{Uses of the set}{
+It is the support of a multinomial with total \eqn{n} over \eqn{k}
+categories with positive probabilities, and it contains the support of any
+other distribution on a fixed total. An expectation
 under such a law is therefore a finite sum over these rows, evaluated
 exactly, where a continuous family would need a quadrature.
 }

@@ -11,9 +11,10 @@ template:
 home:
   title: Numerical kernels for statistical modeling
   description: >
-    The numerical layer of the statmodels7 toolkit, written once: the
-    combinatorial enumerations a higher-order chain rule rests on, one
-    stencil library, batched quadrature and series, and special functions.
+    The numerical layer of the statmodels7 toolkit: the combinatorial
+    enumerations on which a higher-order chain rule rests, a library of
+    finite-difference stencils, batched quadrature and series, special
+    functions, and smoothers of the absolute value.
 
 navbar:
   structure:
@@ -30,8 +31,8 @@ navbar:
 reference:
 - title: Enumerations
   desc: >
-    The combinatorial objects a higher-order chain rule sums over, each in
-    one copy so that an enumeration cannot disagree with itself.
+    The combinatorial objects over which a higher-order chain rule sums,
+    defined once so that every package uses the same ordering.
   contents:
   - tuple_indices
   - set_partitions
@@ -39,9 +40,10 @@ reference:
 
 - title: Finite differences
   desc: >
-    One stencil library: weights from the Vandermonde system, offsets sized
-    from order and accuracy, a balanced step, and an applicator that never
-    composes lower-order differences.
+    Finite-difference stencils: weights from the Vandermonde system, offsets
+    sized from the order and the accuracy, a step that balances truncation
+    against rounding, and an applicator that never composes lower-order
+    differences.
   contents:
   - fd_weights
   - fd_offsets
@@ -51,8 +53,8 @@ reference:
 - title: Quadrature and series
   desc: >
     Integrals and sums vectorized over the parameters: one matrix evaluation
-    for many parameter values, adaptivity batched by row, and NA with a named
-    row where the requested accuracy cannot be reached.
+    for many parameter values, adaptivity batched by row, and NA with a
+    warning for a row that does not reach the requested accuracy.
   contents:
   - quad_vec
   - series_vec
@@ -61,8 +63,8 @@ reference:
 - title: Threads
   desc: >
     The thread policy of the toolkit, one object passed as an argument from
-    the fit entry points down to the compiled kernels. The result does not
-    depend on the count, bit for bit.
+    the fit entry points down to the compiled kernels. Each kernel returns the
+    same bits at any thread count.
   contents:
   - n_threads
   - thread_count
@@ -90,7 +92,7 @@ reference:
     A smooth replacement for the absolute value with its derivatives up to
     order five, from which the smooth sign, step and hinge follow by
     composition. A break-point term smoothed this way has a true Jacobian
-    block, and the validator checks a smoother written outside the package.
+    block, and the validator checks a user-written smoother.
   contents:
   - abs_smoother
   - smooth_probit

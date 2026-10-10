@@ -7,8 +7,8 @@
 local_threads(x, frame = parent.frame())
 }
 \arguments{
-\item{x}{An object returned by \code{\link[=n_threads]{n_threads()}}. Anything else throws, through
-\code{\link[=thread_count]{thread_count()}}.}
+\item{x}{An object returned by \code{\link[=n_threads]{n_threads()}}. Any other value signals an
+error through \code{\link[=thread_count]{thread_count()}}.}
 
 \item{frame}{The environment whose exit restores the previous setting,
 defaulting to the caller's. Pass an outer frame to hold the setting for
@@ -21,8 +21,8 @@ The thread count, invisibly: a single integer, at least 1.
 Sets \pkg{RcppParallel}'s thread count to the policy's for the calling
 frame's lifetime and restores the previous process state when that frame
 exits. Called once at the entry of a fit; the count itself still travels
-to each kernel as an argument, this call only sizes the worker pool the
-parallel regions draw from.
+to each kernel as an argument, and this call only sizes the worker pool from
+which the parallel regions draw.
 }
 \details{
 \code{RcppParallel::setThreadOptions()} writes a process-level variable, so a fit
@@ -30,8 +30,8 @@ that set it and returned would leave it moved for whatever runs next. The
 restoration is therefore registered with \code{on.exit} in the caller's frame,
 which fires however the fit leaves, an error included.
 
-At a count of 1 nothing is touched at all. That is what keeps the sequential
-path free of any trace of the parallel machinery.
+At a count of 1 nothing is changed, so the sequential path does not touch
+the parallel machinery.
 }
 \examples{
 f <- function() {

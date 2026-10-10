@@ -21,8 +21,9 @@ argument. \code{d1} is negative at every order, \code{K} decreasing in its argum
 Computes \eqn{\log K_\nu(x)} together with its first four derivatives with
 respect to the \emph{argument}, from the ratio identity
 \eqn{(\log K_\nu)' = \nu/x - K_{\nu+1}/K_\nu} and the modified Bessel
-equation, exactly as in \code{\link[=log_bessel_i_derivs]{log_bessel_i_derivs()}}. The sign is the one
-difference: \eqn{K} decreases in its argument where \eqn{I} grows.
+equation, exactly as in \code{\link[=log_bessel_i_derivs]{log_bessel_i_derivs()}}. The only difference is the
+sign of the ratio term, because \eqn{K_\nu(x)} decreases in \eqn{x} while
+\eqn{I_\nu(x)} increases.
 }
 \details{
 Derivatives with respect to the \emph{order} have no elementary form and are not

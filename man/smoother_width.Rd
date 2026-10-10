@@ -10,8 +10,8 @@ smoother_width(smoother, spacing, max_gap = NULL)
 \item{smoother}{An \code{\link[=abs_smoother]{abs_smoother()}}. Anything else is rejected.}
 
 \item{spacing}{A spacing in covariate units, one value or one per group.
-Every entry must be positive and none may be missing; a smoother that
-already carries a width never reaches the check.}
+Every entry must be positive and none may be missing; the check is not
+made when the smoother already carries a width.}
 
 \item{max_gap}{\code{NULL} (the default), or the largest gap between consecutive
 distinct values of the covariate over the range a break-point may take,
@@ -23,18 +23,19 @@ The width, on the smoother's own scale. The same length as \code{spacing}
 when resolved from it, and a single number when the smoother carries one.
 }
 \description{
-Returns the width the smoother carries where it carries one, and otherwise
-the given spacing carried onto the width parameter's own scale. This is what
-a consumer calls at build: a break-point term hands it the median spacing of
-its covariate, the smallest transition the data can tell from a step.
+Returns the width carried by the smoother when it has one, and otherwise
+the given spacing carried onto the width parameter's own scale. A consumer
+calls this function at build: a break-point term passes it the median
+spacing of its covariate, which is the smallest transition that the data can
+distinguish from a step.
 }
 \details{
 A smoother constructed with an explicit width keeps it, and \code{spacing} is
-then not even looked at. A smoother constructed with \code{NULL} takes the
-spacing through its own \code{width_from_spacing}: the identity for
-\code{\link[=smooth_probit]{smooth_probit()}}, the square for \code{\link[=smooth_hyperbolic]{smooth_hyperbolic()}}, whose parameter is
-a squared length, and \eqn{5/(2\log 2)} times the spacing for
-\code{\link[=smooth_quintic]{smooth_quintic()}}, for the reason its page gives.
+then ignored. A smoother constructed with \code{NULL} takes the spacing through
+its own \code{width_from_spacing}: the identity for \code{\link[=smooth_probit]{smooth_probit()}}, the square
+for \code{\link[=smooth_hyperbolic]{smooth_hyperbolic()}}, whose parameter is a squared length, and
+\eqn{5/(2\log 2)} times the spacing for \code{\link[=smooth_quintic]{smooth_quintic()}}, for the reason
+given on its page.
 
 A smoother that declares an \code{exact_radius} is equal to \eqn{\lvert u\rvert}
 beyond that radius, so a break-point smoothed with it has no curvature where
@@ -44,13 +45,14 @@ the width is therefore raised until the radius is at least
 \eqn{0.55} times it, the radius being taken to grow in proportion to the
 width, which holds for \code{\link[=smooth_quintic]{smooth_quintic()}}, whose radius is its width. The
 median spacing does not bound the largest gap: among \eqn{n} uniform points
-the largest gap is about \eqn{\log_2 n} median spacings, 8.6 at
-\eqn{n = 400}, against the 3.61 the quintic's width covers. A smoother
-without an \code{exact_radius} ignores \code{max_gap}.
+the largest gap is about \eqn{(\log n + \gamma)/\log 2} median spacings,
+with \eqn{\gamma} Euler's constant (9.5 at
+\eqn{n = 400}), while the quintic's width is 3.61 median spacings. A
+smoother without an \code{exact_radius} ignores \code{max_gap}.
 
-The result is nothing about whether the width is large enough for the
-arithmetic; \code{\link[=smoother_width_floor]{smoother_width_floor()}} answers that separately, and a consumer
-takes the larger of the two.
+The result does not indicate whether the width is large enough for the
+arithmetic; \code{\link[=smoother_width_floor]{smoother_width_floor()}} returns that bound separately, and a
+consumer takes the larger of the two.
 }
 \examples{
 # A length-parametrized smoother takes the spacing as it stands.
@@ -65,7 +67,7 @@ smoother_width(smooth_probit(h = 0.5), 0.3)
 # One width per group.
 smoother_width(smooth_probit(per_group = TRUE), c(0.2, 0.4, 0.35))
 
-# The quintic is raised to cover half of a large gap; the probit is not.
+# The quintic is raised to 0.55 times a large gap; the probit is not.
 smoother_width(smooth_quintic(), 0.01, max_gap = 0.1)
 smoother_width(smooth_probit(), 0.01, max_gap = 0.1)
 

@@ -18,23 +18,22 @@ negative or either argument is missing.
 }
 \description{
 Computes \eqn{\log K_\nu(x)} in vectorized R, through the same branches and
-the same formulas as the compiled kernel behind \code{\link[=log_bessel_k]{log_bessel_k()}}. It exists
-as the independent reference the tests compare that kernel against, so a
-change to either side that is not a change to both shows up as a
-disagreement. Not called on any production path; \code{\link[=log_bessel_k]{log_bessel_k()}} is.
+the same formulas as the compiled kernel behind \code{\link[=log_bessel_k]{log_bessel_k()}}. It serves
+as the independent reference against which the tests compare that kernel,
+so a change to one side that is not made to the other shows up as a
+disagreement. No production code calls it; the production route is
+\code{\link[=log_bessel_k]{log_bessel_k()}}.
 }
 \details{
 \code{x} and \code{nu} are recycled against each other to the longer length, and the
 order enters as \eqn{|\nu|}, \eqn{K} being even in it. The branches are the
 large-argument and large-order expansions, R's own scaled \code{besselK} in the
 moderate region, and the Rothwell integral in the corner where that scaled
-value overflows.
-
-The compiled route measured 2.9x faster on a mixed workload spanning every
-branch, so the twin costs little to keep.
+value overflows or comes close to it, as described on the page of
+\code{\link[=log_bessel_k]{log_bessel_k()}}.
 }
 \seealso{
-\code{\link[=log_bessel_k]{log_bessel_k()}}, the compiled kernel this mirrors, and
+\code{\link[=log_bessel_k]{log_bessel_k()}}, the compiled kernel that this function mirrors, and
 \code{\link[=log_bessel_i]{log_bessel_i()}} for the first-kind counterpart.
 }
 \keyword{internal}

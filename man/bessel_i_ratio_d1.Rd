@@ -17,14 +17,15 @@ bessel_i_ratio_d4(kappa, threads = 1L)
 }
 \arguments{
 \item{kappa}{A numeric vector of concentrations, non-negative and of any
-size. Zero returns 0, the limit, and \code{Inf} returns 1. A negative value
-returns \code{NaN}.}
+size. A negative value returns \code{NaN}.}
 
 \item{threads}{The number of threads, a positive whole number.}
 }
 \value{
 A numeric vector the length of \code{kappa}. \code{bessel_i_ratio_d1()} is
-strictly positive at every finite concentration and tends to 1/2 at zero.
+positive, equal to 1/2 at zero, and decays like \eqn{1/(2\kappa^2)}, so
+in double precision it underflows to zero beyond about
+\eqn{\kappa = 10^{154}}.
 }
 \description{
 Compute the derivatives of \eqn{A(\kappa) = I_1(\kappa)/I_0(\kappa)} in
@@ -50,7 +51,9 @@ therefore use three regimes, as \code{\link[=bessel_i_ratio]{bessel_i_ratio()}} 
 by term; from 0.5 to 30 the continued fraction for \eqn{A} and the
 identity above, both in double-double arithmetic (about 32 digits); from 30
 the asymptotic series in \eqn{1/\kappa} differentiated term by term. Each
-order is accurate to the last bits over the whole range.
+order is accurate to the last bits wherever its value is a normal double;
+at very large concentrations the value becomes subnormal and carries fewer
+significant digits.
 
 \eqn{A'} is the variance of \eqn{\cos(\Theta - \mu)} under a von Mises
 distribution and is therefore positive; the higher derivatives are its

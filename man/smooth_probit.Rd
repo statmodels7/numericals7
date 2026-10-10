@@ -13,7 +13,7 @@ default) to be resolved at build from the covariate's spacing through
 
 \item{per_group}{\code{TRUE} to resolve the width once per group, \code{FALSE} (the
 default) for one width throughout. The validity window of a Laplace
-approximation is per-subject, so a hierarchical break-point wants \code{TRUE}.}
+approximation is per subject, so a hierarchical break-point uses \code{TRUE}.}
 }
 \value{
 An \code{\link[=abs_smoother]{abs_smoother()}} named \code{"probit"}, with \code{width_name} \code{"h"}, no
@@ -22,9 +22,9 @@ no \code{exact_radius}.
 }
 \description{
 \eqn{s(u) = \mathbb{E}\lvert u + hZ\rvert} for \eqn{Z} standard normal, the
-one to reach for unless you have a reason not to. Its excess over
-\eqn{\lvert u\rvert} has gaussian tails, so the smoothing bias is confined
-to a window of width \eqn{h} around the kink, and it is the only one of the
+recommended default among the three smoothers. Its excess over
+\eqn{\lvert u\rvert} has gaussian tails, so the smoothing bias decays within
+a few widths of the kink, and it is the only one of the
 three that declares a scale correction for a random break-point.
 }
 \section{The closed form}{
@@ -33,25 +33,25 @@ three that declares a scale correction for a random break-point.
 
 with the third to fifth derivatives following from
 \eqn{\phi'(z) = -z\phi(z)}. At the kink \eqn{s(0) = 2h\phi(0) \approx
-0.798h}, which is the intrinsic scale \code{\link[=check_abs_smoother]{check_abs_smoother()}} places its grid
-by.
+0.798h}, which is the intrinsic scale by which \code{\link[=check_abs_smoother]{check_abs_smoother()}}
+places its grid.
 }
 
-\section{Why the tails matter}{
+\section{The tails}{
 The excess \eqn{s(u) - \lvert u\rvert} decays like \eqn{\phi(u/h)}, so it
-is gone within a few widths. Measured at \eqn{h = 0.3}: \code{6.7e-05} at
+vanishes within a few widths. At \eqn{h = 0.3} it is \code{6.7e-05} at
 \eqn{u = 1} and exactly \code{0} at \eqn{u = 3}, against \code{4.4e-02} and \code{1.5e-02}
 for \code{\link[=smooth_hyperbolic]{smooth_hyperbolic()}} at the same transition width. A model smoothed
-this way is the sharp model to within rounding a short distance from the
-break-point.
+this way agrees with the sharp model to rounding error from about seven
+widths away from the break-point.
 }
 
 \section{The convolution identity}{
 Smoothing the step with width \eqn{h} is exactly convolving the break-point
 with \eqn{N(0, h^2)}, so a random break-point of true scale \eqn{\tau}
 appears at \eqn{\sqrt{\tau^2 + h^2}}, and the smoother declares
-\eqn{\tau_{\mathrm{true}} = \sqrt{\tau^2 - h^2}}, floored at zero. No other
-smoother here has such an identity.
+\eqn{\tau_{\mathrm{true}} = \sqrt{\tau^2 - h^2}}, floored at zero. The
+other two smoothers have no such identity.
 }
 
 \examples{
@@ -71,7 +71,7 @@ sqrt(0.5^2 - 0.231^2)
 
 }
 \seealso{
-\code{\link[=abs_smoother]{abs_smoother()}} for the contract, \code{\link[=smooth_hyperbolic]{smooth_hyperbolic()}} and
+\code{\link[=abs_smoother]{abs_smoother()}} for the class, \code{\link[=smooth_hyperbolic]{smooth_hyperbolic()}} and
 \code{\link[=smooth_quintic]{smooth_quintic()}} for the alternatives, \code{\link[=smoother_width]{smoother_width()}} for
 resolving \code{h} from data, \code{\link[=check_abs_smoother]{check_abs_smoother()}} to verify it.
 }

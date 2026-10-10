@@ -35,42 +35,38 @@ seam. At the kink \eqn{s(0) = 5h/16}.
 }
 
 \section{Exact outside the transition}{
-The smoothing bias is exactly zero outside \eqn{[-h, h]}, which is the
-cleanest fixed-width choice: measured at \eqn{h = 0.3} the excess over
-\eqn{\lvert u\rvert} is \code{0} at \eqn{u = 1} and at \eqn{u = 3}, where
-\code{\link[=smooth_probit]{smooth_probit()}} leaves \code{6.7e-05} and \code{\link[=smooth_hyperbolic]{smooth_hyperbolic()}} \code{4.4e-02}. The
-smoother declares an \code{exact_radius}, so a consumer can say where its answer
-is the sharp model's.
+The smoothing bias is exactly zero outside \eqn{[-h, h]}. At \eqn{h = 0.3}
+the excess over \eqn{\lvert u\rvert} is \code{0} at \eqn{u = 1} and at
+\eqn{u = 3}, where \code{\link[=smooth_probit]{smooth_probit()}} leaves \code{6.7e-05} at \eqn{u = 1} and
+\code{\link[=smooth_hyperbolic]{smooth_hyperbolic()}} \code{4.4e-02}. The smoother declares an \code{exact_radius},
+so a consumer can report where the smoothed model equals the sharp one.
 
-The branches are why \code{\link[=abs_smoother]{abs_smoother()}} carries the derivatives as functions:
-\code{\link[stats:deriv]{stats::deriv()}} does not read a clamp, and written out in the constructor
-the branches are ordinary code.
+These branches are the reason why \code{\link[=abs_smoother]{abs_smoother()}} carries the derivatives
+as functions: \code{\link[stats:deriv]{stats::deriv()}} cannot differentiate a branch, and in the
+constructor the branches are ordinary code.
 
 There is no convolution identity here, so \code{tau_correction} is \code{NULL}.
 }
 
 \section{The width resolved from data}{
-Exactness outside the transition has a cost for a break-point. The
+Exactness outside the transition has a cost for a break-point. The second
 derivative of \eqn{s} in the break-point is \eqn{s''}, which is zero outside
 \eqn{[-h, h]}, so where no observation falls within \eqn{h} of the fitted
 break-point the break-point has no curvature at all and is not identified.
-At a width of one median spacing this happens in 25 to 55 per cent of fits
-of a discontinuous break-point on a uniform covariate, because a quarter of
-the gaps are wider than \eqn{2h}. The width resolved from a spacing \eqn{g}
-is therefore
+At a width of one median spacing this happens often for a discontinuous
+break-point on a uniform covariate, because a quarter of the gaps are wider
+than \eqn{2h}. The width resolved from a spacing \eqn{g} is therefore
 
 \deqn{h = \frac{5}{2\log 2}\,g \approx 3.61\,g,}
 
 which puts five observations inside \eqn{[-h, h]} on average for a uniform
 covariate, whose median spacing is \eqn{\log 2} times its mean spacing.
-Measured on the same fits, this removes the unidentified break-point and
-brings its error to that of \code{\link[=smooth_probit]{smooth_probit()}}, at a fit error on a true
-sharp step 10 to 15 per cent above the probit's. It does not guarantee an
-observation inside the width for a covariate with large gaps, since the
-largest of \eqn{n} gaps is about \eqn{\log_2 n} median spacings, so a
-consumer that passes the largest gap to \code{\link[=smoother_width]{smoother_width()}} also has the
-width raised to at least \eqn{0.55} times it. A width supplied as \code{h} is
-used as it stands.
+This width does not guarantee an observation inside the transition for a
+covariate with large gaps, since the largest of \eqn{n} gaps is about
+\eqn{(\log n + \gamma)/\log 2} median spacings, with \eqn{\gamma} Euler's
+constant, so a consumer that passes the largest gap to
+\code{\link[=smoother_width]{smoother_width()}} also has the width raised to at least \eqn{0.55} times
+that gap. A width supplied as \code{h} is used as it stands.
 }
 
 \section{Under an outer criterion}{
@@ -79,12 +75,9 @@ there. An exact outer gradient of a marginal criterion reads the fourth
 derivative of \eqn{s} through a break-point term and an exact outer Hessian
 reads the fifth, so over the hyperparameters the criterion is smooth only
 between the values at which an observation crosses \eqn{\psi \pm h}, and the
-Hessian leaves out the point masses. Measured on a random break-point under
-REML, the jump of the gradient at such a crossing is below the resolution of
-a step of \eqn{10^{-4}} in the hyperparameter, and the exact gradient agrees
-with a difference of the criterion to \eqn{2.7 \times 10^{-7}}.
-\code{\link[=smooth_probit]{smooth_probit()}}, which is analytic, has neither effect and is the choice
-where a criterion is estimated over a smoothed break-point.
+Hessian leaves out the point masses. \code{\link[=smooth_probit]{smooth_probit()}}, which is analytic,
+has neither effect and is the smoother to use when a criterion is estimated
+over a smoothed break-point.
 }
 
 \examples{
@@ -104,7 +97,7 @@ smoother_deriv(sm, c(0.4, 0.49, 0.5, 0.51), order = 2)
 
 }
 \seealso{
-\code{\link[=abs_smoother]{abs_smoother()}} for the contract, \code{\link[=smooth_probit]{smooth_probit()}} for the
+\code{\link[=abs_smoother]{abs_smoother()}} for the class, \code{\link[=smooth_probit]{smooth_probit()}} for the
 recommended default, \code{\link[=smooth_hyperbolic]{smooth_hyperbolic()}} for the simplest form,
 \code{\link[=check_abs_smoother]{check_abs_smoother()}} to verify it.
 }

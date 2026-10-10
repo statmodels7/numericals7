@@ -15,8 +15,9 @@ smoother_deriv(smoother, u, width = NULL, order = 0L)
 (the default) for the smoother's own. A smoother built with \code{width = NULL}
 and given none here is rejected, with the two ways to supply one named.}
 
-\item{order}{The derivative order, a whole number from 0 to 5. \code{0L} by
-default, which is \eqn{s} itself. Anything outside that range is rejected.}
+\item{order}{The derivative order, an integer from 0 to 5; a fractional
+value is truncated toward zero. \code{0L} by default, which is \eqn{s} itself.
+A value outside that range is rejected.}
 }
 \value{
 A numeric vector as long as \code{u}.
@@ -31,8 +32,9 @@ A vector \code{width} is one value per point, which is how a per-group width
 arrives: a break-point term with \code{per_group = TRUE} resolves one width per
 subject and passes the whole vector.
 
-The derivatives are the ones the smoother carries, evaluated directly. None
-is differenced, so order five is as accurate as order zero.
+The derivatives are the functions carried by the smoother, evaluated
+directly. None is obtained by differencing, so order five is as accurate as
+order zero.
 }
 \examples{
 # The smooth sign: odd, bounded by one, and passing through zero.
@@ -47,6 +49,6 @@ try(smoother_deriv(smooth_probit(), 1))
 
 }
 \seealso{
-\code{\link[=abs_smoother]{abs_smoother()}} for the contract, \code{\link[=smoother_width]{smoother_width()}} for
+\code{\link[=abs_smoother]{abs_smoother()}} for the class, \code{\link[=smoother_width]{smoother_width()}} for
 resolving a width, \code{\link[=check_abs_smoother]{check_abs_smoother()}} for verifying the derivatives.
 }

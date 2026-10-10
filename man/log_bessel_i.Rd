@@ -17,7 +17,7 @@ log_bessel_i(x, nu, threads = 1L)
 policy. Every branch of the kernel is this package's own arithmetic, so
 element \eqn{i} is computed and written by one thread and the result is
 bit-identical at any count; below an internal threshold the sequential
-path is taken whatever the count says. \code{\link[=log_bessel_k]{log_bessel_k()}} takes
+path is taken regardless of the count. \code{\link[=log_bessel_k]{log_bessel_k()}} takes
 no such argument: its hybrid branch calls R's own scaled \code{besselK},
 which can raise a warning, and a warning from a worker thread ends the
 session.}
@@ -26,14 +26,14 @@ session.}
 A numeric vector of \eqn{\log I_\nu(x)}, of the recycled length of
 \code{x} and \code{nu}. \code{0} at \eqn{x = 0} with \eqn{\nu = 0}, since \eqn{I_0(0) =
   1}; \code{-Inf} at \eqn{x = 0} for any \eqn{\nu > 0}; and \code{NA} where either
-argument is negative or missing. Nothing is thrown for an argument outside
-the domain.
+argument is negative or missing. An argument outside the domain does not
+signal an error.
 }
 \description{
 Computes \eqn{\log I_\nu(x)} for \eqn{x \ge 0} and \eqn{\nu \ge 0}, carrying
 every intermediate quantity on the log scale, so the result is finite and
 accurate wherever \eqn{\log I_\nu(x)} itself is representable. That includes
-two regions R's own function cannot reach: past about \eqn{x = 700}, where
+two regions that R's own function cannot reach: past about \eqn{x = 700}, where
 the unscaled \eqn{I_\nu} overflows, and at a large order with a small
 argument or an argument beyond about \eqn{10^5}, where the exponentially
 scaled form underflows or loses its precision.

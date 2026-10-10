@@ -7,9 +7,10 @@
 thread_count(x)
 }
 \arguments{
-\item{x}{An object returned by \code{\link[=n_threads]{n_threads()}}. Anything else throws, with a
-message naming the constructor, because a bare number reaching an entry
-point is the likely mistake and would otherwise be read as a policy.}
+\item{x}{An object returned by \code{\link[=n_threads]{n_threads()}}. Any other value signals an
+error with a message naming the constructor, because a bare number passed
+to an entry point is the likely mistake and would otherwise be read as a
+policy.}
 }
 \value{
 A single integer, at least 1.
@@ -17,8 +18,8 @@ A single integer, at least 1.
 \description{
 Returns the thread count an \code{\link[=n_threads]{n_threads()}} object carries, as a single
 integer. An entry point calls it once to validate the \code{threads} argument it
-was given, then passes the plain count down to the kernels, which take a
-number and know nothing about the policy object.
+was given, then passes the plain count down to the kernels, which receive a
+number and not the policy object.
 }
 \examples{
 thread_count(n_threads())

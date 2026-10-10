@@ -250,3 +250,32 @@ test_that("a row whose error estimate does not fall with bisection stops at max_
   expect_error(quad_vec(h, 0, 1, max_panels = 0), "max_panels")
   expect_error(quad_vec(h, 0, 1, max_panels = c(10, 20)), "max_panels")
 })
+
+test_that("a rule of another length is accepted", {
+  # The Gauss-Kronrod 3-7 pair, checked here by its defining property before
+  # it is used: the Kronrod rule is exact to degree 11 and the Gauss rule to
+  # degree 5.
+  xh <- c(0.960491268708020283423507092629080, 0.774596669241483377035853079956480,
+          0.434243749346802558002071502844628, 0)
+  wkh <- c(0.104656226026467265193823857192073, 0.268488089868333440728569280666710,
+           0.401397414775962222905051818618432, 0.450916538658474142345110087045571)
+  wgh <- c(0, 5 / 9, 0, 8 / 9)
+  r7 <- list(nodes = c(-xh[1:3], 0, rev(xh[1:3])),
+             wk = c(wkh[1:3], wkh[4], rev(wkh[1:3])),
+             wg = c(wgh[1:3], wgh[4], rev(wgh[1:3])))
+  mk <- vapply(0:11, function(d) sum(r7$wk * r7$nodes^d) - (1 + (-1)^d) / (d + 1),
+               numeric(1))
+  mg <- vapply(0:5, function(d) sum(r7$wg * r7$nodes^d) - (1 + (-1)^d) / (d + 1),
+               numeric(1))
+  expect_lt(max(abs(mk)), 1e-15)
+  expect_lt(max(abs(mg)), 1e-15)
+
+  shp <- c(2, 5, 9)
+  f <- function(x, i) dgamma(x, shape = shp[i], rate = 1)
+  expect_equal(quad_vec(f, 0, rep(Inf, 3), rule = r7), rep(1, 3), tolerance = 1e-9)
+  expect_equal(quad_vec(function(x, i) sin(x), 0, pi, rule = r7), 2, tolerance = 1e-10)
+
+  expect_error(quad_vec(function(x, i) x, 0, 1,
+                        rule = list(nodes = 1:3, wk = 1:2, wg = 1:3)),
+               "equal length")
+})

@@ -151,7 +151,7 @@ NULL
 #' Computes \eqn{\log I_\nu(x)} for \eqn{x \ge 0} and \eqn{\nu \ge 0}, carrying
 #' every intermediate quantity on the log scale, so the result is finite and
 #' accurate wherever \eqn{\log I_\nu(x)} itself is representable. That includes
-#' two regions R's own function cannot reach: past about \eqn{x = 700}, where
+#' two regions that R's own function cannot reach: past about \eqn{x = 700}, where
 #' the unscaled \eqn{I_\nu} overflows, and at a large order with a small
 #' argument or an argument beyond about \eqn{10^5}, where the exponentially
 #' scaled form underflows or loses its precision.
@@ -180,7 +180,7 @@ NULL
 #'   policy. Every branch of the kernel is this package's own arithmetic, so
 #'   element \eqn{i} is computed and written by one thread and the result is
 #'   bit-identical at any count; below an internal threshold the sequential
-#'   path is taken whatever the count says. [log_bessel_k()] takes
+#'   path is taken regardless of the count. [log_bessel_k()] takes
 #'   no such argument: its hybrid branch calls R's own scaled `besselK`,
 #'   which can raise a warning, and a warning from a worker thread ends the
 #'   session.
@@ -188,8 +188,8 @@ NULL
 #' @return A numeric vector of \eqn{\log I_\nu(x)}, of the recycled length of
 #'   `x` and `nu`. `0` at \eqn{x = 0} with \eqn{\nu = 0}, since \eqn{I_0(0) =
 #'   1}; `-Inf` at \eqn{x = 0} for any \eqn{\nu > 0}; and `NA` where either
-#'   argument is negative or missing. Nothing is thrown for an argument outside
-#'   the domain.
+#'   argument is negative or missing. An argument outside the domain does not
+#'   signal an error.
 #'
 #' @references
 #' Plesner, A., Sørensen, H. H. B., and Hauberg, S. (2024). Accurate
@@ -227,19 +227,18 @@ log_bessel_i <- function(x, nu, threads = 1L) {
 #' @description
 #' Computes \eqn{\log I_\nu(x)} in vectorized R, through the same seven branches
 #' and the same formulas as the compiled kernel behind [log_bessel_i()]. It
-#' exists as the independent reference the tests compare that kernel against, so
-#' a change to either side that is not a change to both shows up as a
-#' disagreement. Not called on any production path; [log_bessel_i()] is.
+#' serves as the independent reference against which the tests compare that
+#' kernel, so a change to one side that is not made to the other shows up as a
+#' disagreement. No production code calls it; the production route is
+#' [log_bessel_i()].
 #'
 #' @details
 #' `x` and `nu` are recycled against each other to the longer length. Branch
-#' selection is `.lb_branch()`'s: the ascending series for a small argument, the
-#' large-argument expansion at three truncation depths, and the large-order
-#' uniform asymptotic expansion at three more, chosen so that every branch is
-#' used where its own error is smallest.
-#'
-#' The compiled route measured 1.1x faster on a mixed workload of one million
-#' points spanning all seven branches, so the twin costs little to keep.
+#' selection is that of `.lb_branch()`: the ascending series for a small
+#' argument, the large-argument expansion at two truncation depths (3 and 20
+#' terms), and the large-order uniform asymptotic expansion at four (4, 6, 9 and
+#' 13 polynomials), chosen so that every branch is used where its own error is
+#' smallest.
 #'
 #' @param x A numeric vector of arguments, non-negative.
 #' @param nu A numeric vector of orders, non-negative.
@@ -247,9 +246,10 @@ log_bessel_i <- function(x, nu, threads = 1L) {
 #' @return A numeric vector of \eqn{\log I_\nu(x)}, of length
 #'   `max(length(x), length(nu))`. `NA` where either argument is `NA` or
 #'   negative; `0` at `x = 0, nu = 0`, since \eqn{I_0(0) = 1}; and `-Inf` at
-#'   `x = 0` for any `nu > 0`. Nothing is thrown for an out-of-domain argument.
+#'   `x = 0` for any `nu > 0`. An argument outside the domain does not signal
+#'   an error.
 #'
-#' @seealso [log_bessel_i()], the compiled kernel this mirrors, and
+#' @seealso [log_bessel_i()], the compiled kernel that this function mirrors, and
 #'   [log_bessel_k()] for the second-kind counterpart.
 #'
 #' @keywords internal
@@ -295,12 +295,14 @@ log_bessel_i <- function(x, nu, threads = 1L) {
 #' @details
 #' The large-argument and large-order branches follow Plesner, Sørensen and
 #' Hauberg (2024) exactly as in [log_bessel_i()]. At moderate
-#' inputs the exponentially scaled [base::besselK()] is
-#' machine-precision exact wherever it does not overflow and one call beats
-#' a quadrature, so it serves that region; the corner where the scaled value
-#' itself overflows (a small argument with the order near the switching
-#' boundary) goes through the integral representation of Rothwell (2006),
-#' evaluated on the log scale over a composite Simpson rule.
+#' inputs the exponentially scaled [base::besselK()] is exact to machine
+#' precision wherever it does not overflow, and one call is cheaper than a
+#' quadrature, so it serves that region. The corner where the scaled value
+#' overflows or comes close to it, taken as
+#' \eqn{\nu \log(2/x) + \log\Gamma(\max(\nu, 1/2)) > 690} (a very small
+#' argument at an order below the boundary of the uniform expansion, such as
+#' \eqn{x = 10^{-300}} at order 2), goes through the integral representation of
+#' Rothwell (2006), evaluated on the log scale over a composite Simpson rule.
 #'
 #' @param x A numeric vector of arguments, recycled against `nu`. Positive; zero
 #'   gives `Inf`, \eqn{K} diverging there, and a negative value gives `NA`.
@@ -348,20 +350,19 @@ log_bessel_k <- function(x, nu) {
 #'
 #' @description
 #' Computes \eqn{\log K_\nu(x)} in vectorized R, through the same branches and
-#' the same formulas as the compiled kernel behind [log_bessel_k()]. It exists
-#' as the independent reference the tests compare that kernel against, so a
-#' change to either side that is not a change to both shows up as a
-#' disagreement. Not called on any production path; [log_bessel_k()] is.
+#' the same formulas as the compiled kernel behind [log_bessel_k()]. It serves
+#' as the independent reference against which the tests compare that kernel,
+#' so a change to one side that is not made to the other shows up as a
+#' disagreement. No production code calls it; the production route is
+#' [log_bessel_k()].
 #'
 #' @details
 #' `x` and `nu` are recycled against each other to the longer length, and the
 #' order enters as \eqn{|\nu|}, \eqn{K} being even in it. The branches are the
 #' large-argument and large-order expansions, R's own scaled `besselK` in the
 #' moderate region, and the Rothwell integral in the corner where that scaled
-#' value overflows.
-#'
-#' The compiled route measured 2.9x faster on a mixed workload spanning every
-#' branch, so the twin costs little to keep.
+#' value overflows or comes close to it, as described on the page of
+#' [log_bessel_k()].
 #'
 #' @param x A numeric vector of arguments, non-negative.
 #' @param nu A numeric vector of orders, of any sign.
@@ -370,7 +371,7 @@ log_bessel_k <- function(x, nu) {
 #'   `max(length(x), length(nu))`. `Inf` at \eqn{x = 0}, and `NA` where `x` is
 #'   negative or either argument is missing.
 #'
-#' @seealso [log_bessel_k()], the compiled kernel this mirrors, and
+#' @seealso [log_bessel_k()], the compiled kernel that this function mirrors, and
 #'   [log_bessel_i()] for the first-kind counterpart.
 #'
 #' @keywords internal
@@ -419,8 +420,9 @@ log_bessel_k <- function(x, nu) {
 #' \eqn{(\log I_\nu)' = \nu/x + I_{\nu+1}/I_\nu}, with the ratio formed as the
 #' exponential of a difference of logarithms and therefore finite wherever the
 #' logarithms are. The higher orders follow from the modified Bessel equation
-#' and cost no further Bessel evaluations, so the whole table is the price of
-#' two.
+#' and need no further Bessel evaluations, so the value and the four
+#' derivatives require two evaluations of \eqn{\log I}, at the orders \eqn{\nu}
+#' and \eqn{\nu + 1}.
 #'
 #' @details
 #' Derivatives with respect to the *order* have no elementary form and are not
@@ -469,8 +471,9 @@ log_bessel_i_derivs <- function(x, nu) {
 #' Computes \eqn{\log K_\nu(x)} together with its first four derivatives with
 #' respect to the *argument*, from the ratio identity
 #' \eqn{(\log K_\nu)' = \nu/x - K_{\nu+1}/K_\nu} and the modified Bessel
-#' equation, exactly as in [log_bessel_i_derivs()]. The sign is the one
-#' difference: \eqn{K} decreases in its argument where \eqn{I} grows.
+#' equation, exactly as in [log_bessel_i_derivs()]. The only difference is the
+#' sign of the ratio term, because \eqn{K_\nu(x)} decreases in \eqn{x} while
+#' \eqn{I_\nu(x)} increases.
 #'
 #' @details
 #' Derivatives with respect to the *order* have no elementary form and are not

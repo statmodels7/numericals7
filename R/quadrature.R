@@ -15,24 +15,24 @@ NULL
 #' extension of the 7-point Gauss rule on \eqn{[-1, 1]}. One set of nodes
 #' carries both rules, so a single evaluation of the integrand gives an
 #' estimate and, from the difference of the two rules, an error for it. An
-#' adaptive routine reads that error to decide where to refine, and pays
-#' nothing for it beyond the estimate.
+#' adaptive routine uses that error to decide where to refine, and the error
+#' requires no evaluations of the integrand beyond those of the estimate.
 #'
 #' @details
 #' The eight Kronrod-only nodes carry a Gauss weight of zero, so both rules are
 #' formed from one matrix of function values by two weighted sums.
 #'
-#' The constants are QUADPACK's, carried at the precision it prints them. An
-#' adaptive routine reads the difference of the two rules, and on a constant
-#' integrand that difference is \eqn{\lvert\sum w_k - \sum w_g\rvert / 2} of
-#' the integral on every panel. Transcribed to fifteen decimals, as they were
-#' before version 0.14.0, the Kronrod weights summed to
-#' \eqn{2 - 6.0 \times 10^{-15}}, so every error estimate carried a floor of
-#' \eqn{3.4 \times 10^{-15}} of the integral that no bisection lowers. At full
-#' precision both sums are 2 within the rounding of the sum. The tests pin the
-#' constants by their defining property, that the 7-point rule integrates
-#' polynomials of degree 13 exactly and the 15-point one degree 22, and pin the
-#' two sums to a few units in the last place.
+#' The constants are QUADPACK's, carried at the full precision at which it
+#' prints them. An adaptive routine uses the difference of the two rules as the
+#' error, and on a constant integrand that difference is
+#' \eqn{\lvert\sum w_k - \sum w_g\rvert / 2} of the integral on every panel.
+#' With the Kronrod weights rounded to fifteen decimals they sum to
+#' \eqn{2 - 6.0 \times 10^{-15}}, and every error estimate would carry a floor
+#' of \eqn{3.4 \times 10^{-15}} of the integral that no bisection lowers. At
+#' full precision both sums are 2 within the rounding of the sum. The tests pin
+#' the constants by their defining property, that the 7-point rule integrates
+#' polynomials of degree 13 exactly and the 15-point rule those of degree 23,
+#' and pin the two sums to a few units in the last place.
 #'
 #' @return A list of three numeric vectors, each of length 15:
 #'   \describe{
@@ -59,8 +59,8 @@ NULL
 #' # The weights of a rule sum to the length of its interval.
 #' c(kronrod = sum(r$wk), gauss = sum(r$wg))
 #'
-#' # The Gauss rule lives on eight of the fifteen nodes, so both rules come
-#' # from one set of function values.
+#' # The Gauss rule uses seven of the fifteen nodes (the other eight carry a
+#' # Gauss weight of zero), so both rules come from one set of function values.
 #' sum(r$wg == 0)
 #'
 #' # Its defining property: exact on polynomials to degree 13.
@@ -104,11 +104,11 @@ gauss_kronrod15 <- function() {
 #' pays its overhead once per value.
 #'
 #' @details
-#' # The integrand contract
+#' # The integrand
 #'
 #' `f(x, i)` receives a numeric matrix `x` of evaluation points and an integer
-#' vector `i` with one entry per row of `x`, saying which parameter set that row
-#' belongs to. It returns the values elementwise, either as a matrix shaped like
+#' vector `i` with one entry per row of `x`, which gives the parameter set to
+#' which that row belongs. It returns the values elementwise, either as a matrix shaped like
 #' `x` or as a vector in column-major order.
 #'
 #' Elementwise recycling does the indexing. For a gamma mean at parameter
@@ -129,33 +129,35 @@ gauss_kronrod15 <- function() {
 #' single evaluation, so one hard row refines its own panels without
 #' serializing the others.
 #'
-#' The budget is judged on the sum for a reason worth knowing, because the
-#' obvious alternative fails. Giving each panel a share proportional to its
-#' length cannot integrate an endpoint singularity at all: near such a point the
-#' error stays concentrated in the innermost panel however deep the bisection
-#' goes, so a per-length share demands of that panel an accuracy no depth
-#' reaches. Judging the sum lets the smooth panels carry the row.
+#' The budget is judged on the sum because the alternative of giving each panel
+#' a share proportional to its length cannot integrate an endpoint singularity
+#' at all: near such a point the error stays concentrated in the innermost
+#' panel however deep the bisection goes, so a per-length share demands of that
+#' panel an accuracy that no depth reaches. With the sum, the smooth panels
+#' absorb the error of the panel at the singularity.
 #'
 #' # Infinite endpoints
 #'
-#' Mapped to finite ones by the rational transforms \eqn{x = a + t/(1-t)},
-#' \eqn{x = b - t/(1-t)} and \eqn{x = t/(1-t^2)}, whose Jacobians multiply the
-#' integrand. Rows of different kinds may share one call, so a vector of
-#' endpoints mixing finite and infinite costs nothing extra.
+#' Infinite endpoints are mapped to finite ones by the rational transforms
+#' \eqn{x = a + t/(1-t)}, \eqn{x = b - t/(1-t)} and \eqn{x = t/(1-t^2)}, whose
+#' Jacobians multiply the integrand. Rows of different kinds may share one
+#' call, so a vector of endpoints mixing finite and infinite ones is integrated
+#' in the same passes.
 #'
-#' # A failure is reported as one
+#' # Rows that do not converge
 #'
 #' A row whose panels still exceed their budget at `max_depth`, or once it
-#' holds `max_panels` panels, returns `NA`, and one warning names every such
-#' row. An `NA` says the accuracy was not reached; a plausible number would say
-#' nothing and be believed.
+#' holds `max_panels` panels, returns `NA`, and one warning lists the first
+#' eight such rows (followed by an ellipsis if there are more). The value `NA`
+#' indicates that the requested accuracy was not reached.
 #'
 #' `max_depth` ends a row whose error is concentrated at a point, where
 #' bisection narrows one panel after another, and `max_panels` ends a row whose
 #' error is spread over its whole interval, from rounding or from an
 #' oscillation faster than the panels resolve. In the second case every panel
-#' carries a share of the error, half the panels are split at every pass, and
-#' the count doubles long before any panel reaches `max_depth`.
+#' carries a similar share of the error, so most panels are split at every
+#' pass, and the count grows geometrically long before any panel reaches
+#' `max_depth`.
 #'
 #' # The floor of the rule
 #'
@@ -170,35 +172,35 @@ gauss_kronrod15 <- function() {
 #' could never be met, and the call signals an error naming the floor before
 #' the integrand is evaluated.
 #'
-#' @param f The integrand, obeying the contract above.
+#' @param f The integrand, a function of `x` and `i` as described above.
 #' @param lower,upper Numeric vectors of endpoints, recycled to a common length,
 #'   either of which may be infinite. Every `lower` must be strictly below its
-#'   `upper`, or the call throws.
+#'   `upper`, or the call signals an error.
 #' @param atol,rtol The absolute and relative error budgets per row, defaulting
 #'   to `1e-10` and `1e-8`. A row is judged against the larger of the two, so
 #'   `atol` governs an integral near zero and `rtol` a large one. With
 #'   `atol = 0` an `rtol` below the floor of the rule signals an error; with a
 #'   positive `atol` any `rtol` is accepted, `rtol = 0` included.
 #' @param max_depth The greatest number of bisections one panel may undergo,
-#'   `48` by default. It is the lever for an endpoint singularity, and the
-#'   measured reach is narrower than "integrable" suggests: at the default a
-#'   gamma density of shape 0.5 converges and one of shape 0.45 does not, while
-#'   `max_depth = 200` reaches shape 0.2 and still not 0.1. A row past the
-#'   budget returns `NA`.
+#'   `48` by default. It governs the integration of an endpoint singularity,
+#'   and not every integrable singularity is reached: at the default the
+#'   density of a gamma distribution with shape 0.5 is integrated and the one
+#'   with shape 0.45 returns `NA`, while with `max_depth = 200` shape 0.2 is
+#'   integrated and shape 0.1 returns `NA`. A row past the budget returns `NA`.
 #' @param max_panels The greatest number of panels one row may hold, `4096` by
 #'   default. A row still over its budget once it holds that many returns `NA`.
 #'   It bounds the memory of a row whose error estimate does not fall with
-#'   bisection, which at the default costs about 40 MB at the peak, and it still
-#'   admits `cos(16000 x)` on the unit interval, which needs between 2048 and
-#'   4096 panels. The count is per row, so a row's result does not depend on
-#'   the other rows of the call.
-#' @param rule The embedded quadrature pair, [gauss_kronrod15()] by default.
-#'   Any list of `nodes`, `wk` and `wg` of equal length serves.
+#'   bisection, and at the default it admits `cos(16000 x)` on the unit
+#'   interval, which needs between 2048 and 4096 panels. The count is per row,
+#'   so a row's result does not depend on the other rows of the call.
+#' @param rule The embedded quadrature pair, [gauss_kronrod15()] by default: a
+#'   list of `nodes` on \eqn{[-1, 1]} and the weights `wk` and `wg` of the two
+#'   rules at those nodes, three numeric vectors of equal length.
 #'
 #' @return A numeric vector of integrals, one per row, of the recycled length of
 #'   `lower` and `upper`. `NA` in any row that did not reach the requested
-#'   accuracy within `max_depth` and `max_panels`, with a warning naming those
-#'   rows.
+#'   accuracy within `max_depth` and `max_panels`, with a warning that lists
+#'   the first eight of those rows.
 #'
 #' @seealso [series_vec()] for the discrete counterpart, [gauss_kronrod15()] for
 #'   the default rule.
@@ -242,13 +244,18 @@ quad_vec <- function(f, lower, upper, atol = 1e-10, rtol = 1e-8,
   # A relative budget below the rule's floor cannot be met on any panel, and
   # with no absolute budget to stop at instead the row would refine until it
   # met the cap. It is refused here, before the integrand is evaluated.
+  m <- length(rule$nodes)
+  if (!m || length(rule$wk) != m || length(rule$wg) != m) {
+    stop("'rule' must be a list of 'nodes', 'wk' and 'wg' of equal length.",
+         call. = FALSE)
+  }
   fl <- quad_floor(rule)
   if (length(atol) == 1L && length(rtol) == 1L && !is.na(atol) && !is.na(rtol) &&
       atol <= 0 && rtol < fl) {
     stop(sprintf(paste0(
       "quad_vec: rtol = %g is below the floor of the quadrature rule, %.3g,\n",
       "  and atol = %g leaves no absolute budget to stop at instead.\n",
-      "  Ask for rtol >= %.3g, or give a positive atol."), rtol, fl, atol, fl),
+      "  Use rtol >= %.3g, or give a positive atol."), rtol, fl, atol, fl),
       call. = FALSE)
   }
   if (!is.numeric(max_panels) || length(max_panels) != 1L || is.na(max_panels) ||
@@ -275,10 +282,10 @@ quad_vec <- function(f, lower, upper, atol = 1e-10, rtol = 1e-8,
   # evaluate the raw integrand times the Jacobian of the row's transform
   eval_panels <- function(orig, a, b) {
     half <- (b - a) / 2
-    Tm <- outer(a + half, rep(1, 15L)) + outer(half, rule$nodes)
+    Tm <- outer(a + half, rep(1, m)) + outer(half, rule$nodes)
     ty <- type[orig]
     X <- Tm
-    J <- matrix(1, nrow(Tm), 15L)
+    J <- matrix(1, nrow(Tm), m)
     if (any(ty == 1L)) {
       r <- ty == 1L
       X[r, ] <- lower[orig[r]] + Tm[r, , drop = FALSE] / (1 - Tm[r, , drop = FALSE])
@@ -296,7 +303,7 @@ quad_vec <- function(f, lower, upper, atol = 1e-10, rtol = 1e-8,
       J[r, ] <- (1 + tt^2) / (1 - tt^2)^2
     }
     Fv <- f(X, orig)
-    Fm <- matrix(as.numeric(Fv), nrow(Tm), 15L) * J
+    Fm <- matrix(as.numeric(Fv), nrow(Tm), m) * J
     K <- half * as.numeric(Fm %*% rule$wk)
     G <- half * as.numeric(Fm %*% rule$wg)
     list(K = K, err = abs(K - G))
@@ -427,23 +434,22 @@ quad_vec <- function(f, lower, upper, atol = 1e-10, rtol = 1e-8,
 #' The Smallest Relative Budget a Quadrature Rule Can Meet
 #'
 #' @description
-#' Returns \eqn{\lvert\sum w_k - \sum w_g\rvert / 2} plus one unit in the last
-#' place: the relative error estimate an embedded pair gives on a constant
+#' Returns \eqn{\lvert\sum w_k - \sum w_g\rvert / 2} plus the machine epsilon:
+#' the relative error estimate that an embedded pair gives on a constant
 #' integrand, on every panel, together with the rounding of the two sums.
-#' [quad_vec()] refuses a relative budget below it when no absolute budget is
+#' [quad_vec()] rejects a relative budget below it when no absolute budget is
 #' given.
 #'
 #' @details
 #' On a constant integrand both rules are exact up to their weight sums, so the
-#' difference of the two estimates, which an adaptive routine reads as the
+#' difference of the two estimates, which an adaptive routine uses as the
 #' error, is the difference of the sums scaled by the panel's half-width.
 #' Relative to the integral it is the same on every panel, and bisection does
 #' not lower it. For [gauss_kronrod15()] the two sums are 2 up to their
 #' rounding, and the value is \eqn{2.2 \times 10^{-16}} where the computed sums
 #' agree to the last bit, as on x86_64, and \eqn{4.4 \times 10^{-16}} where
 #' they differ by one unit in the last place of 2, as on the arm64 build of R
-#' for macOS; with the
-#' fifteen-decimal constants this package carried before 0.14.0 it was
+#' for macOS. With the Kronrod weights rounded to fifteen decimals it would be
 #' \eqn{3.7 \times 10^{-15}}.
 #'
 #' @param rule An embedded pair: a list of `nodes`, `wk` and `wg` of equal

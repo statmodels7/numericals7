@@ -56,36 +56,36 @@ primitive the toolkit uses is generated from the absolute value:
   \mathbb{1}(u \geq 0) = \frac{1 + \operatorname{sign}(u)}{2}, \qquad
   (u)_{+} = \frac{u + \lvert u\rvert}{2},}
 
-so one contract serves them all. The smooth sign is \eqn{s'}, the smooth
-step \eqn{(1 + s'(u))/2} and the smooth hinge \eqn{(u + s(u))/2} follow by
-composition, and a consumer that replaces \eqn{\lvert u\rvert} by \eqn{s(u)}
-has replaced every one of them consistently.
+so a single object of this class serves all of them. The smooth sign is
+\eqn{s'}, the smooth step \eqn{(1 + s'(u))/2} and the smooth hinge
+\eqn{(u + s(u))/2} follow by composition, and a consumer that replaces
+\eqn{\lvert u\rvert} by \eqn{s(u)} replaces every one of them consistently.
 }
-\section{What a smoother buys}{
+\section{Uses of a smoother}{
 A break-point term smoothed this way becomes an ordinary nonlinear term
 whose design block is the true Jacobian, so a random or penalized
-development of its break-points becomes fittable. A kinked penalty
-smoothed this way becomes a proper separable one, at the price of the exact
-zeros the kink produced.
+development of its break-points can be fitted. A kinked penalty smoothed
+this way becomes a smooth separable penalty, and the exact zeros produced by
+the kink are lost.
 }
 
-\section{The derivatives are functions}{
-They are functions and not expressions. A piecewise smoother, the quintic
-here, has branches that \code{\link[stats:deriv]{stats::deriv()}} does not read, and with the
-derivatives written out in the constructor those branches are ordinary code.
-Each takes \verb{(u, width)} and vectorizes in both, so a per-group width is one
-value per observation.
+\section{The derivatives as functions}{
+The derivatives are stored as functions and not as expressions. A piecewise
+smoother such as the quintic has branches that \code{\link[stats:deriv]{stats::deriv()}} cannot
+differentiate, so the derivatives are written out in the constructor, where
+the branches are ordinary code. Each function takes \verb{(u, width)} and
+vectorizes in both, so a per-group width is one value per observation.
 }
 
 \section{The width}{
 \code{width} is the transition scale: \code{h} for a smoother whose parameter is a
 length, the bent-cable reading of a transition of width \eqn{h}, and \code{c} for
-the hyperbolic, whose parameter is a squared length. \code{NULL}, the default of
-all three constructors, asks the consumer to resolve it from the data at
-build through \code{\link[=smoother_width]{smoother_width()}}; a break-point term hands it the median
-spacing of its covariate. \code{per_group} asks for one width per group where a
-grouping is available, the validity window of a Laplace approximation being
-per-subject.
+the hyperbolic, whose parameter is a squared length. With \code{NULL}, the
+default of all three constructors, the consumer resolves the width from the
+data at build through \code{\link[=smoother_width]{smoother_width()}}; a break-point term passes it the
+median spacing of its covariate. With \code{per_group = TRUE} the width is
+resolved once per group where a grouping is available, because the validity
+window of a Laplace approximation is per subject.
 }
 
 \section{The scale correction}{
@@ -109,8 +109,8 @@ smoother_deriv(sm, u, order = 1)                    # smooth sign
 (1 + smoother_deriv(sm, u, order = 1)) / 2          # smooth step
 (u + smoother_deriv(sm, u, order = 0)) / 2          # smooth hinge
 
-# Three widths out they agree with the sharp versions to five decimals,
-# and inside the transition they are what replaces them.
+# Four widths out they agree with the sharp versions to five decimals,
+# and inside the transition they replace them.
 far <- c(-1.2, -0.9, 0.9, 1.2)
 round(smoother_deriv(sm, far, order = 1) - sign(far), 5)
 round((far + smoother_deriv(sm, far, order = 0)) / 2 - pmax(far, 0), 5)
@@ -132,5 +132,5 @@ for threshold regression models. \emph{Journal of Econometrics},
 \code{\link[=smooth_probit]{smooth_probit()}}, \code{\link[=smooth_hyperbolic]{smooth_hyperbolic()}} and \code{\link[=smooth_quintic]{smooth_quintic()}}
 for the three that ship, \code{\link[=smoother_deriv]{smoother_deriv()}} to evaluate one,
 \code{\link[=smoother_width]{smoother_width()}} and \code{\link[=smoother_width_floor]{smoother_width_floor()}} for the width,
-\code{\link[=check_abs_smoother]{check_abs_smoother()}} to verify one of your own.
+\code{\link[=check_abs_smoother]{check_abs_smoother()}} to verify a user-written smoother.
 }

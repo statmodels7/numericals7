@@ -7,34 +7,62 @@
 owen_t(h, a)
 }
 \arguments{
-\item{h}{A numeric vector, the offset. Any finite value.}
+\item{h}{A numeric vector, the offset, of any sign and size.}
 
-\item{a}{A numeric vector of slopes, recycled against \code{h}. May be negative or
-infinite; both are taken by identity.}
+\item{a}{A numeric vector of slopes, recycled against \code{h}, of any sign and
+size, \code{Inf} included.}
 }
 \value{
 A numeric vector of the recycled length of \code{h} and \code{a}, bounded in
-\eqn{[-1/4, 1/4]}.
+\eqn{[-1/4, 1/4]}, with \code{NA} where either argument is missing.
 }
 \description{
 Computes \eqn{T(h, a) = \dfrac{1}{2\pi}\displaystyle\int_0^{a}
-  \dfrac{e^{-h^2(1 + x^2)/2}}{1 + x^2}\,\mathrm{d}x}, the function the skew
-normal distribution function is written in. \eqn{T(h, a)} is the probability
-that a standard bivariate normal pair falls in the wedge below the line of
+  \dfrac{e^{-h^2(1 + x^2)/2}}{1 + x^2}\,\mathrm{d}x}, the function in which
+the skew normal distribution function is written. \eqn{T(h, a)} is the probability
+that a pair of independent standard normal variables falls in the wedge
+below the line of
 slope \eqn{a} beyond \eqn{h}, so it is bounded by \eqn{1/4} and is odd in
 \eqn{a}.
 }
-\details{
-The integrand is bounded and smooth over a finite range, so quadrature
-evaluates it to near machine precision. Every element of the input goes into
-one batched call of \code{\link[=quad_vec]{quad_vec()}}, one row per element, so a whole vector of
-skew normal probabilities costs a single quadrature.
+\section{The integral}{
+\eqn{T} is even in \eqn{h} and odd in \eqn{a}, so the computation runs on
+\eqn{\lvert h\rvert} and \eqn{\lvert a\rvert}. For \eqn{\lvert a\rvert \le 1}
+the factor \eqn{e^{-h^2/2}} is taken out of the integral,
 
-Two identities are applied in closed form, so the extremes are exact where
-quadrature would merely be accurate: \eqn{T(h, a) = -T(h, -a)} handles a
-negative second argument, and \eqn{T(h, \infty) = \tfrac{1}{2}\Phi(-|h|)}
-handles an infinite one.
+\deqn{T(h, a) = \frac{e^{-h^2/2}}{2\pi} \int_0^{a}
+  \frac{e^{-h^2 x^2/2}}{1 + x^2}\,\mathrm{d}x,}
+
+so the integrand equals one at zero whatever \eqn{h} is, and \code{\link[=quad_vec]{quad_vec()}}
+evaluates the integral to a relative tolerance of \eqn{10^{-13}} with no
+absolute tolerance, which keeps the relative accuracy of a value far below
+one. Every such element goes into one batched call, one row per element, so
+a whole vector of skew normal probabilities costs a single quadrature.
 }
+
+\section{A slope above one}{
+For \eqn{a > 1} the integrand is concentrated within a distance of order
+\eqn{1/h} of zero, which a quadrature over \eqn{[0, a]} can miss. The
+reflection identity (Owen, 1956)
+
+\deqn{T(h, a) = \tfrac{1}{2}\bigl\{Q(h) + Q(ah)\bigr\} - Q(h)\,Q(ah)
+  - T(ah, 1/a), \qquad h \ge 0,}
+
+with \eqn{Q = 1 - \Phi} computed as an upper tail, replaces it by an integral
+with a slope below one. The result is at least a quarter of the first
+terms, so the subtraction loses at most two bits.
+}
+
+\section{Closed forms}{
+\eqn{T(h, 0) = 0}, \eqn{T(h, \infty) = \tfrac{1}{2}Q(\lvert h\rvert)} and
+\eqn{T(\pm\infty, a) = 0} are set directly, and a missing argument gives
+\code{NA}.
+
+Against values computed to 50 digits on a grid of \eqn{h} from 0 to 37 and
+\eqn{a} from \eqn{10^{-6}} to \eqn{10^6}, the largest relative error is of
+order \eqn{10^{-15}}.
+}
+
 \examples{
 # At h = 0 the integral is elementary: T(0, a) = atan(a) / (2 pi).
 a <- c(0.5, 1, 4)
@@ -43,6 +71,12 @@ max(abs(owen_t(0, a) - atan(a) / (2 * pi)))
 # Odd in the second argument, and the infinite case is a normal tail.
 owen_t(1, 2) + owen_t(1, -2)
 owen_t(1.3, Inf) - pnorm(-1.3) / 2
+
+# A steep slope, where the integrand sits within 1/h of zero: the skew
+# normal distribution function at alpha = 1000 against its limit
+# 2 Phi(z) - 1.
+z <- 2.5
+(pnorm(z) - 2 * owen_t(z, 1000)) - (2 * pnorm(z) - 1)
 
 }
 \references{

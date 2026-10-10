@@ -26,7 +26,8 @@ probability, or its logarithm. A non-positive \code{df} gives \code{NaN}.
 }
 \description{
 Computes \eqn{T_\nu(q) = P(T \le q)} for a Student \eqn{t} variable with
-\eqn{\nu > 0} degrees of freedom, real-valued, or the upper tail, on the
+\eqn{\nu > 0} degrees of freedom, which need not be an integer, or its upper
+tail, on the
 natural or the log scale. The values are those of \code{\link[stats:TDist]{stats::pt()}}, from a
 compiled function that never reaches the R API, so that it may be called
 from a worker thread. Its C entry point is \code{n7_pt}, resolved with

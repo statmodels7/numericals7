@@ -7,21 +7,23 @@
 mills_ratio(t)
 }
 \arguments{
-\item{t}{A numeric vector of any values, the whole real line included. No
-argument is out of range and none is special-cased.}
+\item{t}{A numeric vector. Large finite values of either sign are handled
+on the log scale and are not special-cased. An infinite value gives \code{NaN}
+in \code{dr}, and \code{-Inf} gives \code{NaN} in \code{r} as well.}
 }
 \value{
 A list of two numeric vectors, each the length of \code{t}:
 \describe{
 \item{\code{r}}{the ratio \eqn{R(t) = \phi(t)/\Phi(t)}, positive and
-decreasing, asymptotic to \eqn{-t} as \eqn{t \to -\infty}.}
+decreasing, asymptotic to \eqn{-t} as \eqn{t \to -\infty}. In double
+precision it underflows to zero above about \eqn{t = 38.6}.}
 \item{\code{dr}}{its derivative \eqn{R'(t)}, which lies in \eqn{(-1, 0)}.}
 }
 }
 \description{
-Returns \eqn{R(t) = \phi(t)/\Phi(t)} and \eqn{R'(t) = -R(t)\{t + R(t)\}},
-the two quantities every derivative of a skew normal log-density is built
-from.
+Returns \eqn{R(t) = \phi(t)/\Phi(t)}, often called the inverse Mills ratio,
+and its derivative \eqn{R'(t) = -R(t)\{t + R(t)\}}. Every derivative of a
+skew normal log-density is built from these two quantities.
 }
 \details{
 The ratio is formed on the log scale. Written directly it is \eqn{0/0} for

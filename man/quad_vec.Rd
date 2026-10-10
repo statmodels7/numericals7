@@ -16,11 +16,11 @@ quad_vec(
 )
 }
 \arguments{
-\item{f}{The integrand, obeying the contract above.}
+\item{f}{The integrand, a function of \code{x} and \code{i} as described above.}
 
 \item{lower, upper}{Numeric vectors of endpoints, recycled to a common length,
 either of which may be infinite. Every \code{lower} must be strictly below its
-\code{upper}, or the call throws.}
+\code{upper}, or the call signals an error.}
 
 \item{atol, rtol}{The absolute and relative error budgets per row, defaulting
 to \code{1e-10} and \code{1e-8}. A row is judged against the larger of the two, so
@@ -29,28 +29,28 @@ to \code{1e-10} and \code{1e-8}. A row is judged against the larger of the two, 
 positive \code{atol} any \code{rtol} is accepted, \code{rtol = 0} included.}
 
 \item{max_depth}{The greatest number of bisections one panel may undergo,
-\code{48} by default. It is the lever for an endpoint singularity, and the
-measured reach is narrower than "integrable" suggests: at the default a
-gamma density of shape 0.5 converges and one of shape 0.45 does not, while
-\code{max_depth = 200} reaches shape 0.2 and still not 0.1. A row past the
-budget returns \code{NA}.}
+\code{48} by default. It governs the integration of an endpoint singularity,
+and not every integrable singularity is reached: at the default the
+density of a gamma distribution with shape 0.5 is integrated and the one
+with shape 0.45 returns \code{NA}, while with \code{max_depth = 200} shape 0.2 is
+integrated and shape 0.1 returns \code{NA}. A row past the budget returns \code{NA}.}
 
 \item{max_panels}{The greatest number of panels one row may hold, \code{4096} by
 default. A row still over its budget once it holds that many returns \code{NA}.
 It bounds the memory of a row whose error estimate does not fall with
-bisection, which at the default costs about 40 MB at the peak, and it still
-admits \verb{cos(16000 x)} on the unit interval, which needs between 2048 and
-4096 panels. The count is per row, so a row's result does not depend on
-the other rows of the call.}
+bisection, and at the default it admits \verb{cos(16000 x)} on the unit
+interval, which needs between 2048 and 4096 panels. The count is per row,
+so a row's result does not depend on the other rows of the call.}
 
-\item{rule}{The embedded quadrature pair, \code{\link[=gauss_kronrod15]{gauss_kronrod15()}} by default.
-Any list of \code{nodes}, \code{wk} and \code{wg} of equal length serves.}
+\item{rule}{The embedded quadrature pair, \code{\link[=gauss_kronrod15]{gauss_kronrod15()}} by default: a
+list of \code{nodes} on \eqn{[-1, 1]} and the weights \code{wk} and \code{wg} of the two
+rules at those nodes, three numeric vectors of equal length.}
 }
 \value{
 A numeric vector of integrals, one per row, of the recycled length of
 \code{lower} and \code{upper}. \code{NA} in any row that did not reach the requested
-accuracy within \code{max_depth} and \code{max_panels}, with a warning naming those
-rows.
+accuracy within \code{max_depth} and \code{max_panels}, with a warning that lists
+the first eight of those rows.
 }
 \description{
 Computes \eqn{\int_{a_i}^{b_i} f(x; \theta_i)\,\mathrm{d}x} for every row
@@ -60,10 +60,10 @@ not a loop. The toolkit's integrals are almost always this shape, one
 integrand at many parameter values, and a scalar integrator called in a loop
 pays its overhead once per value.
 }
-\section{The integrand contract}{
+\section{The integrand}{
 \code{f(x, i)} receives a numeric matrix \code{x} of evaluation points and an integer
-vector \code{i} with one entry per row of \code{x}, saying which parameter set that row
-belongs to. It returns the values elementwise, either as a matrix shaped like
+vector \code{i} with one entry per row of \code{x}, which gives the parameter set to
+which that row belongs. It returns the values elementwise, either as a matrix shaped like
 \code{x} or as a vector in column-major order.
 
 Elementwise recycling does the indexing. For a gamma mean at parameter
@@ -83,33 +83,35 @@ row's worst panels are bisected, and the splits from every row join the next
 single evaluation, so one hard row refines its own panels without
 serializing the others.
 
-The budget is judged on the sum for a reason worth knowing, because the
-obvious alternative fails. Giving each panel a share proportional to its
-length cannot integrate an endpoint singularity at all: near such a point the
-error stays concentrated in the innermost panel however deep the bisection
-goes, so a per-length share demands of that panel an accuracy no depth
-reaches. Judging the sum lets the smooth panels carry the row.
+The budget is judged on the sum because the alternative of giving each panel
+a share proportional to its length cannot integrate an endpoint singularity
+at all: near such a point the error stays concentrated in the innermost
+panel however deep the bisection goes, so a per-length share demands of that
+panel an accuracy that no depth reaches. With the sum, the smooth panels
+absorb the error of the panel at the singularity.
 }
 
 \section{Infinite endpoints}{
-Mapped to finite ones by the rational transforms \eqn{x = a + t/(1-t)},
-\eqn{x = b - t/(1-t)} and \eqn{x = t/(1-t^2)}, whose Jacobians multiply the
-integrand. Rows of different kinds may share one call, so a vector of
-endpoints mixing finite and infinite costs nothing extra.
+Infinite endpoints are mapped to finite ones by the rational transforms
+\eqn{x = a + t/(1-t)}, \eqn{x = b - t/(1-t)} and \eqn{x = t/(1-t^2)}, whose
+Jacobians multiply the integrand. Rows of different kinds may share one
+call, so a vector of endpoints mixing finite and infinite ones is integrated
+in the same passes.
 }
 
-\section{A failure is reported as one}{
+\section{Rows that do not converge}{
 A row whose panels still exceed their budget at \code{max_depth}, or once it
-holds \code{max_panels} panels, returns \code{NA}, and one warning names every such
-row. An \code{NA} says the accuracy was not reached; a plausible number would say
-nothing and be believed.
+holds \code{max_panels} panels, returns \code{NA}, and one warning lists the first
+eight such rows (followed by an ellipsis if there are more). The value \code{NA}
+indicates that the requested accuracy was not reached.
 
 \code{max_depth} ends a row whose error is concentrated at a point, where
 bisection narrows one panel after another, and \code{max_panels} ends a row whose
 error is spread over its whole interval, from rounding or from an
 oscillation faster than the panels resolve. In the second case every panel
-carries a share of the error, half the panels are split at every pass, and
-the count doubles long before any panel reaches \code{max_depth}.
+carries a similar share of the error, so most panels are split at every
+pass, and the count grows geometrically long before any panel reaches
+\code{max_depth}.
 }
 
 \section{The floor of the rule}{

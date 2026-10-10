@@ -20,10 +20,10 @@ source.
 \description{
 Holds the coefficients of the polynomials \eqn{u_k(t)} for
 \eqn{k = 1, \dots, 13}, which enter the large-order uniform asymptotic
-expansions of the modified Bessel functions (DLMF 10.41). They are what
-\code{\link[=log_bessel_i]{log_bessel_i()}} and \code{\link[=log_bessel_k]{log_bessel_k()}} sum in their large-order branches, and
-the truncation depth \eqn{K} that names each of those branches is how many of
-these polynomials it uses.
+expansions of the modified Bessel functions (DLMF 10.41). \code{\link[=log_bessel_i]{log_bessel_i()}}
+and \code{\link[=log_bessel_k]{log_bessel_k()}} sum them in their large-order branches, and the
+truncation depth \eqn{K} of each branch is the number of polynomials that it
+uses.
 }
 \details{
 Each \eqn{u_k} is a polynomial in \eqn{t} with only every other power
@@ -36,8 +36,8 @@ coefficients. They satisfy the recurrence
 
 DLMF 10.41.9, and were generated from it in exact rational arithmetic and
 converted to double only at the end. The tests re-run the recurrence
-numerically and compare, so a mistyped digit fails rather than degrading an
-expansion quietly.
+numerically and compare the result with the stored coefficients at a
+relative tolerance of \eqn{10^{-13}}.
 
 The polynomials grow: \eqn{u_1} has two terms and \eqn{u_{13}} has fourteen,
 with coefficients reaching \eqn{10^{12}}.

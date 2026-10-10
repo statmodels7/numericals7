@@ -12,26 +12,27 @@
 #' accepts through its `threads` argument. The default, one thread and
 #' one process, takes exactly the sequential code path; a larger
 #' `threads` lets the compiled per-observation kernels and the dense
-#' assembly products run in parallel, and a larger `workers` fans the
-#' independent fits of a cross-validation's folds out over separate R
-#' processes.
+#' assembly products run in parallel, and a larger `workers` distributes the
+#' independent units of a fit over separate R processes: the folds of a
+#' cross-validation and the combinations of a kinked path's product grid.
 #'
 #' @details
-#' # The count does not change the answer
+#' # Results independent of the thread count
 #'
 #' Every parallel region in the toolkit decomposes its work over the elements
 #' of its output. Each accumulated value is therefore summed in full by one
-#' thread, no reduction is ever split across threads, and a kernel returns the
+#' thread, reductions are never split across threads, and a kernel returns the
 #' same bits at any count. A fold's fit is a complete independent computation,
 #' and the folds are collected in fold order however many processes ran them.
 #'
 #' Two properties of the drivers make that hold, and neither belongs to the
 #' kernels themselves. A worker installs the calling thread's floating-point
-#' environment before running its chunk: without it some of the platform's own
-#' math routines return per-thread last bits, and R's `psigamma` at higher
-#' orders, `bessel_k`, and `pgamma` and `pbeta` on the log scale were each
-#' measured doing so. The sequential branch also runs through the same compiled
-#' function the parallel one does, so a compiler cannot optimize the two apart.
+#' environment before running its chunk, because without it some of the
+#' platform's own math routines (among them R's `psigamma` at higher orders,
+#' `bessel_k`, and `pgamma` and `pbeta` on the log scale) can return results
+#' that differ in the last bits between threads. The sequential branch also
+#' runs through the same compiled function as the parallel one, so a compiler
+#' cannot optimize the two differently.
 #'
 #' One qualification. In the dense assembly products of \pkg{statmodels7},
 #' raising the count first *engages* a threaded kernel where a BLAS expression
@@ -42,27 +43,27 @@
 #'
 #' The guarantee is a design constraint on any kernel added later.
 #'
-#' # The sequential path is the sequential path
+#' # The sequential path
 #'
-#' At `threads = 1` nothing parallel is entered and no process-level thread
-#' setting is touched. The code taken is the sequential one, not a parallel path
-#' running on a single thread.
+#' At `threads = 1` no parallel region is entered and the process-level thread
+#' setting is left unchanged. The code taken is the sequential one, not a
+#' parallel path running on a single thread.
 #'
 #' Each kernel carries an internal threshold as well, measured where the cost of
 #' opening a parallel region overtakes its gain. Below it the kernel stays
-#' sequential whatever the count says.
+#' sequential regardless of the count.
 #'
-#' # The two levels do not nest
+#' # Threads inside worker processes
 #'
 #' A fit running inside a worker process is sequential by construction, so
-#' `workers = 4` opens four processes each fitting on one thread, never
+#' `workers = 4` opens up to four processes, each fitting on one thread, never
 #' `4 * threads` of them.
 #'
 #' Worker processes are separate R sessions that load the installed packages,
-#' which makes them safe for the S7 objects a fold's fit carries; this is the
-#' rule `optimizers7::multistart` records. Starting one costs on the order of a
-#' second, so `workers` pays on a cross-validated path and is not worth asking
-#' for on a fit shorter than that.
+#' which makes them safe for the S7 objects carried by a fold's fit; this is
+#' the rule recorded by `optimizers7::multistart`. Starting a worker process
+#' takes on the order of a second, so `workers` shortens a cross-validated path
+#' only when each fold takes longer than that.
 #'
 #' # Printing
 #'
@@ -71,13 +72,15 @@
 #' returns its argument invisibly.
 #'
 #' @param threads A single whole number, at least 1, and the default is `1`.
-#'   The count is what the kernels are given and what they run on, not a ceiling
-#'   they may come under. Anything else throws: a value below 1, a fractional
-#'   value, `Inf`, a character string and a vector of length other than one are
-#'   all rejected with the same message.
+#'   The count is passed to the compiled kernels unchanged, and a kernel still
+#'   runs sequentially on an input below its internal threshold. Any other
+#'   value signals an error: a value below 1, a fractional value, `Inf`, `NA`,
+#'   a character string and a vector of length other than one are all rejected
+#'   with the same message. A value above the largest integer gives a coercion
+#'   warning followed by R's error "missing value where TRUE/FALSE needed".
 #' @param workers A single whole number, at least 1, and the default is `1`:
-#'   how many R processes the independent fits of a cross-validation's folds may
-#'   use. `1` runs them in this process. Validated exactly as `threads` is.
+#'   how many R processes the independent units of a fit may use. `1` runs
+#'   them in this process. Validated exactly as `threads` is.
 #' @param x An `n_threads` object.
 #' @param ... Unused, and present because `print()` requires it.
 #'
@@ -141,12 +144,13 @@ print.n_threads <- function(x, ...) {
 #' @description
 #' Returns the thread count an [n_threads()] object carries, as a single
 #' integer. An entry point calls it once to validate the `threads` argument it
-#' was given, then passes the plain count down to the kernels, which take a
-#' number and know nothing about the policy object.
+#' was given, then passes the plain count down to the kernels, which receive a
+#' number and not the policy object.
 #'
-#' @param x An object returned by [n_threads()]. Anything else throws, with a
-#'   message naming the constructor, because a bare number reaching an entry
-#'   point is the likely mistake and would otherwise be read as a policy.
+#' @param x An object returned by [n_threads()]. Any other value signals an
+#'   error with a message naming the constructor, because a bare number passed
+#'   to an entry point is the likely mistake and would otherwise be read as a
+#'   policy.
 #'
 #' @return A single integer, at least 1.
 #'
@@ -172,11 +176,11 @@ thread_count <- function(x) {
 #' @description
 #' Returns the worker-process count an [n_threads()] object carries, as a single
 #' integer. A policy stored before `workers` existed has no such component, and
-#' this reader answers 1 for it, so an object saved with an old fit keeps
-#' meaning what it meant.
+#' this function returns 1 for it, so that an object saved with an earlier fit
+#' is read as sequential across folds.
 #'
-#' @param x An object returned by [n_threads()]. Anything else throws, with a
-#'   message naming the constructor.
+#' @param x An object returned by [n_threads()]. Any other value signals an
+#'   error with a message naming the constructor.
 #'
 #' @return A single integer, at least 1. One for a policy carrying no `workers`
 #'   component.
@@ -205,8 +209,8 @@ worker_count <- function(x) {
 #' Sets \pkg{RcppParallel}'s thread count to the policy's for the calling
 #' frame's lifetime and restores the previous process state when that frame
 #' exits. Called once at the entry of a fit; the count itself still travels
-#' to each kernel as an argument, this call only sizes the worker pool the
-#' parallel regions draw from.
+#' to each kernel as an argument, and this call only sizes the worker pool from
+#' which the parallel regions draw.
 #'
 #' @details
 #' `RcppParallel::setThreadOptions()` writes a process-level variable, so a fit
@@ -214,11 +218,11 @@ worker_count <- function(x) {
 #' restoration is therefore registered with `on.exit` in the caller's frame,
 #' which fires however the fit leaves, an error included.
 #'
-#' At a count of 1 nothing is touched at all. That is what keeps the sequential
-#' path free of any trace of the parallel machinery.
+#' At a count of 1 nothing is changed, so the sequential path does not touch
+#' the parallel machinery.
 #'
-#' @param x An object returned by [n_threads()]. Anything else throws, through
-#'   [thread_count()].
+#' @param x An object returned by [n_threads()]. Any other value signals an
+#'   error through [thread_count()].
 #' @param frame The environment whose exit restores the previous setting,
 #'   defaulting to the caller's. Pass an outer frame to hold the setting for
 #'   longer than one call.

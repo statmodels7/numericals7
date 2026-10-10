@@ -16,9 +16,8 @@ bessel_i_ratio_inverse_d3(kappa, threads = 1L)
 bessel_i_ratio_inverse_d4(kappa, threads = 1L)
 }
 \arguments{
-\item{kappa}{A numeric vector of concentrations, non-negative and of any
-size. Zero returns 0, the limit, and \code{Inf} returns 1. A negative value
-returns \code{NaN}.}
+\item{kappa}{A numeric vector of concentrations, non-negative. A negative
+value returns \code{NaN}.}
 
 \item{threads}{The number of threads, a positive whole number.}
 }
@@ -40,8 +39,18 @@ The derivatives come from the inverse function rule on the derivatives of
       \kappa''' = \frac{3(A'')^2 - A'A'''}{(A')^5},}
 \deqn{\kappa'''' = \frac{-15(A'')^3 + 10A'A''A''' - (A')^2A''''}{(A')^7}.}
 The derivative of order \eqn{n} needs \eqn{A'} to \eqn{A^{(n)}}, which are
-computed together at the cost of one evaluation of the continued fraction.
-\eqn{A' > 0} keeps every denominator away from zero.
+computed together in one evaluation. Since \eqn{A'} decays like
+\eqn{1/(2\kappa^2)}, its powers in the denominators would underflow at
+large concentrations, so the formulas are evaluated on \eqn{w = 1/A'} and
+the ratios \eqn{r_j = A^{(j)}/A'},
+
+\deqn{\kappa'' = -r_2 w^2, \qquad \kappa''' = (3r_2^2 - r_3)\,w^3, \qquad
+      \kappa'''' = (-15r_2^3 + 10r_2r_3 - r_4)\,w^4,}
+
+with the ratios taken from the asymptotic series without its powers of
+\eqn{1/\kappa} from \eqn{\kappa = 30}. Each derivative is finite and
+accurate until the derivative itself overflows (near
+\eqn{\kappa = 10^{60}} for the fourth).
 }
 \examples{
 k <- bessel_i_ratio_inverse(0.7)

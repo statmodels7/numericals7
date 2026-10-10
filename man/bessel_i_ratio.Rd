@@ -22,11 +22,11 @@ Computes \eqn{A(\kappa) = I_1(\kappa)/I_0(\kappa)}, a strictly increasing
 bijection from \eqn{(0, \infty)} onto \eqn{(0, 1)}. For a von Mises
 distribution it is the mean resultant length, the expected cosine of the
 deviation from the mean direction, so it is the map between a concentration
-and the moment a method of moments estimates.
+and the moment that a method of moments estimates.
 }
 \details{
 The ratio is evaluated in compiled code without the Bessel functions
-themselves, which overflow from about \eqn{\kappa = 700} and, exponentially
+themselves, which overflow from about \eqn{\kappa = 709} and, exponentially
 scaled, underflow between \eqn{10^5} and \eqn{10^6}. Below
 \eqn{\kappa = 0.5} it is the power series of \eqn{A} at zero; from there to
 \eqn{\kappa = 30} it is the continued fraction

@@ -7,9 +7,9 @@
 set_partitions(n)
 }
 \arguments{
-\item{n}{A positive whole number. The recursion has no base case below one,
-so zero and negative values recurse until the stack overflows instead of
-throwing.}
+\item{n}{A positive whole number. The argument is not checked, and the
+recursion has no base case below one, so a zero, negative or fractional
+value recurses until R signals a stack overflow error.}
 }
 \value{
 A list of \eqn{B_n} partitions. Each partition is a list of integer
@@ -27,13 +27,13 @@ identities built on it. The number of partitions is the Bell number
 \eqn{B_n}: 1, 2, 5, 15, 52 and 203 for \eqn{n} from one to six.
 }
 \section{How they are built}{
-By the standard recursion. The partitions of \code{1:n} come from those of
-\code{1:(n-1)} by putting \eqn{n} into each existing block in turn, and then into
-a block of its own.
+The partitions are built by the standard recursion: the partitions of \code{1:n}
+come from those of \code{1:(n-1)} by putting \eqn{n} into each existing block in
+turn, and then into a block of its own.
 
 The cost is therefore \eqn{B_n}, which grows faster than any exponential:
-\eqn{B_8} is 4140 and \eqn{B_{10}} is 115975. Four is as high as the
-toolkit's derivatives go, where the sum has fifteen terms.
+\eqn{B_8} is 4140 and \eqn{B_{10}} is 115975. A chain rule of order four
+has fifteen terms, and one of order five has 52.
 }
 
 \section{The blocks index positions}{
@@ -42,7 +42,8 @@ repeated in that multi-index therefore counts with its correct multiplicity
 and needs no bookkeeping of its own: differentiating three times in one
 variable and once in another sums over the same fifteen partitions as four
 distinct variables do, and what differs is which derivative each block
-names. \code{\link[=tuple_indices]{tuple_indices()}} supplies the multi-index the positions point into.
+names. \code{\link[=tuple_indices]{tuple_indices()}} supplies the multi-index into which the positions
+point.
 }
 
 \examples{
@@ -69,6 +70,6 @@ formula with applications. \emph{Transactions of the American Mathematical
 Society} \strong{348}, 503-520.
 }
 \seealso{
-\code{\link[=tuple_indices]{tuple_indices()}} for the multi-indices the blocks index into, and
+\code{\link[=tuple_indices]{tuple_indices()}} for the multi-indices into which the blocks index, and
 \code{\link[=compositions]{compositions()}} for the ordered sums.
 }

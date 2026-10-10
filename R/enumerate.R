@@ -10,20 +10,21 @@
 #' non-decreasing tuple \eqn{(i_1 \le \cdots \le i_k)} drawn from `1:d`, where
 #' \eqn{k} is the derivative order and \eqn{d} the number of variables. There
 #' is one tuple per distinct partial derivative, because a mixed partial does
-#' not depend on the order the variables are differentiated in, so the count is
+#' not depend on the order in which the variables are differentiated, so the
+#' count is
 #' \eqn{\binom{d + k - 1}{k}}.
 #'
 #' @details
-#' # The ordering is part of the interface
+#' # The ordering
 #'
 #' At order two the diagonal comes first, \eqn{(1,1), (2,2), \dots, (d,d)}, and
-#' the off-diagonal pairs follow in lexicographic order. That is the order a
-#' Hessian consumer indexes by. At orders three and four the enumeration is
-#' plain lexicographic over non-decreasing tuples.
+#' the off-diagonal pairs follow in lexicographic order, which is the order
+#' used to index a Hessian. At orders three and four the enumeration is plain
+#' lexicographic over non-decreasing tuples.
 #'
 #' Every object in the toolkit holding derivatives over \eqn{d} variables keys
-#' its components by this enumeration, so two of them meet without either being
-#' reordered. Treat the order as fixed.
+#' its components by this enumeration, so two such objects can be combined
+#' without reordering either. The order is fixed.
 #'
 #' # Counts
 #'
@@ -33,17 +34,18 @@
 #' \eqn{d = 3} the four orders give 3, 6, 10 and 15 tuples.
 #'
 #' @param d The number of variables, a non-negative whole number. Zero gives an
-#'   empty list. A negative value throws, from `seq_len()`, with a message
-#'   about coercion to a non-negative integer.
+#'   empty list. A negative value signals an error: at orders one and two it
+#'   comes from `seq_len()` and concerns coercion to a non-negative integer,
+#'   and at orders three and four it comes from [utils::combn()].
 #' @param order The derivative order \eqn{k}, one of `1`, `2`, `3` or `4`.
-#'   Anything else throws: the enumeration is written out only that far,
-#'   because a fourth derivative is as high as the toolkit carries.
+#'   Any other value signals an error, because the enumeration is written out
+#'   only to order four.
 #'
 #' @return A list of \eqn{\binom{d + k - 1}{k}} integer vectors, each of length
 #'   `order`, each non-decreasing. An empty list when `d` is zero.
 #'
-#' @seealso [set_partitions()], the other enumeration a higher-order chain rule
-#'   needs, and [compositions()] for the ordered sums.
+#' @seealso [set_partitions()], the other enumeration that a higher-order chain
+#'   rule needs, and [compositions()] for the ordered sums.
 #'
 #' @examples
 #' # Second-order tuples of three variables: the diagonal first, then the
@@ -96,13 +98,13 @@ tuple_indices <- function(d, order = 2L) {
 #' @details
 #' # How they are built
 #'
-#' By the standard recursion. The partitions of `1:n` come from those of
-#' `1:(n-1)` by putting \eqn{n} into each existing block in turn, and then into
-#' a block of its own.
+#' The partitions are built by the standard recursion: the partitions of `1:n`
+#' come from those of `1:(n-1)` by putting \eqn{n} into each existing block in
+#' turn, and then into a block of its own.
 #'
 #' The cost is therefore \eqn{B_n}, which grows faster than any exponential:
-#' \eqn{B_8} is 4140 and \eqn{B_{10}} is 115975. Four is as high as the
-#' toolkit's derivatives go, where the sum has fifteen terms.
+#' \eqn{B_8} is 4140 and \eqn{B_{10}} is 115975. A chain rule of order four
+#' has fifteen terms, and one of order five has 52.
 #'
 #' # The blocks index positions
 #'
@@ -111,11 +113,12 @@ tuple_indices <- function(d, order = 2L) {
 #' and needs no bookkeeping of its own: differentiating three times in one
 #' variable and once in another sums over the same fifteen partitions as four
 #' distinct variables do, and what differs is which derivative each block
-#' names. [tuple_indices()] supplies the multi-index the positions point into.
+#' names. [tuple_indices()] supplies the multi-index into which the positions
+#' point.
 #'
-#' @param n A positive whole number. The recursion has no base case below one,
-#'   so zero and negative values recurse until the stack overflows instead of
-#'   throwing.
+#' @param n A positive whole number. The argument is not checked, and the
+#'   recursion has no base case below one, so a zero, negative or fractional
+#'   value recurses until R signals a stack overflow error.
 #'
 #' @return A list of \eqn{B_n} partitions. Each partition is a list of integer
 #'   vectors, its blocks, which between them contain each of `1:n` exactly
@@ -129,7 +132,7 @@ tuple_indices <- function(d, order = 2L) {
 #' formula with applications. *Transactions of the American Mathematical
 #' Society* **348**, 503-520.
 #'
-#' @seealso [tuple_indices()] for the multi-indices the blocks index into, and
+#' @seealso [tuple_indices()] for the multi-indices into which the blocks index, and
 #'   [compositions()] for the ordered sums.
 #'
 #' @examples
@@ -180,7 +183,7 @@ set_partitions <- function(n) {
 #' Enumerates the weak compositions of \eqn{n} into \eqn{k} parts: every vector
 #' of \eqn{k} non-negative whole numbers summing to \eqn{n}, returned one per
 #' row of an integer matrix. *Weak* means a part may be zero, so the set is the
-#' whole lattice simplex of counts and includes its faces. There are
+#' whole simplex of integer counts and includes its faces. There are
 #' \eqn{\binom{n + k - 1}{k - 1}} rows.
 #'
 #' @details
@@ -203,18 +206,19 @@ set_partitions <- function(n) {
 #' the practical size: \eqn{n = 20} with \eqn{k = 5} is 10626 rows, and the
 #' same \eqn{n} with \eqn{k = 10} is 10015005.
 #'
-#' # Where the set turns up
+#' # Uses of the set
 #'
-#' It is exactly the support of a multinomial with total \eqn{n} over \eqn{k}
-#' categories, and of any other distribution on a fixed total. An expectation
+#' It is the support of a multinomial with total \eqn{n} over \eqn{k}
+#' categories with positive probabilities, and it contains the support of any
+#' other distribution on a fixed total. An expectation
 #' under such a law is therefore a finite sum over these rows, evaluated
 #' exactly, where a continuous family would need a quadrature.
 #'
 #' @param n The total, a non-negative whole number. Neither argument is
-#'   validated. A negative `n` returns a matrix that answers no question, since
-#'   the recursion walks `0:n` and that sequence runs downwards.
+#'   validated. A negative `n` returns a matrix whose rows contain negative
+#'   parts, since the recursion walks `0:n` and that sequence runs downwards.
 #' @param k The number of parts, a positive whole number. Zero recurses until
-#'   the stack overflows.
+#'   R signals an infinite-recursion error.
 #'
 #' @return An integer matrix with `k` columns and
 #'   \eqn{\binom{n + k - 1}{k - 1}} rows, every row summing to `n`.

@@ -18,8 +18,9 @@ Matches \code{\link[=fd_offsets]{fd_offsets()}}'s argument of the same name.}
 which may be infinite. \code{NULL}, the default, applies no clamp.}
 }
 \value{
-A numeric vector of steps the same length as \code{x}, positive except at
-a point sitting on a finite bound, where it is zero.
+A numeric vector of steps the same length as \code{x}. A step is
+positive at a point strictly inside \code{bounds}, zero at a point on a finite
+bound, and negative at a point outside the bounds.
 }
 \description{
 Returns the step at which a single stencil of the given order and accuracy
@@ -38,22 +39,23 @@ neighborhood.
 
 At the default accuracy the exponent is \eqn{1/4} for a second derivative and
 \eqn{1/6} for a fourth, giving steps of about \code{1.2e-4} and \code{2.5e-3} at
-\eqn{x = 1}. A high order wants a \emph{large} step, since rounding is what
-dominates there.
+\eqn{x = 1}. A higher order uses a larger step, because rounding error
+dominates the total error there.
 }
 
 \section{Staying inside the domain}{
-Given \code{bounds}, the step is shrunk so the farthest node of the stencil stays
-strictly inside: a node outside the domain does not make a derivative
-inaccurate, it makes it \code{NaN}. The margin is 0.49 of the distance to the
-bound, divided by the reach.
+Given \code{bounds}, the step is shrunk so that the farthest node of the stencil
+stays strictly inside the domain, because a function evaluated outside its
+domain usually returns \code{NaN}, and the derivative estimate is then \code{NaN}. The
+margin is 0.49 of the distance to the bound, divided by the reach.
 }
 
-\section{The one case to guard}{
+\section{A point on a bound}{
 A point sitting exactly on a finite bound gets a step of \strong{zero}, and a
-stencil divided by \eqn{h^{d}} is then \code{NaN}. The evaluation point is the
-caller's, so this is not checked here; either keep the point off the bound or
-use a one-sided stencil with a step of your own.
+stencil divided by \eqn{h^{d}} is then \code{NaN}. The function does not check the
+evaluation point. For a point on a bound the caller moves the point strictly
+inside the domain, or applies a one-sided stencil with an explicitly chosen
+step.
 }
 
 \examples{

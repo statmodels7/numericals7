@@ -16,11 +16,11 @@ number. Anything else is rejected.}
 A single number, on the smoother's own width scale.
 }
 \description{
-Returns the floor of the width, derived from the expression that binds. A
-consumer resolving a width from data takes the larger of this and
-\code{\link[=smoother_width]{smoother_width()}}'s answer.
+Returns the floor of the width, derived from the conditioning of the
+design. A consumer resolving a width from data takes the larger of this
+floor and the width returned by \code{\link[=smoother_width]{smoother_width()}}.
 }
-\section{Where the bound comes from}{
+\section{Derivation of the bound}{
 The derivatives of a smoother scale as \eqn{s^{(k)} \sim h^{1-k}}, so the
 Jacobian column of a smoothed break-point carries \eqn{s''(0)/2 \sim 1/h}
 against covariate columns of order the range \eqn{D}. Holding the design's
@@ -33,12 +33,11 @@ carried onto the width parameter's own scale for a smoother parametrized by
 a squared length. At a covariate range of 10 that is \code{1.49e-07} for
 \code{\link[=smooth_probit]{smooth_probit()}} and its square, \code{2.22e-14}, for \code{\link[=smooth_hyperbolic]{smooth_hyperbolic()}}.
 The floor goes through the same \code{width_from_spacing} as a spacing does, so
-for \code{\link[=smooth_quintic]{smooth_quintic()}} it is \eqn{5/(2\log 2)} times larger, which only
-makes it more conservative.
+for \code{\link[=smooth_quintic]{smooth_quintic()}} it is \eqn{5/(2\log 2)} times larger, which makes it
+more conservative.
 
-The bound is derived, which is the toolkit's rule for a guard constant, and
-it is the same argument the break-point schedule's own scaling floor rests
-on.
+The bound follows from this argument and is not a tuned constant. The
+scaling floor of the break-point schedule rests on the same argument.
 }
 
 \examples{

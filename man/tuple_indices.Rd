@@ -8,12 +8,13 @@ tuple_indices(d, order = 2L)
 }
 \arguments{
 \item{d}{The number of variables, a non-negative whole number. Zero gives an
-empty list. A negative value throws, from \code{seq_len()}, with a message
-about coercion to a non-negative integer.}
+empty list. A negative value signals an error: at orders one and two it
+comes from \code{seq_len()} and concerns coercion to a non-negative integer,
+and at orders three and four it comes from \code{\link[utils:combn]{utils::combn()}}.}
 
 \item{order}{The derivative order \eqn{k}, one of \code{1}, \code{2}, \code{3} or \code{4}.
-Anything else throws: the enumeration is written out only that far,
-because a fourth derivative is as high as the toolkit carries.}
+Any other value signals an error, because the enumeration is written out
+only to order four.}
 }
 \value{
 A list of \eqn{\binom{d + k - 1}{k}} integer vectors, each of length
@@ -24,18 +25,19 @@ Enumerates the multi-indices that key a list of partial derivatives: every
 non-decreasing tuple \eqn{(i_1 \le \cdots \le i_k)} drawn from \code{1:d}, where
 \eqn{k} is the derivative order and \eqn{d} the number of variables. There
 is one tuple per distinct partial derivative, because a mixed partial does
-not depend on the order the variables are differentiated in, so the count is
+not depend on the order in which the variables are differentiated, so the
+count is
 \eqn{\binom{d + k - 1}{k}}.
 }
-\section{The ordering is part of the interface}{
+\section{The ordering}{
 At order two the diagonal comes first, \eqn{(1,1), (2,2), \dots, (d,d)}, and
-the off-diagonal pairs follow in lexicographic order. That is the order a
-Hessian consumer indexes by. At orders three and four the enumeration is
-plain lexicographic over non-decreasing tuples.
+the off-diagonal pairs follow in lexicographic order, which is the order
+used to index a Hessian. At orders three and four the enumeration is plain
+lexicographic over non-decreasing tuples.
 
 Every object in the toolkit holding derivatives over \eqn{d} variables keys
-its components by this enumeration, so two of them meet without either being
-reordered. Treat the order as fixed.
+its components by this enumeration, so two such objects can be combined
+without reordering either. The order is fixed.
 }
 
 \section{Counts}{
@@ -63,6 +65,6 @@ tuple_indices(0, 2)
 
 }
 \seealso{
-\code{\link[=set_partitions]{set_partitions()}}, the other enumeration a higher-order chain rule
-needs, and \code{\link[=compositions]{compositions()}} for the ordered sums.
+\code{\link[=set_partitions]{set_partitions()}}, the other enumeration that a higher-order chain
+rule needs, and \code{\link[=compositions]{compositions()}} for the ordered sums.
 }

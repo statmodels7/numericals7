@@ -11,14 +11,13 @@ check_abs_smoother(smoother, width = NULL, tol = 1e-06, verbose = TRUE)
 
 \item{width}{The width to check at, a single positive number, or \code{NULL} (the
 default) for the smoother's own. A smoother carrying none is checked at
-\code{0.5}, a scale chosen to exercise the formulas and saying nothing about
-any data.}
+\code{0.5}, a scale chosen to exercise the formulas and unrelated to any data.}
 
 \item{tol}{The relative error above which a row is reported as \code{FAILED}. A
-single positive number, \code{1e-6} by default. The worst error the three
-shipped smoothers reach is \code{1.3e-10}, four orders under it, so the default
-separates a correct smoother from one whose derivative is wrong in its
-fourth digit.}
+single positive number, \code{1e-6} by default. The errors of the three shipped
+smoothers are of order \code{1e-10}, about four orders of magnitude below it, so
+the default separates a correct smoother from one whose derivative is wrong
+in its fourth digit.}
 
 \item{verbose}{\code{TRUE}, the default, prints a header naming the smoother and
 the width, then the table without row names, and returns invisibly.
@@ -34,8 +33,8 @@ A data frame with one row per check and three columns: \code{check}
 Compares a smoother against the properties every smoother of
 \eqn{\lvert u\rvert} must have, and each derivative order against one
 numerical differentiation of the analytic order below it. Returns one row
-per check with the worst error and a pass or fail. Write a smoother of your
-own and this says whether its five derivatives are right.
+per check with the worst error and a pass or fail. Applied to a
+user-written smoother, it verifies the five derivatives.
 }
 \section{The rows}{
 Ten checks, and two more for a smoother declaring a scale correction:\tabular{ll}{
@@ -54,8 +53,8 @@ Ten checks, and two more for a smoother declaring a scale correction:\tabular{ll
 Order \eqn{k} goes against \pkg{numDeriv} applied \strong{once} to the analytic
 order \eqn{k-1}, so a wrong derivative is caught against an independent
 route while the reference never degenerates into a difference of
-differences. Over the three shipped smoothers at four widths each, every row
-passes and the worst error is \code{1.3e-10}.
+differences. For the three shipped smoothers every row passes, with errors
+of order \code{1e-10}.
 
 The tail row is deliberately loose, at a fifth of the excess at the kink,
 because \code{\link[=smooth_hyperbolic]{smooth_hyperbolic()}}'s polynomial tails would fail a tight one and
@@ -67,16 +66,16 @@ twentieth of the kink's value ten widths out.
 The grid spans the transition and the tails, placed by the smoother's own
 intrinsic scale \eqn{s(0)}, which is of order the transition width for any
 smoother of the absolute value, so no reading of what the width parameter
-means is needed. Every point sits off zero and off the seam: a piecewise
-smoother has measure-zero points where a one-sided derivative is read, and a
-difference straddling one compares nothing.
+means is needed. Every point sits off zero and off the seam, because a
+piecewise smoother has isolated points at which only one-sided derivatives
+exist, and a difference that straddles such a point is meaningless.
 }
 
-\section{What it catches}{
-This is not decoration. Writing \code{\link[=smooth_quintic]{smooth_quintic()}}, a factor-2 error in its
-own \eqn{s'''} was caught here before anything shipped: the order-3 row read
-a relative \code{0.5} and the order-4 row \code{1.0}, the wrong third derivative
-becoming the reference for the fourth. The examples below reproduce it.
+\section{An example of a detected error}{
+A factor-2 error in the third derivative of \code{\link[=smooth_quintic]{smooth_quintic()}} gives a
+relative error of \code{0.5} in the order-3 row and of \code{1.0} in the order-4 row,
+because the wrong third derivative becomes the reference for the fourth.
+The examples below reproduce it.
 }
 
 \section{Errors}{
@@ -107,7 +106,7 @@ bad[bad$status != "OK", c("check", "max_error")]
 
 }
 \seealso{
-\code{\link[=abs_smoother]{abs_smoother()}} for the contract being checked,
+\code{\link[=abs_smoother]{abs_smoother()}} for the class being checked,
 \code{\link[=smoother_deriv]{smoother_deriv()}} for the derivatives it reads,
 \code{penalties7::check_penalty()} for the sibling on a penalty.
 }

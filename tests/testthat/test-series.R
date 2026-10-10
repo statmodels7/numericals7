@@ -58,3 +58,47 @@ test_that("convergence at a block boundary is not special", {
   got <- series_vec(function(k, i) r[i]^k, n = 3, block = 8L)
   expect_equal(got, 1 / (1 - r), tolerance = 1e-9)
 })
+
+
+test_that("leading terms that underflow to zero do not end the sum", {
+  # dpois(k, 1e4) is exactly zero below k ~ 8000 and k * dpois(k, 2000)
+  # below k ~ 1400; the old rule retired both rows on their first block and
+  # returned 0
+  expect_equal(series_vec(function(k, i) dpois(k, 1e4), n = 1), 1,
+               tolerance = 1e-10)
+  expect_equal(series_vec(function(k, i) k * dpois(k, 2000), n = 1), 2000,
+               tolerance = 1e-10)
+  # the zeros past a finite support end it at once
+  expect_equal(series_vec(function(k, i) dbinom(k, 10, 0.3), n = 1), 1,
+               tolerance = 1e-14)
+})
+
+
+test_that("a polynomial tail is summed within the budget or returned NA", {
+  # the tail estimate doubles the geometric continuation, which covers k^-p
+  # for p >= 2; before, 1/k^3 retired at a relative error of 6e-9
+  z3 <- 1.2020569031595942854
+  expect_lt(abs(series_vec(function(k, i) 1 / k^3, n = 1, from = 1L) / z3 - 1),
+            1e-10)
+  expect_lt(abs(series_vec(function(k, i) 1 / k^4, n = 1, from = 1L) /
+                  (pi^4 / 90) - 1), 1e-10)
+  expect_lt(abs(series_vec(function(k, i) 0.999^k, n = 1) / 1000 - 1), 1e-10)
+  # 1/k^2 does not reach its budget within the default max_terms
+  expect_warning(v <- series_vec(function(k, i) 1 / k^2, n = 1, from = 1L),
+                 "rows 1")
+  expect_true(is.na(v))
+})
+
+
+test_that("a row of zeros returns 0 and block is validated", {
+  # a structurally null series (a zero component of an expected Hessian)
+  # is probed ahead and returns 0 without a warning
+  expect_identical(series_vec(function(k, i) 0 * k, n = 1), 0)
+  lam <- c(0.5, 1e4, 0)
+  expect_equal(series_vec(function(k, i) dpois(k, lam[i]) * (lam[i] > 0), n = 3),
+               c(1, 1, 0), tolerance = 1e-10)
+  expect_equal(series_vec(function(k, i) dpois(k, 1e6), n = 1), 1,
+               tolerance = 1e-10)
+  expect_error(series_vec(function(k, i) 0.5^k, n = 1, block = 3L), "block")
+  expect_error(series_vec(function(k, i) 0.5^k, n = 1, block = 6.5), "block")
+})
