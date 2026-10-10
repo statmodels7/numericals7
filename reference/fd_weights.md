@@ -31,8 +31,8 @@ fd_weights(offsets, order)
   smaller than `length(offsets)`**. Order `0` is legal and returns
   interpolation weights at the origin. Anything else throws: an order at
   or above the node count with a message naming both numbers, and a
-  negative, fractional, missing or non-scalar order with a message
-  naming the requirement.
+  negative, fractional, `NA` or non-scalar order with a message naming
+  the requirement.
 
 ## Value
 
@@ -78,18 +78,22 @@ first term it cannot reproduce, giving an estimate accurate to
 
 \$\$\frac{1}{n!}\sum\_{j=1}^{n} w_j\\ s_j^{\\n}.\$\$
 
-Five nodes therefore give a fourth-order first derivative and a
-second-order fourth derivative.
+On a symmetric stencil the constant vanishes whenever \\n - d\\ is odd,
+and the error is then \\O(h^{\\n-d+1})\\. Five nodes therefore give a
+fourth-order first derivative, and a fourth derivative that is of second
+order on the central stencil `-2:2` and of first order on the one-sided
+stencil `0:4`.
 [`fd_offsets()`](https://statmodels7.github.io/numericals7/reference/fd_offsets.md)
-sizes a stencil from the order and the accuracy asked of it.
+sizes a stencil from the order and the requested accuracy.
 
-## One stencil, never nested
+## Single stencils and nested differences
 
 Reaching a high order by composing low-order differences multiplies the
 error of each stage into the next, and a fourth derivative built from
-four nested first differences is noise. Every numerical fallback in the
-toolkit takes one stencil of the order it wants, and these weights are
-what it takes.
+four nested first differences, each taken at the step chosen for a first
+derivative, is dominated by rounding error. Every numerical fallback in
+the toolkit uses one stencil of the order that it needs, with the
+weights returned by this function.
 
 ## See also
 
@@ -111,7 +115,7 @@ fd_weights(c(-1, 0, 1), 2)                 #    1,  -2,  1
 
 # Five nodes, first derivative: the familiar (1, -8, 0, 8, -1)/12.
 fd_weights(-2:2, 1) * 12
-#> [1]  1 -8  0  8 -1
+#> [1]  1.000000e+00 -8.000000e+00 -2.854859e-15  8.000000e+00 -1.000000e+00
 
 # The weights are for a unit step, so the caller divides by h^order.
 h <- 1e-3
@@ -126,7 +130,8 @@ exp(1)
 s <- -2:2
 w <- fd_weights(s, 1)
 vapply(0:5, function(m) sum(w * s^m), numeric(1))
-#> [1]  0  1  0  0  0 -4
+#> [1] -2.976135e-17  1.000000e+00  1.665335e-16  1.110223e-16  0.000000e+00
+#> [6] -4.000000e+00
 
 # That first failure is the error constant: -4/5! = -1/30.
 sum(w * s^5) / factorial(5)

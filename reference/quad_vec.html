@@ -17,7 +17,7 @@ pays its overhead once per value."><meta property="og:image" content="https://st
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.22.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,13 +71,13 @@ pays its overhead once per value.</p>
 
 
 <dl><dt id="arg-f">f<a class="anchor" aria-label="anchor" href="#arg-f"></a></dt>
-<dd><p>The integrand, obeying the contract above.</p></dd>
+<dd><p>The integrand, a function of <code>x</code> and <code>i</code> as described above.</p></dd>
 
 
 <dt id="arg-lower-upper">lower, upper<a class="anchor" aria-label="anchor" href="#arg-lower-upper"></a></dt>
 <dd><p>Numeric vectors of endpoints, recycled to a common length,
 either of which may be infinite. Every <code>lower</code> must be strictly below its
-<code>upper</code>, or the call throws.</p></dd>
+<code>upper</code>, or the call signals an error.</p></dd>
 
 
 <dt id="arg-atol-rtol">atol, rtol<a class="anchor" aria-label="anchor" href="#arg-atol-rtol"></a></dt>
@@ -90,40 +90,40 @@ positive <code>atol</code> any <code>rtol</code> is accepted, <code>rtol = 0</co
 
 <dt id="arg-max-depth">max_depth<a class="anchor" aria-label="anchor" href="#arg-max-depth"></a></dt>
 <dd><p>The greatest number of bisections one panel may undergo,
-<code>48</code> by default. It is the lever for an endpoint singularity, and the
-measured reach is narrower than "integrable" suggests: at the default a
-gamma density of shape 0.5 converges and one of shape 0.45 does not, while
-<code>max_depth = 200</code> reaches shape 0.2 and still not 0.1. A row past the
-budget returns <code>NA</code>.</p></dd>
+<code>48</code> by default. It governs the integration of an endpoint singularity,
+and not every integrable singularity is reached: at the default the
+density of a gamma distribution with shape 0.5 is integrated and the one
+with shape 0.45 returns <code>NA</code>, while with <code>max_depth = 200</code> shape 0.2 is
+integrated and shape 0.1 returns <code>NA</code>. A row past the budget returns <code>NA</code>.</p></dd>
 
 
 <dt id="arg-max-panels">max_panels<a class="anchor" aria-label="anchor" href="#arg-max-panels"></a></dt>
 <dd><p>The greatest number of panels one row may hold, <code>4096</code> by
 default. A row still over its budget once it holds that many returns <code>NA</code>.
 It bounds the memory of a row whose error estimate does not fall with
-bisection, which at the default costs about 40 MB at the peak, and it still
-admits <code>cos(16000 x)</code> on the unit interval, which needs between 2048 and
-4096 panels. The count is per row, so a row's result does not depend on
-the other rows of the call.</p></dd>
+bisection, and at the default it admits <code>cos(16000 x)</code> on the unit
+interval, which needs between 2048 and 4096 panels. The count is per row,
+so a row's result does not depend on the other rows of the call.</p></dd>
 
 
 <dt id="arg-rule">rule<a class="anchor" aria-label="anchor" href="#arg-rule"></a></dt>
-<dd><p>The embedded quadrature pair, <code><a href="gauss_kronrod15.html">gauss_kronrod15()</a></code> by default.
-Any list of <code>nodes</code>, <code>wk</code> and <code>wg</code> of equal length serves.</p></dd>
+<dd><p>The embedded quadrature pair, <code><a href="gauss_kronrod15.html">gauss_kronrod15()</a></code> by default: a
+list of <code>nodes</code> on \([-1, 1]\) and the weights <code>wk</code> and <code>wg</code> of the two
+rules at those nodes, three numeric vectors of equal length.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A numeric vector of integrals, one per row, of the recycled length of
 <code>lower</code> and <code>upper</code>. <code>NA</code> in any row that did not reach the requested
-accuracy within <code>max_depth</code> and <code>max_panels</code>, with a warning naming those
-rows.</p>
+accuracy within <code>max_depth</code> and <code>max_panels</code>, with a warning that lists
+the first eight of those rows.</p>
     </div>
     <div class="section level2">
-    <h2 id="the-integrand-contract">The integrand contract<a class="anchor" aria-label="anchor" href="#the-integrand-contract"></a></h2>
+    <h2 id="the-integrand">The integrand<a class="anchor" aria-label="anchor" href="#the-integrand"></a></h2>
     <p><code>f(x, i)</code> receives a numeric matrix <code>x</code> of evaluation points and an integer
-vector <code>i</code> with one entry per row of <code>x</code>, saying which parameter set that row
-belongs to. It returns the values elementwise, either as a matrix shaped like
+vector <code>i</code> with one entry per row of <code>x</code>, which gives the parameter set to
+which that row belongs. It returns the values elementwise, either as a matrix shaped like
 <code>x</code> or as a vector in column-major order.</p>
 <p>Elementwise recycling does the indexing. For a gamma mean at parameter
 vectors of length \(n\):</p>
@@ -138,32 +138,34 @@ converges when the <em>sum</em> of its panel errors fits the budget
 row's worst panels are bisected, and the splits from every row join the next
 single evaluation, so one hard row refines its own panels without
 serializing the others.</p>
-<p>The budget is judged on the sum for a reason worth knowing, because the
-obvious alternative fails. Giving each panel a share proportional to its
-length cannot integrate an endpoint singularity at all: near such a point the
-error stays concentrated in the innermost panel however deep the bisection
-goes, so a per-length share demands of that panel an accuracy no depth
-reaches. Judging the sum lets the smooth panels carry the row.</p>
+<p>The budget is judged on the sum because the alternative of giving each panel
+a share proportional to its length cannot integrate an endpoint singularity
+at all: near such a point the error stays concentrated in the innermost
+panel however deep the bisection goes, so a per-length share demands of that
+panel an accuracy that no depth reaches. With the sum, the smooth panels
+absorb the error of the panel at the singularity.</p>
     </div>
     <div class="section level2">
     <h2 id="infinite-endpoints">Infinite endpoints<a class="anchor" aria-label="anchor" href="#infinite-endpoints"></a></h2>
-    <p>Mapped to finite ones by the rational transforms \(x = a + t/(1-t)\),
-\(x = b - t/(1-t)\) and \(x = t/(1-t^2)\), whose Jacobians multiply the
-integrand. Rows of different kinds may share one call, so a vector of
-endpoints mixing finite and infinite costs nothing extra.</p>
+    <p>Infinite endpoints are mapped to finite ones by the rational transforms
+\(x = a + t/(1-t)\), \(x = b - t/(1-t)\) and \(x = t/(1-t^2)\), whose
+Jacobians multiply the integrand. Rows of different kinds may share one
+call, so a vector of endpoints mixing finite and infinite ones is integrated
+in the same passes.</p>
     </div>
     <div class="section level2">
-    <h2 id="a-failure-is-reported-as-one">A failure is reported as one<a class="anchor" aria-label="anchor" href="#a-failure-is-reported-as-one"></a></h2>
+    <h2 id="rows-that-do-not-converge">Rows that do not converge<a class="anchor" aria-label="anchor" href="#rows-that-do-not-converge"></a></h2>
     <p>A row whose panels still exceed their budget at <code>max_depth</code>, or once it
-holds <code>max_panels</code> panels, returns <code>NA</code>, and one warning names every such
-row. An <code>NA</code> says the accuracy was not reached; a plausible number would say
-nothing and be believed.</p>
+holds <code>max_panels</code> panels, returns <code>NA</code>, and one warning lists the first
+eight such rows (followed by an ellipsis if there are more). The value <code>NA</code>
+indicates that the requested accuracy was not reached.</p>
 <p><code>max_depth</code> ends a row whose error is concentrated at a point, where
 bisection narrows one panel after another, and <code>max_panels</code> ends a row whose
 error is spread over its whole interval, from rounding or from an
 oscillation faster than the panels resolve. In the second case every panel
-carries a share of the error, half the panels are split at every pass, and
-the count doubles long before any panel reaches <code>max_depth</code>.</p>
+carries a similar share of the error, so most panels are split at every
+pass, and the count grows geometrically long before any panel reaches
+<code>max_depth</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="the-floor-of-the-rule">The floor of the rule<a class="anchor" aria-label="anchor" href="#the-floor-of-the-rule"></a></h2>
@@ -195,7 +197,7 @@ the default rule.</p></div>
 <span class="r-in"><span><span class="co"># Their means, against the closed form.</span></span></span>
 <span class="r-in"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="va">x</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/GammaDist.html" class="external-link">dgamma</a></span><span class="op">(</span><span class="va">x</span>, shape <span class="op">=</span> <span class="va">shp</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, rate <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="fu">quad_vec</span><span class="op">(</span><span class="va">g</span>, <span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">Inf</span>, <span class="fl">30</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="va">shp</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -1.889533e-11  2.317305e-10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -1.889511e-11  2.317305e-10</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># A shape below one puts an integrable singularity at the origin. The</span></span></span>
 <span class="r-in"><span><span class="co"># sum-judged budget reaches shape 0.5 at the default depth, and a harsher</span></span></span>
@@ -220,7 +222,7 @@ the default rule.</p></div>
 <span class="r-in"><span>             atol <span class="op">=</span> <span class="fl">0</span>, rtol <span class="op">=</span> <span class="fl">1e-17</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Error : quad_vec: rtol = 1e-17 is below the floor of the quadrature rule, 2.22e-16,</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   and atol = 0 leaves no absolute budget to stop at instead.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Ask for rtol &gt;= 2.22e-16, or give a positive atol.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Use rtol &gt;= 2.22e-16, or give a positive atol.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># An oscillation far faster than the panels resolve stops at max_panels.</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span><span class="fu">quad_vec</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">1e9</span> <span class="op">*</span> <span class="va">x</span><span class="op">)</span>, <span class="fl">0</span>, <span class="fl">1</span>,</span></span>

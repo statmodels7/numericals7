@@ -2,16 +2,17 @@
 
 Almost every R package that computes a derivative it has no formula for
 writes its own finite difference, and almost every one that sums a
-series writes its own stopping rule. They are written as internal
-helpers, so nothing outside can reuse them, and each one is written to
-the accuracy its author needed on the day. A stencil is a fixed piece of
-arithmetic; so is a quadrature rule, so is the enumeration of the set
-partitions of four elements. This package holds one copy of each and the
-packages above it consume them, so an enumeration cannot disagree with
-itself between two of them.
+series writes its own stopping rule. These are written as internal
+helpers, so other packages cannot reuse them, and each is written to the
+accuracy that its author needed at the time. A stencil is a fixed piece
+of arithmetic, and so are a quadrature rule and the enumeration of the
+set partitions of four elements. This package holds one copy of each for
+the packages above it, so that they all use the same arithmetic and the
+same orderings.
 
-There are no classes here, deliberately. What follows is what the four
-groups do and where each of them stops.
+Apart from the class `abs_smoother`, which is described in its own help
+pages, the package consists of plain functions. This vignette describes
+five groups of them and the limits of each.
 
 ## Derivatives with no closed form
 
@@ -27,13 +28,13 @@ solves it and returns the weights.
 fd_weights(-1:1, order = 1)     # the textbook central difference
 #> [1] -0.5  0.0  0.5
 fd_weights(-2:2, order = 1)     # five points, accurate two orders further
-#> [1]  0.08333333 -0.66666667  0.00000000  0.66666667 -0.08333333
+#> [1]  8.333333e-02 -6.666667e-01 -2.379049e-16  6.666667e-01 -8.333333e-02
 ```
 
 [`fd_derivative()`](https://statmodels7.github.io/numericals7/reference/fd_derivative.md)
 applies one to a function. `accuracy` is the order of the truncation
-error, and buying more of it costs evaluations of the integrand and
-nothing else:
+error, and a higher accuracy costs only more evaluations of the
+function:
 
 ``` r
 
@@ -42,12 +43,14 @@ d1 <- function(x) -x * exp(-x^2 / 2)          # the closed form, for comparison
 
 sapply(c(2, 4, 6), function(a)
   abs(fd_derivative(f, 0.7, order = 1, accuracy = a) - d1(0.7)))
-#> [1] 7.842615e-12 1.512124e-13 8.881784e-15
+#> [1] 7.842615e-12 7.616130e-14 3.108624e-15
 ```
 
-The step is not a constant. Rounding grows with the order of the
-difference, truncation falls with it, and the step that balances the two
-is $`\varepsilon^{1/(k+2)}`$ scaled by the point:
+The step depends on the order $`k`$. The rounding error of a stencil for
+a derivative of order $`k`$ grows like $`\varepsilon h^{-k}`$ as the
+step $`h`$ shrinks, and the truncation error at accuracy two shrinks
+like $`h^2`$. The two balance at a step of $`\varepsilon^{1/(k+2)}`$
+times the larger of one and the magnitude of the point:
 
 ``` r
 
@@ -61,35 +64,36 @@ data.frame(order = 1:4,
 #> 4     4 2.460783e-03 2.460783e-03
 ```
 
-so a fourth derivative is differenced at a step four hundred times a
-first derivative’s, and asking for one at a first derivative’s step
-would return noise.
+A fourth derivative is therefore differenced at a step about four
+hundred times that of a first derivative, and a fourth derivative
+computed at the step of a first derivative is dominated by rounding
+error.
 
-### One stencil, never a chain
+### Single stencils and nested differences
 
-The rule the whole toolkit follows is that a derivative of order $`k`$
-is reached by **one** stencil applied to the highest analytic order
-available, never by differencing a difference. Two nested central
-differences in the same variable multiply their rounding, and by the
-third order the answer is noise: the identity function’s exactly zero
-third derivative comes back of order one. Where a caller has an analytic
-first derivative, the fourth derivative is one stencil of order three on
-it, and the accuracy is several digits better than four stencils of
-order one.
+Throughout the toolkit a derivative of order $`k`$ is computed by
+**one** stencil applied to the highest analytic order available, never
+by differencing a difference. When each stage of a nested difference
+uses the step chosen for its own order, the rounding errors multiply:
+three nested first differences of $`\sin`$ at 0.7 are off by about
+$`5 \times 10^{-2}`$ in the third derivative, and four are off by about
+$`10^4`$ in the fourth. Where a caller has an analytic first derivative,
+the fourth derivative is one stencil of order three on it, which is
+several digits more accurate than four nested first differences.
 
 ## Integrals and sums over a parameter vector
 
-A modeling routine rarely wants one integral. It wants the same integral
-at every parameter setting in a vector, and computing them one at a time
-in a loop pays R’s call overhead once per setting.
+A modeling routine rarely needs a single integral. It needs the same
+integral at every parameter setting in a vector, and computing them one
+at a time in a loop pays R’s call overhead once per setting.
 [`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)
 takes a vector of endpoints and returns a vector of integrals,
 evaluating the integrand once for every node of every panel of every
 row.
 
 The integrand receives a matrix of evaluation points and an integer
-vector saying which parameter setting each row belongs to, so the
-indexing is ordinary recycling:
+vector that gives the parameter setting of each row, so the indexing is
+ordinary recycling:
 
 ``` r
 
@@ -104,11 +108,11 @@ max(abs(got / gamma(a) - 1))
 #> [1] 4.344779e-09
 ```
 
-Note that the number of rows comes from the **endpoints**, so scalar
-endpoints give one integral however long the parameter vector is.
-Infinite endpoints are mapped to finite ones by a rational transform
-whose Jacobian multiplies the integrand, and rows of different kinds may
-share one call.
+The number of rows comes from the **endpoints**, so scalar endpoints
+give one integral however long the parameter vector is. Infinite
+endpoints are mapped to finite ones by a rational transform whose
+Jacobian multiplies the integrand, and rows of different kinds may share
+one call.
 
 Adaptivity is judged per row on the **sum** of that row’s panel errors,
 as QUADPACK judges it. A budget allocated panel by panel cannot meet an
@@ -116,9 +120,10 @@ integrable endpoint singularity at any depth, the error there being
 concentrated in the innermost panel however deep the bisection goes.
 
 [`series_vec()`](https://statmodels7.github.io/numericals7/reference/series_vec.md)
-is the same idea for a sum, and its stopping rule needs three conditions
-rather than two. A block sum that is small and a last term that is small
-are both true long **before** the mode of a hump-shaped term:
+is the same idea for a sum. Its stopping rule estimates the neglected
+tail from the decay of the terms at the end of the last block, and a
+small block sum is not enough: a block sum and a last term that are both
+small occur long **before** the mode of a hump-shaped term.
 
 ``` r
 
@@ -131,8 +136,10 @@ sum((0:63)^2 * dpois(0:63, 300))   # the block sum: tiny
 #> [1] 90300
 ```
 
-The third condition is that the terms are not growing across the block,
-and it is what tells a premature block from a finished tail:
+The terms of that block are rising, so their decay ratio is above one
+and the estimated tail is not small. The row continues until the terms
+decay and the geometric continuation of that decay, doubled, fits the
+budget:
 
 ``` r
 
@@ -142,10 +149,11 @@ max(abs(got / (lam + lam^2) - 1))
 #> [1] 2.220446e-16
 ```
 
-### A failure is reported as one
+### Rows that do not converge
 
-A row whose panels still exceed their budget at `max_depth` returns
-`NA`, with one warning naming every such row:
+A row whose panels still exceed their budget at `max_depth`, or that
+holds `max_panels` panels, returns `NA`, and one warning lists the first
+eight such rows:
 
 ``` r
 
@@ -155,15 +163,14 @@ suppressWarnings(
 #> [1] NA
 ```
 
-The integral diverges, so there is no accuracy to reach. An `NA` says
-the budget was not met; a plausible number would say nothing and be
-believed.
+The integral diverges, so no accuracy can be reached, and the value `NA`
+indicates that the budget was not met.
 
-## Functions that leave the doubles
+## Functions evaluated on a representable scale
 
-Several quantities a likelihood needs are finite and perfectly ordinary
-while the expression normally used to compute them is not. Each of these
-is written on the scale where it stays representable.
+Several quantities that a likelihood needs are finite and ordinary while
+the expression normally used to compute them overflows or underflows.
+Each of these is written on the scale where it stays representable.
 
 The inverse Mills ratio $`R(t) = \phi(t)/\Phi(t)`$ is asymptotic to
 $`-t`$, so it is about 100 at $`t = -100`$. Both of its factors
@@ -181,10 +188,10 @@ data.frame(t, naive = dnorm(t) / pnorm(t), mills = m$r, asymptote = -t)
 #> 4 -400       NaN 400.002500       400
 ```
 
-It returns the derivative alongside, which lies in $`(-1, 0)`$ and which
-a caller would otherwise compute from `r` a second time. The modified
-Bessel function of the first kind overflows at an argument no larger
-than a fitted concentration:
+It also returns the derivative, which lies in $`(-1, 0)`$, so a caller
+does not compute it from `r` a second time. The modified Bessel function
+of the first kind overflows at an argument no larger than a fitted
+concentration:
 
 ``` r
 
@@ -216,9 +223,9 @@ data.frame(
 #> 4 1e+06      NaN 0.9999995
 ```
 
-Owen’s T is here because a skew-normal distribution function is one
-bounded one-dimensional quadrature of it, which beats integrating the
-density over a semi-infinite interval:
+Owen’s T is included because the skew-normal distribution function is
+written in terms of it, and Owen’s T is a bounded one-dimensional
+integral over the interval from 0 to $`a`$:
 
 ``` r
 
@@ -234,8 +241,8 @@ integrate(function(x) exp(-h^2 * (1 + x^2) / 2) / (1 + x^2), 0, a)$value / (2 * 
 A higher-order chain rule is a sum over set partitions, a symmetric
 derivative array is indexed by non-decreasing tuples, and the support of
 a multinomial is the weak compositions. All three are fixed
-combinatorial objects, and the reason they live here is that three
-packages needed them and three copies could disagree.
+combinatorial objects, and they are collected here because several
+packages need them.
 
 ``` r
 
@@ -278,9 +285,12 @@ rowSums(compositions(3, 2))
 [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
 carries the thread policy of the whole toolkit. It is an object passed
 as an argument from `statmod()` and `fit_distrib()` down to the kernels,
-with no global state, and it lives at the root of the dependency graph
-because the packages holding the kernels cannot import the one at the
-top.
+so no package reads a setting that lives in another.
+[`local_threads()`](https://statmodels7.github.io/numericals7/reference/local_threads.md)
+sizes the RcppParallel worker pool for the duration of a fit and
+restores the previous setting on exit. The object lives at the root of
+the dependency graph because the packages holding the kernels cannot
+import the one at the top.
 
 ``` r
 
@@ -301,11 +311,9 @@ identical(log_bessel_i(x, 0, threads = 1), log_bessel_i(x, 0, threads = 4))
 ```
 
 [`log_bessel_k()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md)
-deliberately takes no count. Its hybrid branch calls R’s own `besselK`,
-which can warn, and a warning raised from a worker thread reads R’s
-stack bounds against a foreign stack pointer and kills the process.
-Stating the restriction beats offering an argument that is unsafe on one
-branch.
+takes no count. Its hybrid branch calls R’s own `besselK`, which can
+raise a warning, and a warning raised from a worker thread terminates
+the process.
 
 ## Summary
 
@@ -324,9 +332,14 @@ branch.
   [`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)
   and
   [`series_vec()`](https://statmodels7.github.io/numericals7/reference/series_vec.md)
-  are vectorized over the parameter, take their row count from the
-  endpoints, judge convergence on the sum of a row’s errors, and return
-  `NA` for a row whose budget was not met.
+  are vectorized over the parameter and return `NA` for a row whose
+  budget was not met.
+  [`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)
+  takes its row count from the endpoints and judges convergence on the
+  sum of a row’s panel errors;
+  [`series_vec()`](https://statmodels7.github.io/numericals7/reference/series_vec.md)
+  takes it from `n` and retires a row when the last block and the
+  estimated tail both fit the budget.
 - **Special functions.**
   [`mills_ratio()`](https://statmodels7.github.io/numericals7/reference/mills_ratio.md),
   [`owen_t()`](https://statmodels7.github.io/numericals7/reference/owen_t.md),
@@ -334,15 +347,20 @@ branch.
   [`log_bessel_i()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i.md)
   and
   [`log_bessel_k()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md),
-  each written on the scale where it stays representable, and each
-  returning its derivatives where a caller would otherwise recompute
-  them.
+  each written on the scale where it stays representable.
+  [`mills_ratio()`](https://statmodels7.github.io/numericals7/reference/mills_ratio.md)
+  returns its derivative with the value; the derivatives of the Bessel
+  functions are separate functions
+  ([`bessel_i_ratio_d1()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio_d1.md)
+  to `_d4()`,
+  [`log_bessel_i_derivs()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i_derivs.md),
+  [`log_bessel_k_derivs()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k_derivs.md)).
 - **Enumerations.**
   [`set_partitions()`](https://statmodels7.github.io/numericals7/reference/set_partitions.md),
   [`tuple_indices()`](https://statmodels7.github.io/numericals7/reference/tuple_indices.md)
   and
   [`compositions()`](https://statmodels7.github.io/numericals7/reference/compositions.md),
-  one copy each for the whole toolkit.
+  one copy each for the packages of the toolkit.
 - **Threads.**
   [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
   is passed as an argument, and a kernel’s answer is bit-identical at

@@ -5,8 +5,8 @@ with respect to the *argument*, from the ratio identity \\(\log K\_\nu)'
 = \nu/x - K\_{\nu+1}/K\_\nu\\ and the modified Bessel equation, exactly
 as in
 [`log_bessel_i_derivs()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i_derivs.md).
-The sign is the one difference: \\K\\ decreases in its argument where
-\\I\\ grows.
+The only difference is the sign of the ratio term, because \\K\_\nu(x)\\
+decreases in \\x\\ while \\I\_\nu(x)\\ increases.
 
 ## Usage
 

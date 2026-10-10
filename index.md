@@ -1,13 +1,13 @@
 # numericals7
 
 Every package of the [statmodels7](https://statmodels7.github.io)
-toolkit needs the same numerical machinery – finite-difference stencils,
-quadrature, special functions, the combinatorics behind a chain rule –
-and before this package existed each had quietly grown its own copy: the
-same set-partition enumeration was written twice, finite differences
-three times. [numericals7](https://statmodels7.github.io/numericals7/)
-is that machinery written once, at the bottom of the toolkit, where
-everything above can consume it.
+toolkit needs the same numerical machinery: finite-difference stencils,
+quadrature, special functions and the combinatorics behind a chain rule.
+Before this package existed several packages carried their own copies
+(the set-partition enumeration was written twice, finite differences
+three times). [numericals7](https://statmodels7.github.io/numericals7/)
+contains that machinery once, at the bottom of the toolkit, and every
+package above it uses this copy.
 
 ## Installation
 
@@ -20,8 +20,8 @@ pak::pak("statmodels7/numericals7")
 ## The enumerations behind a chain rule
 
 A derivative of order four over several variables is a sum over
-combinatorial objects, and an enumeration that exists in one copy cannot
-disagree with itself:
+combinatorial objects. The enumerations are defined once, so every
+package that uses them indexes the derivatives in the same order.
 
 ``` r
 
@@ -59,9 +59,10 @@ chooses the offsets,
 [`fd_step()`](https://statmodels7.github.io/numericals7/reference/fd_step.md)
 the step, and
 [`fd_derivative()`](https://statmodels7.github.io/numericals7/reference/fd_derivative.md)
-assembles the three. The toolkit’s policy – one stencil applied to the
-highest analytic order, never a chain of first differences – stays with
-the packages that enforce it; this is the stencil itself, written once.
+assembles the three. The toolkit applies one stencil to the highest
+analytic order available, never a chain of first differences. The
+packages that call these functions choose the order from which to
+differentiate, and the functions here build and apply the stencil.
 
 ``` r
 
@@ -78,12 +79,13 @@ A regression model gives every observation its own parameter value, so
 the integrals a fit needs come in families: the same integrand at
 hundreds of parameter rows.
 [`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)
-integrates all of them in one adaptive pass – the integrand receives a
-matrix of points and a row index, so a thousand parameter values cost
-matrix evaluations rather than a thousand adaptive runs – and
+integrates all of them in one adaptive run, with a single call to the
+integrand per refinement pass: the integrand receives a matrix of points
+and a row index, so a thousand parameter values cost matrix evaluations
+instead of a thousand adaptive runs.
 [`series_vec()`](https://statmodels7.github.io/numericals7/reference/series_vec.md)
-does the same for infinite sums. A row that cannot reach the requested
-accuracy returns `NA` with a warning naming it.
+does the same for infinite sums. A row that does not reach the requested
+accuracy returns `NA` with a warning.
 
 ``` r
 
@@ -99,38 +101,39 @@ series_vec(function(k, i) dpois(k, lam[i]), n = 3)   # masses sum to one
 
 ## The logarithm of the modified Bessel functions
 
-Bessel functions recur across distributions – the von Mises carries
-$`I_0`$, the Poisson-inverse Gaussian carries $`K_{y-1/2}`$ – and both
-overflow from $`x = 700`$ while their exponentially scaled forms
-underflow past $`10^5`$ or lose large orders entirely. Following
-Plesner, Sørensen and Hauberg (ICS 2024, arXiv:2409.08729),
+Bessel functions recur across distributions: the von Mises carries
+$`I_0`$, and the Poisson-inverse Gaussian carries $`K_{y-1/2}`$.
+$`I_\nu(x)`$ overflows from about $`x = 709`$ and $`K_\nu(x)`$
+underflows to zero from about $`x = 705`$, while the exponentially
+scaled forms underflow past $`10^5`$ or lose large orders entirely.
+Following Plesner, Sørensen and Hauberg (ICS 2024, arXiv:2409.08729),
 [`log_bessel_i()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i.md)
 and
 [`log_bessel_k()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md)
-carry every intermediate quantity on the log scale, so the result is
-finite and accurate wherever $`\log I_\nu(x)`$ itself is representable;
-the `_derivs` variants add four derivatives in the argument from the
-ratio identity and the Bessel equation, at the cost of one more
-log-Bessel evaluation.
+work on the log scale, so the result is finite and accurate wherever the
+logarithm of the function is representable. The `_derivs` variants add
+four derivatives in the argument from the ratio identity and the Bessel
+equation, at the cost of one more log-Bessel evaluation.
 
 ``` r
 
-log_bessel_i(1e7, 2)              # I overflows at 700; the log is just a number
+log_bessel_i(1e7, 2)              # I overflows near 709; its logarithm is finite
 #> [1] 9999991
 log_bessel_i(0.001, 5000)         # the scaled form loses this order entirely
 #> [1] -75595.66
-log_bessel_k_derivs(2, 0.5)$d1    # exactly -1/(2x) - 1 at nu = 1/2
+log_bessel_k_derivs(2, 0.5)$d1    # -1/(2x) - 1 at nu = 1/2, to rounding
 #> [1] -1.25
 ```
 
-## Special functions, with their overflow discipline
+## Special functions
 
-Each of these was born inside a distribution and carries the numerical
-lesson learned there: the Mills ratio is formed on the log scale, where
-the direct quotient is 0/0 from `t = -38` on; Owen’s T batches every
-element into one
+Each of these functions was first written for a distribution, and each
+is evaluated on the scale where it stays representable. The Mills ratio
+is formed on the log scale, because the direct quotient loses precision
+from about `t = -38` and is 0/0 from about `t = -38.6`. Owen’s T batches
+every element into one
 [`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)
-call; the Bessel ratio is evaluated from its power series, its continued
+call. The Bessel ratio is evaluated from its power series, its continued
 fraction and its asymptotic series, without the Bessel functions
 themselves, so it is finite at any argument, and its derivatives and
 those of its inverse are computed one order per function.
@@ -150,12 +153,14 @@ bessel_i_ratio(bessel_i_ratio_inverse(0.7))
 ## Smoothers of the absolute value
 
 An `abs_smoother` replaces $`\lvert u \rvert`$ with a smooth $`s(u)`$
-carrying its derivatives to fifth order as functions, which is what a
-term with a break-point needs to become an ordinary differentiable
-model.
+carrying its derivatives to fifth order as functions. With it, a term
+with a break-point becomes an ordinary differentiable model.
 [`smooth_probit()`](https://statmodels7.github.io/numericals7/reference/smooth_probit.md)
-is the one to reach for first: its tails are exact and the convolution
-it performs against a Gaussian is corrected in closed form.
+is the recommended default: its excess over $`\lvert u \rvert`$ has
+Gaussian tails, which fall to rounding error within a few widths, and
+smoothing with width $`h`$ is a convolution of the break-point with
+$`N(0, h^2)`$, for which the smoother supplies a closed-form scale
+correction.
 
 ``` r
 
@@ -180,5 +185,5 @@ smoother_width_floor(sm, scale = 10)   # a covariate spanning ten units
 ```
 
 [`check_abs_smoother()`](https://statmodels7.github.io/numericals7/reference/check_abs_smoother.md)
-validates a smoother of one’s own, each order against one numerical
-differentiation of the analytical order below it.
+validates a user-written smoother, comparing each order with one
+numerical differentiation of the analytic order below it.

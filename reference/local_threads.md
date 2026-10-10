@@ -3,8 +3,8 @@
 Sets RcppParallel's thread count to the policy's for the calling frame's
 lifetime and restores the previous process state when that frame exits.
 Called once at the entry of a fit; the count itself still travels to
-each kernel as an argument, this call only sizes the worker pool the
-parallel regions draw from.
+each kernel as an argument, and this call only sizes the worker pool
+from which the parallel regions draw.
 
 ## Usage
 
@@ -18,7 +18,7 @@ local_threads(x, frame = parent.frame())
 
   An object returned by
   [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md).
-  Anything else throws, through
+  Any other value signals an error through
   [`thread_count()`](https://statmodels7.github.io/numericals7/reference/thread_count.md).
 
 - frame:
@@ -39,8 +39,8 @@ leave it moved for whatever runs next. The restoration is therefore
 registered with `on.exit` in the caller's frame, which fires however the
 fit leaves, an error included.
 
-At a count of 1 nothing is touched at all. That is what keeps the
-sequential path free of any trace of the parallel machinery.
+At a count of 1 nothing is changed, so the sequential path does not
+touch the parallel machinery.
 
 ## See also
 

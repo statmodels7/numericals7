@@ -2,12 +2,12 @@
 
 Holds the coefficients of the polynomials \\u_k(t)\\ for \\k = 1, \dots,
 13\\, which enter the large-order uniform asymptotic expansions of the
-modified Bessel functions (DLMF 10.41). They are what
+modified Bessel functions (DLMF 10.41).
 [`log_bessel_i()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i.md)
 and
 [`log_bessel_k()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md)
-sum in their large-order branches, and the truncation depth \\K\\ that
-names each of those branches is how many of these polynomials it uses.
+sum them in their large-order branches, and the truncation depth \\K\\
+of each branch is the number of polynomials that it uses.
 
 ## Format
 
@@ -39,8 +39,8 @@ coefficients. They satisfy the recurrence
 
 DLMF 10.41.9, and were generated from it in exact rational arithmetic
 and converted to double only at the end. The tests re-run the recurrence
-numerically and compare, so a mistyped digit fails rather than degrading
-an expansion quietly.
+numerically and compare the result with the stored coefficients at a
+relative tolerance of \\10^{-13}\\.
 
 The polynomials grow: \\u_1\\ has two terms and \\u\_{13}\\ has
 fourteen, with coefficients reaching \\10^{12}\\.

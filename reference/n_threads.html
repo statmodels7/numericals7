@@ -4,16 +4,16 @@ statmodels7::statmod() or distributions7::fit_distrib()
 accepts through its threads argument. The default, one thread and
 one process, takes exactly the sequential code path; a larger
 threads lets the compiled per-observation kernels and the dense
-assembly products run in parallel, and a larger workers fans the
-independent fits of a cross-validation's folds out over separate R
-processes."><meta property="og:description" content="Constructs the parallelism policy an entry point such as
+assembly products run in parallel, and a larger workers distributes the
+independent units of a fit over separate R processes: the folds of a
+cross-validation and the combinations of a kinked path's product grid."><meta property="og:description" content="Constructs the parallelism policy an entry point such as
 statmodels7::statmod() or distributions7::fit_distrib()
 accepts through its threads argument. The default, one thread and
 one process, takes exactly the sequential code path; a larger
 threads lets the compiled per-observation kernels and the dense
-assembly products run in parallel, and a larger workers fans the
-independent fits of a cross-validation's folds out over separate R
-processes."><meta property="og:image" content="https://statmodels7.github.io/numericals7/logo.png"></head><body>
+assembly products run in parallel, and a larger workers distributes the
+independent units of a fit over separate R processes: the folds of a
+cross-validation and the combinations of a kinked path's product grid."><meta property="og:image" content="https://statmodels7.github.io/numericals7/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -21,7 +21,7 @@ processes."><meta property="og:image" content="https://statmodels7.github.io/num
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.22.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,9 +53,9 @@ processes."><meta property="og:image" content="https://statmodels7.github.io/num
 accepts through its <code>threads</code> argument. The default, one thread and
 one process, takes exactly the sequential code path; a larger
 <code>threads</code> lets the compiled per-observation kernels and the dense
-assembly products run in parallel, and a larger <code>workers</code> fans the
-independent fits of a cross-validation's folds out over separate R
-processes.</p>
+assembly products run in parallel, and a larger <code>workers</code> distributes the
+independent units of a fit over separate R processes: the folds of a
+cross-validation and the combinations of a kinked path's product grid.</p>
     </div>
 
     <div class="section level2">
@@ -72,16 +72,18 @@ processes.</p>
 
 <dl><dt id="arg-threads">threads<a class="anchor" aria-label="anchor" href="#arg-threads"></a></dt>
 <dd><p>A single whole number, at least 1, and the default is <code>1</code>.
-The count is what the kernels are given and what they run on, not a ceiling
-they may come under. Anything else throws: a value below 1, a fractional
-value, <code>Inf</code>, a character string and a vector of length other than one are
-all rejected with the same message.</p></dd>
+The count is passed to the compiled kernels unchanged, and a kernel still
+runs sequentially on an input below its internal threshold. Any other
+value signals an error: a value below 1, a fractional value, <code>Inf</code>, <code>NA</code>,
+a character string and a vector of length other than one are all rejected
+with the same message. A value above the largest integer gives a coercion
+warning followed by R's error "missing value where TRUE/FALSE needed".</p></dd>
 
 
 <dt id="arg-workers">workers<a class="anchor" aria-label="anchor" href="#arg-workers"></a></dt>
 <dd><p>A single whole number, at least 1, and the default is <code>1</code>:
-how many R processes the independent fits of a cross-validation's folds may
-use. <code>1</code> runs them in this process. Validated exactly as <code>threads</code> is.</p></dd>
+how many R processes the independent units of a fit may use. <code>1</code> runs
+them in this process. Validated exactly as <code>threads</code> is.</p></dd>
 
 
 <dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
@@ -106,19 +108,20 @@ components:</p><dl><dt><code>threads</code></dt>
 first. <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> returns its argument invisibly.</p>
     </div>
     <div class="section level2">
-    <h2 id="the-count-does-not-change-the-answer">The count does not change the answer<a class="anchor" aria-label="anchor" href="#the-count-does-not-change-the-answer"></a></h2>
+    <h2 id="results-independent-of-the-thread-count">Results independent of the thread count<a class="anchor" aria-label="anchor" href="#results-independent-of-the-thread-count"></a></h2>
     <p>Every parallel region in the toolkit decomposes its work over the elements
 of its output. Each accumulated value is therefore summed in full by one
-thread, no reduction is ever split across threads, and a kernel returns the
+thread, reductions are never split across threads, and a kernel returns the
 same bits at any count. A fold's fit is a complete independent computation,
 and the folds are collected in fold order however many processes ran them.</p>
 <p>Two properties of the drivers make that hold, and neither belongs to the
 kernels themselves. A worker installs the calling thread's floating-point
-environment before running its chunk: without it some of the platform's own
-math routines return per-thread last bits, and R's <code>psigamma</code> at higher
-orders, <code>bessel_k</code>, and <code>pgamma</code> and <code>pbeta</code> on the log scale were each
-measured doing so. The sequential branch also runs through the same compiled
-function the parallel one does, so a compiler cannot optimize the two apart.</p>
+environment before running its chunk, because without it some of the
+platform's own math routines (among them R's <code>psigamma</code> at higher orders,
+<code>bessel_k</code>, and <code>pgamma</code> and <code>pbeta</code> on the log scale) can return results
+that differ in the last bits between threads. The sequential branch also
+runs through the same compiled function as the parallel one, so a compiler
+cannot optimize the two differently.</p>
 <p>One qualification. In the dense assembly products of <span class="pkg">statmodels7</span>,
 raising the count first <em>engages</em> a threaded kernel where a BLAS expression
 stood. That kernel is a second implementation of the same sum: bit-exact
@@ -128,24 +131,24 @@ accumulation order is its own.</p>
 <p>The guarantee is a design constraint on any kernel added later.</p>
     </div>
     <div class="section level2">
-    <h2 id="the-sequential-path-is-the-sequential-path">The sequential path is the sequential path<a class="anchor" aria-label="anchor" href="#the-sequential-path-is-the-sequential-path"></a></h2>
-    <p>At <code>threads = 1</code> nothing parallel is entered and no process-level thread
-setting is touched. The code taken is the sequential one, not a parallel path
-running on a single thread.</p>
+    <h2 id="the-sequential-path">The sequential path<a class="anchor" aria-label="anchor" href="#the-sequential-path"></a></h2>
+    <p>At <code>threads = 1</code> no parallel region is entered and the process-level thread
+setting is left unchanged. The code taken is the sequential one, not a
+parallel path running on a single thread.</p>
 <p>Each kernel carries an internal threshold as well, measured where the cost of
 opening a parallel region overtakes its gain. Below it the kernel stays
-sequential whatever the count says.</p>
+sequential regardless of the count.</p>
     </div>
     <div class="section level2">
-    <h2 id="the-two-levels-do-not-nest">The two levels do not nest<a class="anchor" aria-label="anchor" href="#the-two-levels-do-not-nest"></a></h2>
+    <h2 id="threads-inside-worker-processes">Threads inside worker processes<a class="anchor" aria-label="anchor" href="#threads-inside-worker-processes"></a></h2>
     <p>A fit running inside a worker process is sequential by construction, so
-<code>workers = 4</code> opens four processes each fitting on one thread, never
+<code>workers = 4</code> opens up to four processes, each fitting on one thread, never
 <code>4 * threads</code> of them.</p>
 <p>Worker processes are separate R sessions that load the installed packages,
-which makes them safe for the S7 objects a fold's fit carries; this is the
-rule <code>optimizers7::multistart</code> records. Starting one costs on the order of a
-second, so <code>workers</code> pays on a cross-validated path and is not worth asking
-for on a fit shorter than that.</p>
+which makes them safe for the S7 objects carried by a fold's fit; this is
+the rule recorded by <code>optimizers7::multistart</code>. Starting a worker process
+takes on the order of a second, so <code>workers</code> shortens a cross-validated path
+only when each fold takes longer than that.</p>
     </div>
     <div class="section level2">
     <h2 id="printing">Printing<a class="anchor" aria-label="anchor" href="#printing"></a></h2>

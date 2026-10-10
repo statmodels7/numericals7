@@ -3,8 +3,8 @@
 Computes \\\log I\_\nu(x)\\ for \\x \ge 0\\ and \\\nu \ge 0\\, carrying
 every intermediate quantity on the log scale, so the result is finite
 and accurate wherever \\\log I\_\nu(x)\\ itself is representable. That
-includes two regions R's own function cannot reach: past about \\x =
-700\\, where the unscaled \\I\_\nu\\ overflows, and at a large order
+includes two regions that R's own function cannot reach: past about \\x
+= 700\\, where the unscaled \\I\_\nu\\ overflows, and at a large order
 with a small argument or an argument beyond about \\10^5\\, where the
 exponentially scaled form underflows or loses its precision.
 
@@ -33,7 +33,7 @@ log_bessel_i(x, nu, threads = 1L)
   policy. Every branch of the kernel is this package's own arithmetic,
   so element \\i\\ is computed and written by one thread and the result
   is bit-identical at any count; below an internal threshold the
-  sequential path is taken whatever the count says.
+  sequential path is taken regardless of the count.
   [`log_bessel_k()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md)
   takes no such argument: its hybrid branch calls R's own scaled
   `besselK`, which can raise a warning, and a warning from a worker
@@ -44,8 +44,8 @@ log_bessel_i(x, nu, threads = 1L)
 A numeric vector of \\\log I\_\nu(x)\\, of the recycled length of `x`
 and `nu`. `0` at \\x = 0\\ with \\\nu = 0\\, since \\I_0(0) = 1\\;
 `-Inf` at \\x = 0\\ for any \\\nu \> 0\\; and `NA` where either argument
-is negative or missing. Nothing is thrown for an argument outside the
-domain.
+is negative or missing. An argument outside the domain does not signal
+an error.
 
 ## Details
 

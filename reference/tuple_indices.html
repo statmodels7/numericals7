@@ -3,12 +3,14 @@
 non-decreasing tuple \((i_1 \le \cdots \le i_k)\) drawn from 1:d, where
 \(k\) is the derivative order and \(d\) the number of variables. There
 is one tuple per distinct partial derivative, because a mixed partial does
-not depend on the order the variables are differentiated in, so the count is
+not depend on the order in which the variables are differentiated, so the
+count is
 \(\binom{d + k - 1}{k}\)."><meta property="og:description" content="Enumerates the multi-indices that key a list of partial derivatives: every
 non-decreasing tuple \((i_1 \le \cdots \le i_k)\) drawn from 1:d, where
 \(k\) is the derivative order and \(d\) the number of variables. There
 is one tuple per distinct partial derivative, because a mixed partial does
-not depend on the order the variables are differentiated in, so the count is
+not depend on the order in which the variables are differentiated, so the
+count is
 \(\binom{d + k - 1}{k}\)."><meta property="og:image" content="https://statmodels7.github.io/numericals7/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
@@ -17,7 +19,7 @@ not depend on the order the variables are differentiated in, so the count is
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.22.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,7 +50,8 @@ not depend on the order the variables are differentiated in, so the count is
 non-decreasing tuple \((i_1 \le \cdots \le i_k)\) drawn from <code>1:d</code>, where
 \(k\) is the derivative order and \(d\) the number of variables. There
 is one tuple per distinct partial derivative, because a mixed partial does
-not depend on the order the variables are differentiated in, so the count is
+not depend on the order in which the variables are differentiated, so the
+count is
 \(\binom{d + k - 1}{k}\).</p>
     </div>
 
@@ -63,14 +66,15 @@ not depend on the order the variables are differentiated in, so the count is
 
 <dl><dt id="arg-d">d<a class="anchor" aria-label="anchor" href="#arg-d"></a></dt>
 <dd><p>The number of variables, a non-negative whole number. Zero gives an
-empty list. A negative value throws, from <code><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len()</a></code>, with a message
-about coercion to a non-negative integer.</p></dd>
+empty list. A negative value signals an error: at orders one and two it
+comes from <code><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len()</a></code> and concerns coercion to a non-negative integer,
+and at orders three and four it comes from <code><a href="https://rdrr.io/r/utils/combn.html" class="external-link">utils::combn()</a></code>.</p></dd>
 
 
 <dt id="arg-order">order<a class="anchor" aria-label="anchor" href="#arg-order"></a></dt>
 <dd><p>The derivative order \(k\), one of <code>1</code>, <code>2</code>, <code>3</code> or <code>4</code>.
-Anything else throws: the enumeration is written out only that far,
-because a fourth derivative is as high as the toolkit carries.</p></dd>
+Any other value signals an error, because the enumeration is written out
+only to order four.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -79,14 +83,14 @@ because a fourth derivative is as high as the toolkit carries.</p></dd>
 <code>order</code>, each non-decreasing. An empty list when <code>d</code> is zero.</p>
     </div>
     <div class="section level2">
-    <h2 id="the-ordering-is-part-of-the-interface">The ordering is part of the interface<a class="anchor" aria-label="anchor" href="#the-ordering-is-part-of-the-interface"></a></h2>
+    <h2 id="the-ordering">The ordering<a class="anchor" aria-label="anchor" href="#the-ordering"></a></h2>
     <p>At order two the diagonal comes first, \((1,1), (2,2), \dots, (d,d)\), and
-the off-diagonal pairs follow in lexicographic order. That is the order a
-Hessian consumer indexes by. At orders three and four the enumeration is
-plain lexicographic over non-decreasing tuples.</p>
+the off-diagonal pairs follow in lexicographic order, which is the order
+used to index a Hessian. At orders three and four the enumeration is plain
+lexicographic over non-decreasing tuples.</p>
 <p>Every object in the toolkit holding derivatives over \(d\) variables keys
-its components by this enumeration, so two of them meet without either being
-reordered. Treat the order as fixed.</p>
+its components by this enumeration, so two such objects can be combined
+without reordering either. The order is fixed.</p>
     </div>
     <div class="section level2">
     <h2 id="counts">Counts<a class="anchor" aria-label="anchor" href="#counts"></a></h2>
@@ -96,8 +100,8 @@ reordered. Treat the order as fixed.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="set_partitions.html">set_partitions()</a></code>, the other enumeration a higher-order chain rule
-needs, and <code><a href="compositions.html">compositions()</a></code> for the ordered sums.</p></div>
+    <div class="dont-index"><p><code><a href="set_partitions.html">set_partitions()</a></code>, the other enumeration that a higher-order chain
+rule needs, and <code><a href="compositions.html">compositions()</a></code> for the ordered sums.</p></div>
     </div>
 
     <div class="section level2">

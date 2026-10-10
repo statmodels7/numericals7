@@ -11,7 +11,7 @@ transition width in covariate units is \(\sqrt{c}\)."><meta property="og:image" 
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.22.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,23 +69,23 @@ spacing, through <code><a href="smoother_width.html">smoother_width()</a></code>
     <p>$$s(u) = \sqrt{u^2 + c}, \qquad s'(u) = \frac{u}{\sqrt{u^2 + c}},
   \qquad s''(u) = \frac{c}{(u^2 + c)^{3/2}},$$</p>
 <p>every order a rational function of \(u\) over a half-integer power, so
-nothing here needs a special function or a branch.</p>
+every order is computed without special functions or branches.</p>
     </div>
     <div class="section level2">
-    <h2 id="the-cost-of-the-tails">The cost of the tails<a class="anchor" aria-label="anchor" href="#the-cost-of-the-tails"></a></h2>
+    <h2 id="the-tails">The tails<a class="anchor" aria-label="anchor" href="#the-tails"></a></h2>
     <p>The excess over \(\lvert u\rvert\) decays only as \(c/(2\lvert
-u\rvert)\), so the smoothing bias spreads well away from the kink. Measured
-at a transition width of <code>0.3</code>, so \(c = 0.09\): the excess is <code>4.4e-02</code>
+u\rvert)\), so the smoothing bias spreads well away from the kink. At a
+transition width of <code>0.3</code>, so that \(c = 0.09\), the excess is <code>4.4e-02</code>
 at \(u = 1\) and <code>1.5e-02</code> at \(u = 3\), against <code>6.7e-05</code> and exactly
 <code>0</code> for <code><a href="smooth_probit.html">smooth_probit()</a></code> at the same width. A fit smoothed this way is
-perturbed everywhere, not only near the break-point.</p>
-<p>No convolution identity relates \(c\) to the scale of a random
+therefore perturbed far from the break-point as well as near it.</p>
+<p>There is no convolution identity relating \(c\) to the scale of a random
 break-point, so <code>tau_correction</code> is <code>NULL</code> and a consumer reports the
 apparent scale alone.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="abs_smoother.html">abs_smoother()</a></code> for the contract, <code><a href="smooth_probit.html">smooth_probit()</a></code> for the
+    <div class="dont-index"><p><code><a href="abs_smoother.html">abs_smoother()</a></code> for the class, <code><a href="smooth_probit.html">smooth_probit()</a></code> for the
 recommended default, <code><a href="smooth_quintic.html">smooth_quintic()</a></code> for exactness outside the
 transition, <code><a href="check_abs_smoother.html">check_abs_smoother()</a></code> to verify it.</p></div>
     </div>

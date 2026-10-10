@@ -1,10 +1,10 @@
 # The Probit Smoother of the Absolute Value
 
 \\s(u) = \mathbb{E}\lvert u + hZ\rvert\\ for \\Z\\ standard normal, the
-one to reach for unless you have a reason not to. Its excess over
-\\\lvert u\rvert\\ has gaussian tails, so the smoothing bias is confined
-to a window of width \\h\\ around the kink, and it is the only one of
-the three that declares a scale correction for a random break-point.
+recommended default among the three smoothers. Its excess over \\\lvert
+u\rvert\\ has gaussian tails, so the smoothing bias decays within a few
+widths of the kink, and it is the only one of the three that declares a
+scale correction for a random break-point.
 
 ## Usage
 
@@ -24,7 +24,7 @@ smooth_probit(h = NULL, per_group = FALSE)
 
   `TRUE` to resolve the width once per group, `FALSE` (the default) for
   one width throughout. The validity window of a Laplace approximation
-  is per-subject, so a hierarchical break-point wants `TRUE`.
+  is per subject, so a hierarchical break-point uses `TRUE`.
 
 ## Value
 
@@ -40,31 +40,32 @@ spacing is the width), a `tau_correction`, and no `exact_radius`.
 
 with the third to fifth derivatives following from \\\phi'(z) =
 -z\phi(z)\\. At the kink \\s(0) = 2h\phi(0) \approx 0.798h\\, which is
-the intrinsic scale
+the intrinsic scale by which
 [`check_abs_smoother()`](https://statmodels7.github.io/numericals7/reference/check_abs_smoother.md)
-places its grid by.
+places its grid.
 
-## Why the tails matter
+## The tails
 
-The excess \\s(u) - \lvert u\rvert\\ decays like \\\phi(u/h)\\, so it is
-gone within a few widths. Measured at \\h = 0.3\\: `6.7e-05` at \\u =
+The excess \\s(u) - \lvert u\rvert\\ decays like \\\phi(u/h)\\, so it
+vanishes within a few widths. At \\h = 0.3\\ it is `6.7e-05` at \\u =
 1\\ and exactly `0` at \\u = 3\\, against `4.4e-02` and `1.5e-02` for
 [`smooth_hyperbolic()`](https://statmodels7.github.io/numericals7/reference/smooth_hyperbolic.md)
-at the same transition width. A model smoothed this way is the sharp
-model to within rounding a short distance from the break-point.
+at the same transition width. A model smoothed this way agrees with the
+sharp model to rounding error from about seven widths away from the
+break-point.
 
 ## The convolution identity
 
 Smoothing the step with width \\h\\ is exactly convolving the
 break-point with \\N(0, h^2)\\, so a random break-point of true scale
 \\\tau\\ appears at \\\sqrt{\tau^2 + h^2}\\, and the smoother declares
-\\\tau\_{\mathrm{true}} = \sqrt{\tau^2 - h^2}\\, floored at zero. No
-other smoother here has such an identity.
+\\\tau\_{\mathrm{true}} = \sqrt{\tau^2 - h^2}\\, floored at zero. The
+other two smoothers have no such identity.
 
 ## See also
 
 [`abs_smoother()`](https://statmodels7.github.io/numericals7/reference/abs_smoother.md)
-for the contract,
+for the class,
 [`smooth_hyperbolic()`](https://statmodels7.github.io/numericals7/reference/smooth_hyperbolic.md)
 and
 [`smooth_quintic()`](https://statmodels7.github.io/numericals7/reference/smooth_quintic.md)

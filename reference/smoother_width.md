@@ -1,10 +1,10 @@
 # Resolve a Smoother's Width from a Spacing
 
-Returns the width the smoother carries where it carries one, and
-otherwise the given spacing carried onto the width parameter's own
-scale. This is what a consumer calls at build: a break-point term hands
-it the median spacing of its covariate, the smallest transition the data
-can tell from a step.
+Returns the width carried by the smoother when it has one, and otherwise
+the given spacing carried onto the width parameter's own scale. A
+consumer calls this function at build: a break-point term passes it the
+median spacing of its covariate, which is the smallest transition that
+the data can distinguish from a step.
 
 ## Usage
 
@@ -23,8 +23,8 @@ smoother_width(smoother, spacing, max_gap = NULL)
 - spacing:
 
   A spacing in covariate units, one value or one per group. Every entry
-  must be positive and none may be missing; a smoother that already
-  carries a width never reaches the check.
+  must be positive and none may be missing; the check is not made when
+  the smoother already carries a width.
 
 - max_gap:
 
@@ -42,15 +42,15 @@ one.
 ## Details
 
 A smoother constructed with an explicit width keeps it, and `spacing` is
-then not even looked at. A smoother constructed with `NULL` takes the
-spacing through its own `width_from_spacing`: the identity for
+then ignored. A smoother constructed with `NULL` takes the spacing
+through its own `width_from_spacing`: the identity for
 [`smooth_probit()`](https://statmodels7.github.io/numericals7/reference/smooth_probit.md),
 the square for
 [`smooth_hyperbolic()`](https://statmodels7.github.io/numericals7/reference/smooth_hyperbolic.md),
 whose parameter is a squared length, and \\5/(2\log 2)\\ times the
 spacing for
 [`smooth_quintic()`](https://statmodels7.github.io/numericals7/reference/smooth_quintic.md),
-for the reason its page gives.
+for the reason given on its page.
 
 A smoother that declares an `exact_radius` is equal to \\\lvert
 u\rvert\\ beyond that radius, so a break-point smoothed with it has no
@@ -61,14 +61,16 @@ least \\0.55\\ times it, the radius being taken to grow in proportion to
 the width, which holds for
 [`smooth_quintic()`](https://statmodels7.github.io/numericals7/reference/smooth_quintic.md),
 whose radius is its width. The median spacing does not bound the largest
-gap: among \\n\\ uniform points the largest gap is about \\\log_2 n\\
-median spacings, 8.6 at \\n = 400\\, against the 3.61 the quintic's
-width covers. A smoother without an `exact_radius` ignores `max_gap`.
+gap: among \\n\\ uniform points the largest gap is about \\(\log n +
+\gamma)/\log 2\\ median spacings, with \\\gamma\\ Euler's constant (9.5
+at \\n = 400\\), while the quintic's width is 3.61 median spacings. A
+smoother without an `exact_radius` ignores `max_gap`.
 
-The result is nothing about whether the width is large enough for the
+The result does not indicate whether the width is large enough for the
 arithmetic;
 [`smoother_width_floor()`](https://statmodels7.github.io/numericals7/reference/smoother_width_floor.md)
-answers that separately, and a consumer takes the larger of the two.
+returns that bound separately, and a consumer takes the larger of the
+two.
 
 ## See also
 
@@ -96,7 +98,7 @@ smoother_width(smooth_probit(h = 0.5), 0.3)
 smoother_width(smooth_probit(per_group = TRUE), c(0.2, 0.4, 0.35))
 #> [1] 0.20 0.40 0.35
 
-# The quintic is raised to cover half of a large gap; the probit is not.
+# The quintic is raised to 0.55 times a large gap; the probit is not.
 smoother_width(smooth_quintic(), 0.01, max_gap = 0.1)
 #> [1] 0.055
 smoother_width(smooth_probit(), 0.01, max_gap = 0.1)

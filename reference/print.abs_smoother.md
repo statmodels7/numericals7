@@ -26,7 +26,8 @@ a random break-point, and exactness outside the transition.
 The width line reads `h resolved at build` where the smoother carries
 none, and names the width parameter by its own name, so a hyperbolic
 smoother shows `c` where a probit shows `h`. `per group` is appended
-when the width is to be resolved per group.
+whenever the `per_group` property is `TRUE`, also when a width has been
+supplied.
 
 ## Examples
 

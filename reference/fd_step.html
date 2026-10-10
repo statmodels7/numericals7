@@ -13,7 +13,7 @@ inside the domain."><meta property="og:image" content="https://statmodels7.githu
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.22.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,8 +75,9 @@ which may be infinite. <code>NULL</code>, the default, applies no clamp.</p></dd
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A numeric vector of steps the same length as <code>x</code>, positive except at
-a point sitting on a finite bound, where it is zero.</p>
+    <p>A numeric vector of steps the same length as <code>x</code>. A step is
+positive at a point strictly inside <code>bounds</code>, zero at a point on a finite
+bound, and negative at a point outside the bounds.</p>
     </div>
     <div class="section level2">
     <h2 id="where-the-balance-falls">Where the balance falls<a class="anchor" aria-label="anchor" href="#where-the-balance-falls"></a></h2>
@@ -88,22 +89,23 @@ a point near zero does not get a step below the resolution of its own
 neighborhood.</p>
 <p>At the default accuracy the exponent is \(1/4\) for a second derivative and
 \(1/6\) for a fourth, giving steps of about <code>1.2e-4</code> and <code>2.5e-3</code> at
-\(x = 1\). A high order wants a <em>large</em> step, since rounding is what
-dominates there.</p>
+\(x = 1\). A higher order uses a larger step, because rounding error
+dominates the total error there.</p>
     </div>
     <div class="section level2">
     <h2 id="staying-inside-the-domain">Staying inside the domain<a class="anchor" aria-label="anchor" href="#staying-inside-the-domain"></a></h2>
-    <p>Given <code>bounds</code>, the step is shrunk so the farthest node of the stencil stays
-strictly inside: a node outside the domain does not make a derivative
-inaccurate, it makes it <code>NaN</code>. The margin is 0.49 of the distance to the
-bound, divided by the reach.</p>
+    <p>Given <code>bounds</code>, the step is shrunk so that the farthest node of the stencil
+stays strictly inside the domain, because a function evaluated outside its
+domain usually returns <code>NaN</code>, and the derivative estimate is then <code>NaN</code>. The
+margin is 0.49 of the distance to the bound, divided by the reach.</p>
     </div>
     <div class="section level2">
-    <h2 id="the-one-case-to-guard">The one case to guard<a class="anchor" aria-label="anchor" href="#the-one-case-to-guard"></a></h2>
+    <h2 id="a-point-on-a-bound">A point on a bound<a class="anchor" aria-label="anchor" href="#a-point-on-a-bound"></a></h2>
     <p>A point sitting exactly on a finite bound gets a step of <strong>zero</strong>, and a
-stencil divided by \(h^{d}\) is then <code>NaN</code>. The evaluation point is the
-caller's, so this is not checked here; either keep the point off the bound or
-use a one-sided stencil with a step of your own.</p>
+stencil divided by \(h^{d}\) is then <code>NaN</code>. The function does not check the
+evaluation point. For a point on a bound the caller moves the point strictly
+inside the domain, or applies a one-sided stencil with an explicitly chosen
+step.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

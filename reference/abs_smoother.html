@@ -5,19 +5,19 @@ primitive the toolkit uses is generated from the absolute value:
 $$\operatorname{sign}(u) = \frac{d\lvert u\rvert}{du}, \qquad
   \mathbb{1}(u \geq 0) = \frac{1 + \operatorname{sign}(u)}{2}, \qquad
   (u)_{+} = \frac{u + \lvert u\rvert}{2},$$
-so one contract serves them all. The smooth sign is \(s'\), the smooth
-step \((1 + s'(u))/2\) and the smooth hinge \((u + s(u))/2\) follow by
-composition, and a consumer that replaces \(\lvert u\rvert\) by \(s(u)\)
-has replaced every one of them consistently."><meta property="og:description" content="A smooth replacement \(s(u)\) for \(\lvert u \rvert\), carrying its
+so a single object of this class serves all of them. The smooth sign is
+\(s'\), the smooth step \((1 + s'(u))/2\) and the smooth hinge
+\((u + s(u))/2\) follow by composition, and a consumer that replaces
+\(\lvert u\rvert\) by \(s(u)\) replaces every one of them consistently."><meta property="og:description" content="A smooth replacement \(s(u)\) for \(\lvert u \rvert\), carrying its
 derivatives in \(u\) up to order five as functions. Every non-smooth
 primitive the toolkit uses is generated from the absolute value:
 $$\operatorname{sign}(u) = \frac{d\lvert u\rvert}{du}, \qquad
   \mathbb{1}(u \geq 0) = \frac{1 + \operatorname{sign}(u)}{2}, \qquad
   (u)_{+} = \frac{u + \lvert u\rvert}{2},$$
-so one contract serves them all. The smooth sign is \(s'\), the smooth
-step \((1 + s'(u))/2\) and the smooth hinge \((u + s(u))/2\) follow by
-composition, and a consumer that replaces \(\lvert u\rvert\) by \(s(u)\)
-has replaced every one of them consistently."><meta property="og:image" content="https://statmodels7.github.io/numericals7/logo.png"></head><body>
+so a single object of this class serves all of them. The smooth sign is
+\(s'\), the smooth step \((1 + s'(u))/2\) and the smooth hinge
+\((u + s(u))/2\) follow by composition, and a consumer that replaces
+\(\lvert u\rvert\) by \(s(u)\) replaces every one of them consistently."><meta property="og:image" content="https://statmodels7.github.io/numericals7/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -25,7 +25,7 @@ has replaced every one of them consistently."><meta property="og:image" content=
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.22.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,10 +58,10 @@ primitive the toolkit uses is generated from the absolute value:</p>
 <p>$$\operatorname{sign}(u) = \frac{d\lvert u\rvert}{du}, \qquad
   \mathbb{1}(u \geq 0) = \frac{1 + \operatorname{sign}(u)}{2}, \qquad
   (u)_{+} = \frac{u + \lvert u\rvert}{2},$$</p>
-<p>so one contract serves them all. The smooth sign is \(s'\), the smooth
-step \((1 + s'(u))/2\) and the smooth hinge \((u + s(u))/2\) follow by
-composition, and a consumer that replaces \(\lvert u\rvert\) by \(s(u)\)
-has replaced every one of them consistently.</p>
+<p>so a single object of this class serves all of them. The smooth sign is
+\(s'\), the smooth step \((1 + s'(u))/2\) and the smooth hinge
+\((u + s(u))/2\) follow by composition, and a consumer that replaces
+\(\lvert u\rvert\) by \(s(u)\) replaces every one of them consistently.</p>
     </div>
 
     <div class="section level2">
@@ -131,31 +131,31 @@ one.</p></dd>
 above.</p>
     </div>
     <div class="section level2">
-    <h2 id="what-a-smoother-buys">What a smoother buys<a class="anchor" aria-label="anchor" href="#what-a-smoother-buys"></a></h2>
+    <h2 id="uses-of-a-smoother">Uses of a smoother<a class="anchor" aria-label="anchor" href="#uses-of-a-smoother"></a></h2>
     <p>A break-point term smoothed this way becomes an ordinary nonlinear term
 whose design block is the true Jacobian, so a random or penalized
-development of its break-points becomes fittable. A kinked penalty
-smoothed this way becomes a proper separable one, at the price of the exact
-zeros the kink produced.</p>
+development of its break-points can be fitted. A kinked penalty smoothed
+this way becomes a smooth separable penalty, and the exact zeros produced by
+the kink are lost.</p>
     </div>
     <div class="section level2">
-    <h2 id="the-derivatives-are-functions">The derivatives are functions<a class="anchor" aria-label="anchor" href="#the-derivatives-are-functions"></a></h2>
-    <p>They are functions and not expressions. A piecewise smoother, the quintic
-here, has branches that <code><a href="https://rdrr.io/r/stats/deriv.html" class="external-link">stats::deriv()</a></code> does not read, and with the
-derivatives written out in the constructor those branches are ordinary code.
-Each takes <code>(u, width)</code> and vectorizes in both, so a per-group width is one
-value per observation.</p>
+    <h2 id="the-derivatives-as-functions">The derivatives as functions<a class="anchor" aria-label="anchor" href="#the-derivatives-as-functions"></a></h2>
+    <p>The derivatives are stored as functions and not as expressions. A piecewise
+smoother such as the quintic has branches that <code><a href="https://rdrr.io/r/stats/deriv.html" class="external-link">stats::deriv()</a></code> cannot
+differentiate, so the derivatives are written out in the constructor, where
+the branches are ordinary code. Each function takes <code>(u, width)</code> and
+vectorizes in both, so a per-group width is one value per observation.</p>
     </div>
     <div class="section level2">
     <h2 id="the-width">The width<a class="anchor" aria-label="anchor" href="#the-width"></a></h2>
     <p><code>width</code> is the transition scale: <code>h</code> for a smoother whose parameter is a
 length, the bent-cable reading of a transition of width \(h\), and <code>c</code> for
-the hyperbolic, whose parameter is a squared length. <code>NULL</code>, the default of
-all three constructors, asks the consumer to resolve it from the data at
-build through <code><a href="smoother_width.html">smoother_width()</a></code>; a break-point term hands it the median
-spacing of its covariate. <code>per_group</code> asks for one width per group where a
-grouping is available, the validity window of a Laplace approximation being
-per-subject.</p>
+the hyperbolic, whose parameter is a squared length. With <code>NULL</code>, the
+default of all three constructors, the consumer resolves the width from the
+data at build through <code><a href="smoother_width.html">smoother_width()</a></code>; a break-point term passes it the
+median spacing of its covariate. With <code>per_group = TRUE</code> the width is
+resolved once per group where a grouping is available, because the validity
+window of a Laplace approximation is per subject.</p>
     </div>
     <div class="section level2">
     <h2 id="the-scale-correction">The scale correction<a class="anchor" aria-label="anchor" href="#the-scale-correction"></a></h2>
@@ -183,7 +183,7 @@ for threshold regression models. <em>Journal of Econometrics</em>,
     <div class="dont-index"><p><code><a href="smooth_probit.html">smooth_probit()</a></code>, <code><a href="smooth_hyperbolic.html">smooth_hyperbolic()</a></code> and <code><a href="smooth_quintic.html">smooth_quintic()</a></code>
 for the three that ship, <code><a href="smoother_deriv.html">smoother_deriv()</a></code> to evaluate one,
 <code><a href="smoother_width.html">smoother_width()</a></code> and <code><a href="smoother_width_floor.html">smoother_width_floor()</a></code> for the width,
-<code><a href="check_abs_smoother.html">check_abs_smoother()</a></code> to verify one of your own.</p></div>
+<code><a href="check_abs_smoother.html">check_abs_smoother()</a></code> to verify a user-written smoother.</p></div>
     </div>
 
     <div class="section level2">
@@ -204,8 +204,8 @@ for the three that ship, <code><a href="smoother_deriv.html">smoother_deriv()</a
 <span class="r-in"><span><span class="op">(</span><span class="va">u</span> <span class="op">+</span> <span class="fu"><a href="smoother_deriv.html">smoother_deriv</a></span><span class="op">(</span><span class="va">sm</span>, <span class="va">u</span>, order <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span>          <span class="co"># smooth hinge</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3.362337e-05 7.627083e-02 1.196827e-01 1.762708e-01 1.000034e+00</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Three widths out they agree with the sharp versions to five decimals,</span></span></span>
-<span class="r-in"><span><span class="co"># and inside the transition they are what replaces them.</span></span></span>
+<span class="r-in"><span><span class="co"># Four widths out they agree with the sharp versions to five decimals,</span></span></span>
+<span class="r-in"><span><span class="co"># and inside the transition they replace them.</span></span></span>
 <span class="r-in"><span><span class="va">far</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1.2</span>, <span class="op">-</span><span class="fl">0.9</span>, <span class="fl">0.9</span>, <span class="fl">1.2</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="smoother_deriv.html">smoother_deriv</a></span><span class="op">(</span><span class="va">sm</span>, <span class="va">far</span>, order <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/sign.html" class="external-link">sign</a></span><span class="op">(</span><span class="va">far</span><span class="op">)</span>, <span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1]  0.00006  0.00270 -0.00270 -0.00006</span>

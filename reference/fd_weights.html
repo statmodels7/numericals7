@@ -19,7 +19,7 @@ assembles the whole expression."><meta property="og:image" content="https://stat
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.22.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -77,7 +77,7 @@ the Vandermonde system being singular.</p></dd>
 <strong>strictly smaller than <code>length(offsets)</code></strong>. Order <code>0</code> is legal and returns
 interpolation weights at the origin. Anything else throws: an order at or
 above the node count with a message naming both numbers, and a negative,
-fractional, missing or non-scalar order with a message naming the
+fractional, <code>NA</code> or non-scalar order with a message naming the
 requirement.</p></dd>
 
 </dl></div>
@@ -114,16 +114,21 @@ the order and <code><a href="fd_derivative.html">fd_derivative()</a></code> puts
 first term it cannot reproduce, giving an estimate accurate to
 \(O(h^{\,n-d})\) with constant</p>
 <p>$$\frac{1}{n!}\sum_{j=1}^{n} w_j\, s_j^{\,n}.$$</p>
-<p>Five nodes therefore give a fourth-order first derivative and a second-order
-fourth derivative. <code><a href="fd_offsets.html">fd_offsets()</a></code> sizes a stencil from the order and the
-accuracy asked of it.</p>
+<p>On a symmetric stencil the constant vanishes whenever \(n - d\) is odd,
+and the error is then \(O(h^{\,n-d+1})\). Five nodes therefore give a
+fourth-order first derivative, and a fourth derivative that is of second
+order on the central stencil <code>-2:2</code> and of first order on the one-sided
+stencil <code>0:4</code>. <code><a href="fd_offsets.html">fd_offsets()</a></code> sizes a stencil from the order and the
+requested accuracy.</p>
     </div>
     <div class="section level2">
-    <h2 id="one-stencil-never-nested">One stencil, never nested<a class="anchor" aria-label="anchor" href="#one-stencil-never-nested"></a></h2>
+    <h2 id="single-stencils-and-nested-differences">Single stencils and nested differences<a class="anchor" aria-label="anchor" href="#single-stencils-and-nested-differences"></a></h2>
     <p>Reaching a high order by composing low-order differences multiplies the error
 of each stage into the next, and a fourth derivative built from four nested
-first differences is noise. Every numerical fallback in the toolkit takes one
-stencil of the order it wants, and these weights are what it takes.</p>
+first differences, each taken at the step chosen for a first derivative, is
+dominated by rounding error. Every numerical fallback in
+the toolkit uses one stencil of the order that it needs, with the weights
+returned by this function.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -142,7 +147,7 @@ derivative.</p></div>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Five nodes, first derivative: the familiar (1, -8, 0, 8, -1)/12.</span></span></span>
 <span class="r-in"><span><span class="fu">fd_weights</span><span class="op">(</span><span class="op">-</span><span class="fl">2</span><span class="op">:</span><span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fl">12</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1]  1 -8  0  8 -1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1]  1.000000e+00 -8.000000e+00 -2.854859e-15  8.000000e+00 -1.000000e+00</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># The weights are for a unit step, so the caller divides by h^order.</span></span></span>
 <span class="r-in"><span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fl">1e-3</span></span></span>
@@ -157,7 +162,8 @@ derivative.</p></div>
 <span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">2</span><span class="op">:</span><span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="va">w</span> <span class="op">&lt;-</span> <span class="fu">fd_weights</span><span class="op">(</span><span class="va">s</span>, <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">5</span>, <span class="kw">function</span><span class="op">(</span><span class="va">m</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">w</span> <span class="op">*</span> <span class="va">s</span><span class="op">^</span><span class="va">m</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1]  0  1  0  0  0 -4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -2.976135e-17  1.000000e+00  1.665335e-16  1.110223e-16  0.000000e+00</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [6] -4.000000e+00</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># That first failure is the error constant: -4/5! = -1/30.</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">w</span> <span class="op">*</span> <span class="va">s</span><span class="op">^</span><span class="fl">5</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">factorial</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span></span>

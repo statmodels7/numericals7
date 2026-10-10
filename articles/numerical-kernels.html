@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.22.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,15 +68,16 @@
     
 <p>Almost every R package that computes a derivative it has no formula
 for writes its own finite difference, and almost every one that sums a
-series writes its own stopping rule. They are written as internal
-helpers, so nothing outside can reuse them, and each one is written to
-the accuracy its author needed on the day. A stencil is a fixed piece of
-arithmetic; so is a quadrature rule, so is the enumeration of the set
-partitions of four elements. This package holds one copy of each and the
-packages above it consume them, so an enumeration cannot disagree with
-itself between two of them.</p>
-<p>There are no classes here, deliberately. What follows is what the
-four groups do and where each of them stops.</p>
+series writes its own stopping rule. These are written as internal
+helpers, so other packages cannot reuse them, and each is written to the
+accuracy that its author needed at the time. A stencil is a fixed piece
+of arithmetic, and so are a quadrature rule and the enumeration of the
+set partitions of four elements. This package holds one copy of each for
+the packages above it, so that they all use the same arithmetic and the
+same orderings.</p>
+<p>Apart from the class <code>abs_smoother</code>, which is described in
+its own help pages, the package consists of plain functions. This
+vignette describes five groups of them and the limits of each.</p>
 <div class="section level2">
 <h2 id="derivatives-with-no-closed-form">Derivatives with no closed form<a class="anchor" aria-label="anchor" href="#derivatives-with-no-closed-form"></a>
 </h2>
@@ -88,22 +89,30 @@ allow. <code><a href="../reference/fd_weights.html">fd_weights()</a></code> solv
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/fd_weights.html">fd_weights</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="fl">1</span>, order <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>     <span class="co"># the textbook central difference</span></span>
 <span><span class="co">#&gt; [1] -0.5  0.0  0.5</span></span>
 <span><span class="fu"><a href="../reference/fd_weights.html">fd_weights</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span><span class="op">:</span><span class="fl">2</span>, order <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>     <span class="co"># five points, accurate two orders further</span></span>
-<span><span class="co">#&gt; [1]  0.08333333 -0.66666667  0.00000000  0.66666667 -0.08333333</span></span></code></pre></div>
+<span><span class="co">#&gt; [1]  8.333333e-02 -6.666667e-01 -2.379049e-16  6.666667e-01 -8.333333e-02</span></span></code></pre></div>
 <p><code><a href="../reference/fd_derivative.html">fd_derivative()</a></code> applies one to a function.
-<code>accuracy</code> is the order of the truncation error, and buying
-more of it costs evaluations of the integrand and nothing else:</p>
+<code>accuracy</code> is the order of the truncation error, and a higher
+accuracy costs only more evaluations of the function:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">f</span>  <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">x</span><span class="op">^</span><span class="fl">2</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">d1</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">-</span><span class="va">x</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">x</span><span class="op">^</span><span class="fl">2</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span>          <span class="co"># the closed form, for comparison</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span>, <span class="fl">6</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">a</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="fu"><a href="../reference/fd_derivative.html">fd_derivative</a></span><span class="op">(</span><span class="va">f</span>, <span class="fl">0.7</span>, order <span class="op">=</span> <span class="fl">1</span>, accuracy <span class="op">=</span> <span class="va">a</span><span class="op">)</span> <span class="op">-</span> <span class="fu">d1</span><span class="op">(</span><span class="fl">0.7</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 7.842615e-12 1.512124e-13 8.881784e-15</span></span></code></pre></div>
-<p>The step is not a constant. Rounding grows with the order of the
-difference, truncation falls with it, and the step that balances the two
-is
+<span><span class="co">#&gt; [1] 7.842615e-12 7.616130e-14 3.108624e-15</span></span></code></pre></div>
+<p>The step depends on the order
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>.
+The rounding error of a stencil for a derivative of order
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
+grows like
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ε</mi><msup><mi>h</mi><mrow><mi>−</mi><mi>k</mi></mrow></msup></mrow><annotation encoding="application/x-tex">\varepsilon h^{-k}</annotation></semantics></math>
+as the step
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>h</mi><annotation encoding="application/x-tex">h</annotation></semantics></math>
+shrinks, and the truncation error at accuracy two shrinks like
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>h</mi><mn>2</mn></msup><annotation encoding="application/x-tex">h^2</annotation></semantics></math>.
+The two balance at a step of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mi>ε</mi><mrow><mn>1</mn><mi>/</mi><mo stretchy="false" form="prefix">(</mo><mi>k</mi><mo>+</mo><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow></msup><annotation encoding="application/x-tex">\varepsilon^{1/(k+2)}</annotation></semantics></math>
-scaled by the point:</p>
+times the larger of one and the magnitude of the point:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>order <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>,</span>
 <span>           step  <span class="op">=</span> <span class="fu"><a href="../reference/fd_step.html">fd_step</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span>,</span>
@@ -113,36 +122,41 @@ scaled by the point:</p>
 <span><span class="co">#&gt; 2     2 1.220703e-04 1.220703e-04</span></span>
 <span><span class="co">#&gt; 3     3 7.400960e-04 7.400960e-04</span></span>
 <span><span class="co">#&gt; 4     4 2.460783e-03 2.460783e-03</span></span></code></pre></div>
-<p>so a fourth derivative is differenced at a step four hundred times a
-first derivative’s, and asking for one at a first derivative’s step
-would return noise.</p>
+<p>A fourth derivative is therefore differenced at a step about four
+hundred times that of a first derivative, and a fourth derivative
+computed at the step of a first derivative is dominated by rounding
+error.</p>
 <div class="section level3">
-<h3 id="one-stencil-never-a-chain">One stencil, never a chain<a class="anchor" aria-label="anchor" href="#one-stencil-never-a-chain"></a>
+<h3 id="single-stencils-and-nested-differences">Single stencils and nested differences<a class="anchor" aria-label="anchor" href="#single-stencils-and-nested-differences"></a>
 </h3>
-<p>The rule the whole toolkit follows is that a derivative of order
+<p>Throughout the toolkit a derivative of order
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>
-is reached by <strong>one</strong> stencil applied to the highest
-analytic order available, never by differencing a difference. Two nested
-central differences in the same variable multiply their rounding, and by
-the third order the answer is noise: the identity function’s exactly
-zero third derivative comes back of order one. Where a caller has an
-analytic first derivative, the fourth derivative is one stencil of order
-three on it, and the accuracy is several digits better than four
-stencils of order one.</p>
+is computed by <strong>one</strong> stencil applied to the highest
+analytic order available, never by differencing a difference. When each
+stage of a nested difference uses the step chosen for its own order, the
+rounding errors multiply: three nested first differences of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="normal">sin</mi><annotation encoding="application/x-tex">\sin</annotation></semantics></math>
+at 0.7 are off by about
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>5</mn><mo>×</mo><msup><mn>10</mn><mrow><mi>−</mi><mn>2</mn></mrow></msup></mrow><annotation encoding="application/x-tex">5 \times 10^{-2}</annotation></semantics></math>
+in the third derivative, and four are off by about
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>10</mn><mn>4</mn></msup><annotation encoding="application/x-tex">10^4</annotation></semantics></math>
+in the fourth. Where a caller has an analytic first derivative, the
+fourth derivative is one stencil of order three on it, which is several
+digits more accurate than four nested first differences.</p>
 </div>
 </div>
 <div class="section level2">
 <h2 id="integrals-and-sums-over-a-parameter-vector">Integrals and sums over a parameter vector<a class="anchor" aria-label="anchor" href="#integrals-and-sums-over-a-parameter-vector"></a>
 </h2>
-<p>A modeling routine rarely wants one integral. It wants the same
+<p>A modeling routine rarely needs a single integral. It needs the same
 integral at every parameter setting in a vector, and computing them one
 at a time in a loop pays R’s call overhead once per setting.
 <code><a href="../reference/quad_vec.html">quad_vec()</a></code> takes a vector of endpoints and returns a vector
 of integrals, evaluating the integrand once for every node of every
 panel of every row.</p>
 <p>The integrand receives a matrix of evaluation points and an integer
-vector saying which parameter setting each row belongs to, so the
-indexing is ordinary recycling:</p>
+vector that gives the parameter setting of each row, so the indexing is
+ordinary recycling:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">5</span>, <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="va">got</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/quad_vec.html">quad_vec</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="va">x</span><span class="op">^</span><span class="op">(</span><span class="va">a</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">x</span><span class="op">)</span>,</span>
@@ -153,20 +167,21 @@ indexing is ordinary recycling:</p>
 <span><span class="co">#&gt; gamma    1.772454    1    1   24 1.216451e+17</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">got</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/Special.html" class="external-link">gamma</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 4.344779e-09</span></span></code></pre></div>
-<p>Note that the number of rows comes from the
-<strong>endpoints</strong>, so scalar endpoints give one integral
-however long the parameter vector is. Infinite endpoints are mapped to
-finite ones by a rational transform whose Jacobian multiplies the
-integrand, and rows of different kinds may share one call.</p>
+<p>The number of rows comes from the <strong>endpoints</strong>, so
+scalar endpoints give one integral however long the parameter vector is.
+Infinite endpoints are mapped to finite ones by a rational transform
+whose Jacobian multiplies the integrand, and rows of different kinds may
+share one call.</p>
 <p>Adaptivity is judged per row on the <strong>sum</strong> of that
 row’s panel errors, as QUADPACK judges it. A budget allocated panel by
 panel cannot meet an integrable endpoint singularity at any depth, the
 error there being concentrated in the innermost panel however deep the
 bisection goes.</p>
-<p><code><a href="../reference/series_vec.html">series_vec()</a></code> is the same idea for a sum, and its
-stopping rule needs three conditions rather than two. A block sum that
-is small and a last term that is small are both true long
-<strong>before</strong> the mode of a hump-shaped term:</p>
+<p><code><a href="../reference/series_vec.html">series_vec()</a></code> is the same idea for a sum. Its stopping
+rule estimates the neglected tail from the decay of the terms at the end
+of the last block, and a small block sum is not enough: a block sum and
+a last term that are both small occur long <strong>before</strong> the
+mode of a hump-shaped term.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># The first 64 terms of E[Y^2] for a Poisson mean of 300.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">63</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">dpois</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">63</span>, <span class="fl">300</span><span class="op">)</span><span class="op">)</span>   <span class="co"># the block sum: tiny</span></span>
@@ -175,35 +190,38 @@ is small and a last term that is small are both true long
 <span><span class="co">#&gt; [1] 1.179611e-58</span></span>
 <span><span class="fl">300</span> <span class="op">+</span> <span class="fl">300</span><span class="op">^</span><span class="fl">2</span>                        <span class="co"># what the sum actually is</span></span>
 <span><span class="co">#&gt; [1] 90300</span></span></code></pre></div>
-<p>The third condition is that the terms are not growing across the
-block, and it is what tells a premature block from a finished tail:</p>
+<p>The terms of that block are rising, so their decay ratio is above one
+and the estimated tail is not small. The row continues until the terms
+decay and the geometric continuation of that decay, doubled, fits the
+budget:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">lam</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">3</span>, <span class="fl">40</span>, <span class="fl">300</span><span class="op">)</span></span>
 <span><span class="va">got</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/series_vec.html">series_vec</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">k</span>, <span class="va">i</span><span class="op">)</span> <span class="va">k</span><span class="op">^</span><span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">dpois</a></span><span class="op">(</span><span class="va">k</span>, <span class="va">lam</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span>, n <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">lam</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">got</span> <span class="op">/</span> <span class="op">(</span><span class="va">lam</span> <span class="op">+</span> <span class="va">lam</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 2.220446e-16</span></span></code></pre></div>
 <div class="section level3">
-<h3 id="a-failure-is-reported-as-one">A failure is reported as one<a class="anchor" aria-label="anchor" href="#a-failure-is-reported-as-one"></a>
+<h3 id="rows-that-do-not-converge">Rows that do not converge<a class="anchor" aria-label="anchor" href="#rows-that-do-not-converge"></a>
 </h3>
 <p>A row whose panels still exceed their budget at
-<code>max_depth</code> returns <code>NA</code>, with one warning naming
-every such row:</p>
+<code>max_depth</code>, or that holds <code>max_panels</code> panels,
+returns <code>NA</code>, and one warning lists the first eight such
+rows:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/warning.html" class="external-link">suppressWarnings</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="../reference/quad_vec.html">quad_vec</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="fl">1</span> <span class="op">/</span> <span class="va">x</span>, lower <span class="op">=</span> <span class="fl">0</span>, upper <span class="op">=</span> <span class="fl">1</span>, max_depth <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] NA</span></span></code></pre></div>
-<p>The integral diverges, so there is no accuracy to reach. An
-<code>NA</code> says the budget was not met; a plausible number would
-say nothing and be believed.</p>
+<p>The integral diverges, so no accuracy can be reached, and the value
+<code>NA</code> indicates that the budget was not met.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="functions-that-leave-the-doubles">Functions that leave the doubles<a class="anchor" aria-label="anchor" href="#functions-that-leave-the-doubles"></a>
+<h2 id="functions-evaluated-on-a-representable-scale">Functions evaluated on a representable scale<a class="anchor" aria-label="anchor" href="#functions-evaluated-on-a-representable-scale"></a>
 </h2>
-<p>Several quantities a likelihood needs are finite and perfectly
-ordinary while the expression normally used to compute them is not. Each
-of these is written on the scale where it stays representable.</p>
+<p>Several quantities that a likelihood needs are finite and ordinary
+while the expression normally used to compute them overflows or
+underflows. Each of these is written on the scale where it stays
+representable.</p>
 <p>The inverse Mills ratio
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mo>=</mo><mi>ϕ</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo><mi>/</mi><mi mathvariant="normal">Φ</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">R(t) = \phi(t)/\Phi(t)</annotation></semantics></math>
 is asymptotic to
@@ -220,11 +238,11 @@ Both of its factors underflow well before that:</p>
 <span><span class="co">#&gt; 2  -38 38.026280  38.026279        38</span></span>
 <span><span class="co">#&gt; 3 -100       NaN 100.009998       100</span></span>
 <span><span class="co">#&gt; 4 -400       NaN 400.002500       400</span></span></code></pre></div>
-<p>It returns the derivative alongside, which lies in
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mn>1</mn><mo>,</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(-1, 0)</annotation></semantics></math>
-and which a caller would otherwise compute from <code>r</code> a second
-time. The modified Bessel function of the first kind overflows at an
-argument no larger than a fitted concentration:</p>
+<p>It also returns the derivative, which lies in
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mn>1</mn><mo>,</mo><mn>0</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(-1, 0)</annotation></semantics></math>,
+so a caller does not compute it from <code>r</code> a second time. The
+modified Bessel function of the first kind overflows at an argument no
+larger than a fitted concentration:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">500</span>, <span class="fl">800</span>, <span class="fl">5000</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">x</span>, naive <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Bessel.html" class="external-link">besselI</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span><span class="op">)</span>, log_bessel <span class="op">=</span> <span class="fu"><a href="../reference/log_bessel_i.html">log_bessel_i</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
@@ -250,9 +268,10 @@ the two scaled functions is not:</p>
 <span><span class="co">#&gt; 2 1e+04 0.999950 0.9999500</span></span>
 <span><span class="co">#&gt; 3 1e+05 0.999995 0.9999950</span></span>
 <span><span class="co">#&gt; 4 1e+06      NaN 0.9999995</span></span></code></pre></div>
-<p>Owen’s T is here because a skew-normal distribution function is one
-bounded one-dimensional quadrature of it, which beats integrating the
-density over a semi-infinite interval:</p>
+<p>Owen’s T is included because the skew-normal distribution function is
+written in terms of it, and Owen’s T is a bounded one-dimensional
+integral over the interval from 0 to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fl">0.7</span>; <span class="va">a</span> <span class="op">&lt;-</span> <span class="fl">1.3</span></span>
 <span><span class="fu"><a href="../reference/owen_t.html">owen_t</a></span><span class="op">(</span><span class="va">h</span>, <span class="va">a</span><span class="op">)</span></span>
@@ -266,8 +285,8 @@ density over a semi-infinite interval:</p>
 <p>A higher-order chain rule is a sum over set partitions, a symmetric
 derivative array is indexed by non-decreasing tuples, and the support of
 a multinomial is the weak compositions. All three are fixed
-combinatorial objects, and the reason they live here is that three
-packages needed them and three copies could disagree.</p>
+combinatorial objects, and they are collected here because several
+packages need them.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu"><a href="../reference/set_partitions.html">set_partitions</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span><span class="op">)</span>          <span class="co"># the Bell number B4</span></span>
 <span><span class="co">#&gt; [1] 15</span></span>
@@ -305,9 +324,11 @@ non-negative parts, one per row:</p>
 <p><code><a href="../reference/n_threads.html">n_threads()</a></code> carries the thread policy of the whole
 toolkit. It is an object passed as an argument from
 <code>statmod()</code> and <code>fit_distrib()</code> down to the
-kernels, with no global state, and it lives at the root of the
-dependency graph because the packages holding the kernels cannot import
-the one at the top.</p>
+kernels, so no package reads a setting that lives in another.
+<code><a href="../reference/local_threads.html">local_threads()</a></code> sizes the RcppParallel worker pool for the
+duration of a fit and restores the previous setting on exit. The object
+lives at the root of the dependency graph because the packages holding
+the kernels cannot import the one at the top.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">th</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/n_threads.html">n_threads</a></span><span class="op">(</span>threads <span class="op">=</span> <span class="fl">4</span>, workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>threads <span class="op">=</span> <span class="fu"><a href="../reference/thread_count.html">thread_count</a></span><span class="op">(</span><span class="va">th</span><span class="op">)</span>, workers <span class="op">=</span> <span class="fu"><a href="../reference/worker_count.html">worker_count</a></span><span class="op">(</span><span class="va">th</span><span class="op">)</span><span class="op">)</span></span>
@@ -319,11 +340,9 @@ on the count bit for bit:</p>
 <code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">50</span>, length.out <span class="op">=</span> <span class="fl">2000</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="fu"><a href="../reference/log_bessel_i.html">log_bessel_i</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span>, threads <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, <span class="fu"><a href="../reference/log_bessel_i.html">log_bessel_i</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">0</span>, threads <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
-<p><code><a href="../reference/log_bessel_k.html">log_bessel_k()</a></code> deliberately takes no count. Its hybrid
-branch calls R’s own <code>besselK</code>, which can warn, and a warning
-raised from a worker thread reads R’s stack bounds against a foreign
-stack pointer and kills the process. Stating the restriction beats
-offering an argument that is unsafe on one branch.</p>
+<p><code><a href="../reference/log_bessel_k.html">log_bessel_k()</a></code> takes no count. Its hybrid branch calls
+R’s own <code>besselK</code>, which can raise a warning, and a warning
+raised from a worker thread terminates the process.</p>
 </div>
 <div class="section level2">
 <h2 id="summary">Summary<a class="anchor" aria-label="anchor" href="#summary"></a>
@@ -338,20 +357,26 @@ highest analytic order available, never a difference of a
 difference.</li>
 <li>
 <strong>Batched engines.</strong> <code><a href="../reference/quad_vec.html">quad_vec()</a></code> and
-<code><a href="../reference/series_vec.html">series_vec()</a></code> are vectorized over the parameter, take their
-row count from the endpoints, judge convergence on the sum of a row’s
-errors, and return <code>NA</code> for a row whose budget was not
-met.</li>
+<code><a href="../reference/series_vec.html">series_vec()</a></code> are vectorized over the parameter and return
+<code>NA</code> for a row whose budget was not met.
+<code><a href="../reference/quad_vec.html">quad_vec()</a></code> takes its row count from the endpoints and
+judges convergence on the sum of a row’s panel errors;
+<code><a href="../reference/series_vec.html">series_vec()</a></code> takes it from <code>n</code> and retires a row
+when the last block and the estimated tail both fit the budget.</li>
 <li>
 <strong>Special functions.</strong> <code><a href="../reference/mills_ratio.html">mills_ratio()</a></code>,
 <code><a href="../reference/owen_t.html">owen_t()</a></code>, <code><a href="../reference/bessel_i_ratio.html">bessel_i_ratio()</a></code>,
 <code><a href="../reference/log_bessel_i.html">log_bessel_i()</a></code> and <code><a href="../reference/log_bessel_k.html">log_bessel_k()</a></code>, each
-written on the scale where it stays representable, and each returning
-its derivatives where a caller would otherwise recompute them.</li>
+written on the scale where it stays representable.
+<code><a href="../reference/mills_ratio.html">mills_ratio()</a></code> returns its derivative with the value; the
+derivatives of the Bessel functions are separate functions
+(<code><a href="../reference/bessel_i_ratio_d1.html">bessel_i_ratio_d1()</a></code> to <code>_d4()</code>,
+<code><a href="../reference/log_bessel_i_derivs.html">log_bessel_i_derivs()</a></code>,
+<code><a href="../reference/log_bessel_k_derivs.html">log_bessel_k_derivs()</a></code>).</li>
 <li>
 <strong>Enumerations.</strong> <code><a href="../reference/set_partitions.html">set_partitions()</a></code>,
 <code><a href="../reference/tuple_indices.html">tuple_indices()</a></code> and <code><a href="../reference/compositions.html">compositions()</a></code>, one copy
-each for the whole toolkit.</li>
+each for the packages of the toolkit.</li>
 <li>
 <strong>Threads.</strong> <code><a href="../reference/n_threads.html">n_threads()</a></code> is passed as an
 argument, and a kernel’s answer is bit-identical at any count.</li>

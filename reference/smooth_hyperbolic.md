@@ -32,27 +32,27 @@ that squares, and neither a `tau_correction` nor an `exact_radius`.
 \qquad s''(u) = \frac{c}{(u^2 + c)^{3/2}},\$\$
 
 every order a rational function of \\u\\ over a half-integer power, so
-nothing here needs a special function or a branch.
+every order is computed without special functions or branches.
 
-## The cost of the tails
+## The tails
 
 The excess over \\\lvert u\rvert\\ decays only as \\c/(2\lvert
-u\rvert)\\, so the smoothing bias spreads well away from the kink.
-Measured at a transition width of `0.3`, so \\c = 0.09\\: the excess is
-`4.4e-02` at \\u = 1\\ and `1.5e-02` at \\u = 3\\, against `6.7e-05` and
-exactly `0` for
+u\rvert)\\, so the smoothing bias spreads well away from the kink. At a
+transition width of `0.3`, so that \\c = 0.09\\, the excess is `4.4e-02`
+at \\u = 1\\ and `1.5e-02` at \\u = 3\\, against `6.7e-05` and exactly
+`0` for
 [`smooth_probit()`](https://statmodels7.github.io/numericals7/reference/smooth_probit.md)
-at the same width. A fit smoothed this way is perturbed everywhere, not
-only near the break-point.
+at the same width. A fit smoothed this way is therefore perturbed far
+from the break-point as well as near it.
 
-No convolution identity relates \\c\\ to the scale of a random
+There is no convolution identity relating \\c\\ to the scale of a random
 break-point, so `tau_correction` is `NULL` and a consumer reports the
 apparent scale alone.
 
 ## See also
 
 [`abs_smoother()`](https://statmodels7.github.io/numericals7/reference/abs_smoother.md)
-for the contract,
+for the class,
 [`smooth_probit()`](https://statmodels7.github.io/numericals7/reference/smooth_probit.md)
 for the recommended default,
 [`smooth_quintic()`](https://statmodels7.github.io/numericals7/reference/smooth_quintic.md)

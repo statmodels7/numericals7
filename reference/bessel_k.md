@@ -45,9 +45,9 @@ gives `NaN`.
 The computation is R's own: the routine RKBESL of W. J. Cody and L.
 Stoltz, after J. B. Campbell's implementation of Temme's algorithm, as R
 carries it, copied with the warnings R raises from it removed and with
-its work array on the stack rather than in R's memory pool. A warning
-calls into the R API, and R's allocator is not safe to call from a
-worker thread.
+its work array on the stack (allocated with `malloc()` beyond 64 orders)
+instead of in R's memory pool. A warning calls into the R API, and R's
+allocator is not safe to call from a worker thread.
 
 ## References
 

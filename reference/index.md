@@ -2,8 +2,8 @@
 
 ## Enumerations
 
-The combinatorial objects a higher-order chain rule sums over, each in
-one copy so that an enumeration cannot disagree with itself.
+The combinatorial objects over which a higher-order chain rule sums,
+defined once so that every package uses the same ordering.
 
 - [`tuple_indices()`](https://statmodels7.github.io/numericals7/reference/tuple_indices.md)
   : Multi-Indices for Derivatives of a Given Order
@@ -14,9 +14,10 @@ one copy so that an enumeration cannot disagree with itself.
 
 ## Finite differences
 
-One stencil library: weights from the Vandermonde system, offsets sized
-from order and accuracy, a balanced step, and an applicator that never
-composes lower-order differences.
+Finite-difference stencils: weights from the Vandermonde system, offsets
+sized from the order and the accuracy, a step that balances truncation
+against rounding, and an applicator that never composes lower-order
+differences.
 
 - [`fd_weights()`](https://statmodels7.github.io/numericals7/reference/fd_weights.md)
   : Finite-Difference Weights for Any Stencil
@@ -31,7 +32,7 @@ composes lower-order differences.
 
 Integrals and sums vectorized over the parameters: one matrix evaluation
 for many parameter values, adaptivity batched by row, and NA with a
-named row where the requested accuracy cannot be reached.
+warning for a row that does not reach the requested accuracy.
 
 - [`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)
   : Integrate One Function at Many Parameter Values
@@ -43,8 +44,8 @@ named row where the requested accuracy cannot be reached.
 ## Threads
 
 The thread policy of the toolkit, one object passed as an argument from
-the fit entry points down to the compiled kernels. The result does not
-depend on the count, bit for bit.
+the fit entry points down to the compiled kernels. Each kernel returns
+the same bits at any thread count.
 
 - [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
   [`print(`*`<n_threads>`*`)`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
@@ -96,7 +97,7 @@ depend on the count, bit for bit.
 A smooth replacement for the absolute value with its derivatives up to
 order five, from which the smooth sign, step and hinge follow by
 composition. A break-point term smoothed this way has a true Jacobian
-block, and the validator checks a smoother written outside the package.
+block, and the validator checks a user-written smoother.
 
 - [`abs_smoother()`](https://statmodels7.github.io/numericals7/reference/abs_smoother.md)
   : S7 Class for Smoothers of the Absolute Value

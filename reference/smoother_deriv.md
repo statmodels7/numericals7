@@ -32,8 +32,9 @@ smoother_deriv(smoother, u, width = NULL, order = 0L)
 
 - order:
 
-  The derivative order, a whole number from 0 to 5. `0L` by default,
-  which is \\s\\ itself. Anything outside that range is rejected.
+  The derivative order, an integer from 0 to 5; a fractional value is
+  truncated toward zero. `0L` by default, which is \\s\\ itself. A value
+  outside that range is rejected.
 
 ## Value
 
@@ -45,13 +46,14 @@ A vector `width` is one value per point, which is how a per-group width
 arrives: a break-point term with `per_group = TRUE` resolves one width
 per subject and passes the whole vector.
 
-The derivatives are the ones the smoother carries, evaluated directly.
-None is differenced, so order five is as accurate as order zero.
+The derivatives are the functions carried by the smoother, evaluated
+directly. None is obtained by differencing, so order five is as accurate
+as order zero.
 
 ## See also
 
 [`abs_smoother()`](https://statmodels7.github.io/numericals7/reference/abs_smoother.md)
-for the contract,
+for the class,
 [`smoother_width()`](https://statmodels7.github.io/numericals7/reference/smoother_width.md)
 for resolving a width,
 [`check_abs_smoother()`](https://statmodels7.github.io/numericals7/reference/check_abs_smoother.md)

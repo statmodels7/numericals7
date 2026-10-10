@@ -34,8 +34,9 @@ fd_step(x, order, accuracy = 2L, bounds = NULL)
 
 ## Value
 
-A numeric vector of steps the same length as `x`, positive except at a
-point sitting on a finite bound, where it is zero.
+A numeric vector of steps the same length as `x`. A step is positive at
+a point strictly inside `bounds`, zero at a point on a finite bound, and
+negative at a point outside the bounds.
 
 ## Where the balance falls
 
@@ -49,22 +50,24 @@ resolution of its own neighborhood.
 
 At the default accuracy the exponent is \\1/4\\ for a second derivative
 and \\1/6\\ for a fourth, giving steps of about `1.2e-4` and `2.5e-3` at
-\\x = 1\\. A high order wants a *large* step, since rounding is what
-dominates there.
+\\x = 1\\. A higher order uses a larger step, because rounding error
+dominates the total error there.
 
 ## Staying inside the domain
 
-Given `bounds`, the step is shrunk so the farthest node of the stencil
-stays strictly inside: a node outside the domain does not make a
-derivative inaccurate, it makes it `NaN`. The margin is 0.49 of the
-distance to the bound, divided by the reach.
+Given `bounds`, the step is shrunk so that the farthest node of the
+stencil stays strictly inside the domain, because a function evaluated
+outside its domain usually returns `NaN`, and the derivative estimate is
+then `NaN`. The margin is 0.49 of the distance to the bound, divided by
+the reach.
 
-## The one case to guard
+## A point on a bound
 
 A point sitting exactly on a finite bound gets a step of **zero**, and a
-stencil divided by \\h^{d}\\ is then `NaN`. The evaluation point is the
-caller's, so this is not checked here; either keep the point off the
-bound or use a one-sided stencil with a step of your own.
+stencil divided by \\h^{d}\\ is then `NaN`. The function does not check
+the evaluation point. For a point on a bound the caller moves the point
+strictly inside the domain, or applies a one-sided stencil with an
+explicitly chosen step.
 
 ## See also
 

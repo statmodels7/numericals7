@@ -3,13 +3,13 @@
 extension of the 7-point Gauss rule on \([-1, 1]\). One set of nodes
 carries both rules, so a single evaluation of the integrand gives an
 estimate and, from the difference of the two rules, an error for it. An
-adaptive routine reads that error to decide where to refine, and pays
-nothing for it beyond the estimate."><meta property="og:description" content="Returns the nodes and the two sets of weights of the 15-point Kronrod
+adaptive routine uses that error to decide where to refine, and the error
+requires no evaluations of the integrand beyond those of the estimate."><meta property="og:description" content="Returns the nodes and the two sets of weights of the 15-point Kronrod
 extension of the 7-point Gauss rule on \([-1, 1]\). One set of nodes
 carries both rules, so a single evaluation of the integrand gives an
 estimate and, from the difference of the two rules, an error for it. An
-adaptive routine reads that error to decide where to refine, and pays
-nothing for it beyond the estimate."><meta property="og:image" content="https://statmodels7.github.io/numericals7/logo.png"></head><body>
+adaptive routine uses that error to decide where to refine, and the error
+requires no evaluations of the integrand beyond those of the estimate."><meta property="og:image" content="https://statmodels7.github.io/numericals7/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -17,7 +17,7 @@ nothing for it beyond the estimate."><meta property="og:image" content="https://
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.22.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,8 +48,8 @@ nothing for it beyond the estimate."><meta property="og:image" content="https://
 extension of the 7-point Gauss rule on \([-1, 1]\). One set of nodes
 carries both rules, so a single evaluation of the integrand gives an
 estimate and, from the difference of the two rules, an error for it. An
-adaptive routine reads that error to decide where to refine, and pays
-nothing for it beyond the estimate.</p>
+adaptive routine uses that error to decide where to refine, and the error
+requires no evaluations of the integrand beyond those of the estimate.</p>
     </div>
 
     <div class="section level2">
@@ -76,17 +76,17 @@ Kronrod-only nodes.</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The eight Kronrod-only nodes carry a Gauss weight of zero, so both rules are
 formed from one matrix of function values by two weighted sums.</p>
-<p>The constants are QUADPACK's, carried at the precision it prints them. An
-adaptive routine reads the difference of the two rules, and on a constant
-integrand that difference is \(\lvert\sum w_k - \sum w_g\rvert / 2\) of
-the integral on every panel. Transcribed to fifteen decimals, as they were
-before version 0.14.0, the Kronrod weights summed to
-\(2 - 6.0 \times 10^{-15}\), so every error estimate carried a floor of
-\(3.4 \times 10^{-15}\) of the integral that no bisection lowers. At full
-precision both sums are 2 within the rounding of the sum. The tests pin the
-constants by their defining property, that the 7-point rule integrates
-polynomials of degree 13 exactly and the 15-point one degree 22, and pin the
-two sums to a few units in the last place.</p>
+<p>The constants are QUADPACK's, carried at the full precision at which it
+prints them. An adaptive routine uses the difference of the two rules as the
+error, and on a constant integrand that difference is
+\(\lvert\sum w_k - \sum w_g\rvert / 2\) of the integral on every panel.
+With the Kronrod weights rounded to fifteen decimals they sum to
+\(2 - 6.0 \times 10^{-15}\), and every error estimate would carry a floor
+of \(3.4 \times 10^{-15}\) of the integral that no bisection lowers. At
+full precision both sums are 2 within the rounding of the sum. The tests pin
+the constants by their defining property, that the 7-point rule integrates
+polynomials of degree 13 exactly and the 15-point rule those of degree 23,
+and pin the two sums to a few units in the last place.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
@@ -110,8 +110,8 @@ Springer.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> kronrod   gauss </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       2       2 </span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># The Gauss rule lives on eight of the fifteen nodes, so both rules come</span></span></span>
-<span class="r-in"><span><span class="co"># from one set of function values.</span></span></span>
+<span class="r-in"><span><span class="co"># The Gauss rule uses seven of the fifteen nodes (the other eight carry a</span></span></span>
+<span class="r-in"><span><span class="co"># Gauss weight of zero), so both rules come from one set of function values.</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">r</span><span class="op">$</span><span class="va">wg</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 8</span>
 <span class="r-in"><span></span></span>

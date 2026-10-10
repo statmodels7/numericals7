@@ -3,8 +3,9 @@
 Returns the worker-process count an
 [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
 object carries, as a single integer. A policy stored before `workers`
-existed has no such component, and this reader answers 1 for it, so an
-object saved with an old fit keeps meaning what it meant.
+existed has no such component, and this function returns 1 for it, so
+that an object saved with an earlier fit is read as sequential across
+folds.
 
 ## Usage
 
@@ -18,7 +19,8 @@ worker_count(x)
 
   An object returned by
   [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md).
-  Anything else throws, with a message naming the constructor.
+  Any other value signals an error with a message naming the
+  constructor.
 
 ## Value
 

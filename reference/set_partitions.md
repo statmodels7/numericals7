@@ -16,9 +16,9 @@ set_partitions(n)
 
 - n:
 
-  A positive whole number. The recursion has no base case below one, so
-  zero and negative values recurse until the stack overflows instead of
-  throwing.
+  A positive whole number. The argument is not checked, and the
+  recursion has no base case below one, so a zero, negative or
+  fractional value recurses until R signals a stack overflow error.
 
 ## Value
 
@@ -34,13 +34,13 @@ so the three enumerations agree and a block may be compared against
 
 ## How they are built
 
-By the standard recursion. The partitions of `1:n` come from those of
-`1:(n-1)` by putting \\n\\ into each existing block in turn, and then
-into a block of its own.
+The partitions are built by the standard recursion: the partitions of
+`1:n` come from those of `1:(n-1)` by putting \\n\\ into each existing
+block in turn, and then into a block of its own.
 
 The cost is therefore \\B_n\\, which grows faster than any exponential:
-\\B_8\\ is 4140 and \\B\_{10}\\ is 115975. Four is as high as the
-toolkit's derivatives go, where the sum has fifteen terms.
+\\B_8\\ is 4140 and \\B\_{10}\\ is 115975. A chain rule of order four
+has fifteen terms, and one of order five has 52.
 
 ## The blocks index positions
 
@@ -51,7 +51,7 @@ times in one variable and once in another sums over the same fifteen
 partitions as four distinct variables do, and what differs is which
 derivative each block names.
 [`tuple_indices()`](https://statmodels7.github.io/numericals7/reference/tuple_indices.md)
-supplies the multi-index the positions point into.
+supplies the multi-index into which the positions point.
 
 ## References
 
@@ -62,7 +62,7 @@ Society* **348**, 503-520.
 ## See also
 
 [`tuple_indices()`](https://statmodels7.github.io/numericals7/reference/tuple_indices.md)
-for the multi-indices the blocks index into, and
+for the multi-indices into which the blocks index, and
 [`compositions()`](https://statmodels7.github.io/numericals7/reference/compositions.md)
 for the ordered sums.
 

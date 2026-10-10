@@ -56,33 +56,37 @@ fd_derivative(
 
   `"central"` away from boundaries, `"forward"` or `"backward"` where a
   symmetric stencil would leave the domain. All three use \\2r + 1\\
-  nodes, so a one-sided estimate costs the same and is one order less
-  accurate.
+  nodes. At an even order a one-sided estimate costs the same as the
+  central one and is one order less accurate; at an odd order it has the
+  same order of accuracy and costs one more evaluation, because the
+  central stencil has a zero weight at the origin.
 
 ## Value
 
 A numeric vector of the same length as `x`.
 
-## One stencil, never nested
+## Single stencils and nested differences
 
-This is the applicator every numerical fallback in the toolkit speaks
-through, and it enforces the rule they share: one stencil of the order
-requested, never a composition of lower-order differences. Each
-numerical differentiation multiplies the error of the one before it, so
-a fourth derivative reached by four nested first differences is noise.
+The numerical fallbacks of the toolkit's packages apply their stencils
+through this function. It applies one stencil of the requested order and
+never composes lower-order differences. Each numerical differentiation
+multiplies the error of the one before it, so a fourth derivative
+reached by four nested first differences, each taken at the step chosen
+for a first derivative, is dominated by rounding error.
 
-## What it deliberately leaves to the caller
+## Choices left to the caller
 
-The policy around the stencil. Which order to fall back from, when a
-reference can be trusted, and what to do at a domain boundary beyond
-keeping the nodes inside are all decisions that need to know what is
-being differentiated, and this function does not.
+The policy around the stencil is not part of this function. The order
+from which to fall back, the conditions under which a reference value is
+reliable, and the treatment of a domain boundary beyond keeping the
+nodes inside all depend on the function being differentiated, and
+`fd_derivative()` receives only its values.
 
 ## Vectorization
 
 `f` must be vectorized in its argument. `x` and `h` may be vectors, and
-the stencil is applied elementwise, so a whole vector of points costs
-\\2r + 1\\ calls to `f` and no more.
+the stencil is applied elementwise, so a whole vector of points costs at
+most \\2r + 1\\ calls to `f`, one per node with a nonzero weight.
 
 ## See also
 
@@ -105,8 +109,8 @@ c(acc2 = fd_derivative(sin, 0.7, 1) - cos(0.7),
 #>         acc2         acc4 
 #> 3.798628e-12 1.665335e-14 
 
-# At a boundary, one-sided with a step that keeps the nodes inside. The
-# central stencil would reach below zero, where sqrt is not defined.
+# At a boundary, a one-sided stencil with a step that keeps the nodes
+# inside the domain.
 fd_derivative(sqrt, 1e-4, order = 1, side = "forward",
               h = fd_step(1e-4, 1, bounds = c(0, Inf)))
 #> [1] 49.9589

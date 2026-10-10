@@ -1,11 +1,11 @@
 # The Smallest Relative Budget a Quadrature Rule Can Meet
 
-Returns \\\lvert\sum w_k - \sum w_g\rvert / 2\\ plus one unit in the
-last place: the relative error estimate an embedded pair gives on a
+Returns \\\lvert\sum w_k - \sum w_g\rvert / 2\\ plus the machine
+epsilon: the relative error estimate that an embedded pair gives on a
 constant integrand, on every panel, together with the rounding of the
 two sums.
 [`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)
-refuses a relative budget below it when no absolute budget is given.
+rejects a relative budget below it when no absolute budget is given.
 
 ## Usage
 
@@ -28,7 +28,7 @@ A single positive number.
 ## Details
 
 On a constant integrand both rules are exact up to their weight sums, so
-the difference of the two estimates, which an adaptive routine reads as
+the difference of the two estimates, which an adaptive routine uses as
 the error, is the difference of the sums scaled by the panel's
 half-width. Relative to the integral it is the same on every panel, and
 bisection does not lower it. For
@@ -36,9 +36,8 @@ bisection does not lower it. For
 the two sums are 2 up to their rounding, and the value is \\2.2 \times
 10^{-16}\\ where the computed sums agree to the last bit, as on x86_64,
 and \\4.4 \times 10^{-16}\\ where they differ by one unit in the last
-place of 2, as on the arm64 build of R for macOS; with the
-fifteen-decimal constants this package carried before 0.14.0 it was
-\\3.7 \times 10^{-15}\\.
+place of 2, as on the arm64 build of R for macOS. With the Kronrod
+weights rounded to fifteen decimals it would be \\3.7 \times 10^{-15}\\.
 
 ## See also
 

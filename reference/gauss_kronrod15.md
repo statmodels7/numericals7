@@ -4,8 +4,9 @@ Returns the nodes and the two sets of weights of the 15-point Kronrod
 extension of the 7-point Gauss rule on \\\[-1, 1\]\\. One set of nodes
 carries both rules, so a single evaluation of the integrand gives an
 estimate and, from the difference of the two rules, an error for it. An
-adaptive routine reads that error to decide where to refine, and pays
-nothing for it beyond the estimate.
+adaptive routine uses that error to decide where to refine, and the
+error requires no evaluations of the integrand beyond those of the
+estimate.
 
 ## Usage
 
@@ -34,17 +35,17 @@ A list of three numeric vectors, each of length 15:
 The eight Kronrod-only nodes carry a Gauss weight of zero, so both rules
 are formed from one matrix of function values by two weighted sums.
 
-The constants are QUADPACK's, carried at the precision it prints them.
-An adaptive routine reads the difference of the two rules, and on a
-constant integrand that difference is \\\lvert\sum w_k - \sum w_g\rvert
-/ 2\\ of the integral on every panel. Transcribed to fifteen decimals,
-as they were before version 0.14.0, the Kronrod weights summed to \\2 -
-6.0 \times 10^{-15}\\, so every error estimate carried a floor of \\3.4
-\times 10^{-15}\\ of the integral that no bisection lowers. At full
-precision both sums are 2 within the rounding of the sum. The tests pin
-the constants by their defining property, that the 7-point rule
-integrates polynomials of degree 13 exactly and the 15-point one degree
-22, and pin the two sums to a few units in the last place.
+The constants are QUADPACK's, carried at the full precision at which it
+prints them. An adaptive routine uses the difference of the two rules as
+the error, and on a constant integrand that difference is \\\lvert\sum
+w_k - \sum w_g\rvert / 2\\ of the integral on every panel. With the
+Kronrod weights rounded to fifteen decimals they sum to \\2 - 6.0 \times
+10^{-15}\\, and every error estimate would carry a floor of \\3.4 \times
+10^{-15}\\ of the integral that no bisection lowers. At full precision
+both sums are 2 within the rounding of the sum. The tests pin the
+constants by their defining property, that the 7-point rule integrates
+polynomials of degree 13 exactly and the 15-point rule those of degree
+23, and pin the two sums to a few units in the last place.
 
 ## References
 
@@ -70,8 +71,8 @@ c(kronrod = sum(r$wk), gauss = sum(r$wg))
 #> kronrod   gauss 
 #>       2       2 
 
-# The Gauss rule lives on eight of the fifteen nodes, so both rules come
-# from one set of function values.
+# The Gauss rule uses seven of the fifteen nodes (the other eight carry a
+# Gauss weight of zero), so both rules come from one set of function values.
 sum(r$wg == 0)
 #> [1] 8
 

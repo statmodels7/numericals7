@@ -4,8 +4,8 @@ Returns the thread count an
 [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
 object carries, as a single integer. An entry point calls it once to
 validate the `threads` argument it was given, then passes the plain
-count down to the kernels, which take a number and know nothing about
-the policy object.
+count down to the kernels, which receive a number and not the policy
+object.
 
 ## Usage
 
@@ -19,9 +19,9 @@ thread_count(x)
 
   An object returned by
   [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md).
-  Anything else throws, with a message naming the constructor, because a
-  bare number reaching an entry point is the likely mistake and would
-  otherwise be read as a policy.
+  Any other value signals an error with a message naming the
+  constructor, because a bare number passed to an entry point is the
+  likely mistake and would otherwise be read as a policy.
 
 ## Value
 

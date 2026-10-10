@@ -3,8 +3,8 @@
 Compares a smoother against the properties every smoother of \\\lvert
 u\rvert\\ must have, and each derivative order against one numerical
 differentiation of the analytic order below it. Returns one row per
-check with the worst error and a pass or fail. Write a smoother of your
-own and this says whether its five derivatives are right.
+check with the worst error and a pass or fail. Applied to a user-written
+smoother, it verifies the five derivatives.
 
 ## Usage
 
@@ -24,16 +24,16 @@ check_abs_smoother(smoother, width = NULL, tol = 1e-06, verbose = TRUE)
 
   The width to check at, a single positive number, or `NULL` (the
   default) for the smoother's own. A smoother carrying none is checked
-  at `0.5`, a scale chosen to exercise the formulas and saying nothing
-  about any data.
+  at `0.5`, a scale chosen to exercise the formulas and unrelated to any
+  data.
 
 - tol:
 
   The relative error above which a row is reported as `FAILED`. A single
-  positive number, `1e-6` by default. The worst error the three shipped
-  smoothers reach is `1.3e-10`, four orders under it, so the default
-  separates a correct smoother from one whose derivative is wrong in its
-  fourth digit.
+  positive number, `1e-6` by default. The errors of the three shipped
+  smoothers are of order `1e-10`, about four orders of magnitude below
+  it, so the default separates a correct smoother from one whose
+  derivative is wrong in its fourth digit.
 
 - verbose:
 
@@ -67,8 +67,8 @@ Ten checks, and two more for a smoother declaring a scale correction:
 Order \\k\\ goes against numDeriv applied **once** to the analytic order
 \\k-1\\, so a wrong derivative is caught against an independent route
 while the reference never degenerates into a difference of differences.
-Over the three shipped smoothers at four widths each, every row passes
-and the worst error is `1.3e-10`.
+For the three shipped smoothers every row passes, with errors of order
+`1e-10`.
 
 The tail row is deliberately loose, at a fifth of the excess at the
 kink, because
@@ -82,18 +82,18 @@ widths out.
 The grid spans the transition and the tails, placed by the smoother's
 own intrinsic scale \\s(0)\\, which is of order the transition width for
 any smoother of the absolute value, so no reading of what the width
-parameter means is needed. Every point sits off zero and off the seam: a
-piecewise smoother has measure-zero points where a one-sided derivative
-is read, and a difference straddling one compares nothing.
+parameter means is needed. Every point sits off zero and off the seam,
+because a piecewise smoother has isolated points at which only one-sided
+derivatives exist, and a difference that straddles such a point is
+meaningless.
 
-## What it catches
+## An example of a detected error
 
-This is not decoration. Writing
-[`smooth_quintic()`](https://statmodels7.github.io/numericals7/reference/smooth_quintic.md),
-a factor-2 error in its own \\s'''\\ was caught here before anything
-shipped: the order-3 row read a relative `0.5` and the order-4 row
-`1.0`, the wrong third derivative becoming the reference for the fourth.
-The examples below reproduce it.
+A factor-2 error in the third derivative of
+[`smooth_quintic()`](https://statmodels7.github.io/numericals7/reference/smooth_quintic.md)
+gives a relative error of `0.5` in the order-3 row and of `1.0` in the
+order-4 row, because the wrong third derivative becomes the reference
+for the fourth. The examples below reproduce it.
 
 ## Errors
 
@@ -103,7 +103,7 @@ function stops when it is not installed.
 ## See also
 
 [`abs_smoother()`](https://statmodels7.github.io/numericals7/reference/abs_smoother.md)
-for the contract being checked,
+for the class being checked,
 [`smoother_deriv()`](https://statmodels7.github.io/numericals7/reference/smoother_deriv.md)
 for the derivatives it reads, `penalties7::check_penalty()` for the
 sibling on a penalty.

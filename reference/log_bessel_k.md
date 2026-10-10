@@ -39,11 +39,13 @@ The large-argument and large-order branches follow Plesner, Sørensen and
 Hauberg (2024) exactly as in
 [`log_bessel_i()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i.md).
 At moderate inputs the exponentially scaled
-[`base::besselK()`](https://rdrr.io/r/base/Bessel.html) is
-machine-precision exact wherever it does not overflow and one call beats
-a quadrature, so it serves that region; the corner where the scaled
-value itself overflows (a small argument with the order near the
-switching boundary) goes through the integral representation of Rothwell
+[`base::besselK()`](https://rdrr.io/r/base/Bessel.html) is exact to
+machine precision wherever it does not overflow, and one call is cheaper
+than a quadrature, so it serves that region. The corner where the scaled
+value overflows or comes close to it, taken as \\\nu \log(2/x) +
+\log\Gamma(\max(\nu, 1/2)) \> 690\\ (a very small argument at an order
+below the boundary of the uniform expansion, such as \\x = 10^{-300}\\
+at order 2), goes through the integral representation of Rothwell
 (2006), evaluated on the log scale over a composite Simpson rule.
 
 ## References

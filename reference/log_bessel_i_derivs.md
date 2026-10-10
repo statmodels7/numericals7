@@ -5,8 +5,9 @@ with respect to the *argument*. The first is the ratio identity \\(\log
 I\_\nu)' = \nu/x + I\_{\nu+1}/I\_\nu\\, with the ratio formed as the
 exponential of a difference of logarithms and therefore finite wherever
 the logarithms are. The higher orders follow from the modified Bessel
-equation and cost no further Bessel evaluations, so the whole table is
-the price of two.
+equation and need no further Bessel evaluations, so the value and the
+four derivatives require two evaluations of \\\log I\\, at the orders
+\\\nu\\ and \\\nu + 1\\.
 
 ## Usage
 
@@ -69,5 +70,5 @@ log_bessel_i_derivs(2, 0.5)$d1 - (1 / tanh(2) - 1 / (2 * 2))
 # Elsewhere, against one stencil on the value itself.
 log_bessel_i_derivs(3, 2)$d1 -
   fd_derivative(function(z) log_bessel_i(z, 2), 3, 1, accuracy = 4)
-#> [1] 5.262457e-14
+#> [1] 7.771561e-14
 ```

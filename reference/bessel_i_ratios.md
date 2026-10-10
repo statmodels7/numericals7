@@ -1,9 +1,9 @@
 # The Sequence of Modified Bessel Ratios
 
 Computes \\I_j(\kappa)/I_0(\kappa)\\ for \\j = 1, \dots, m\\ by Miller's
-backward recurrence, vectorized over \\\kappa\\. A series in these
-ratios is what a von Mises distribution function costs, so getting all
-\\m\\ of them for the price of one matters.
+backward recurrence, vectorized over \\\kappa\\. The von Mises
+distribution function is a series in these ratios, and the recurrence
+returns all \\m\\ of them in one pass.
 
 ## Usage
 
@@ -27,7 +27,7 @@ bessel_i_ratios(kappa, m)
 A numeric matrix of `length(kappa)` rows and `m` columns. Entry \\(i,
 j)\\ is \\I_j(\kappa_i)/I_0(\kappa_i)\\, decreasing along a row.
 
-## Why the recurrence runs backwards
+## The backward recurrence
 
 The three-term recurrence \\I\_{j-1} - I\_{j+1} = (2j/\kappa) I_j\\ has
 two solutions, one growing and one decaying. Run upwards it should
@@ -35,24 +35,25 @@ follow the decaying one and instead follows rounding error into the
 growing one, so it is unstable. Run downwards the roles swap and it is
 stable, which is Miller's algorithm. The ratios \\r_j = I_j/I\_{j-1}\\
 satisfy \\r_j = 1/(2j/\kappa + r\_{j+1})\\, started from \\r\_{n_0+1} =
-0\\ at an index far enough above both \\m\\ and \\\kappa\\; the answer
-is their running product, and the normalization by \\I_0\\ is free
-because the product starts there.
+0\\ at an index far enough above both \\m\\ and \\\kappa\\; the result
+is their running product, and the normalization by \\I_0\\ requires no
+extra work because the product starts there.
 
 ## Cost
 
-The loop runs over the series index, never over the data, so a vector of
-\\\kappa\\ costs the same number of vectorized steps as a single value.
-A series over these ratios therefore costs less than a quadrature per
-observation, which is why the von Mises distribution function stopped
-being one.
+The recurrence loop runs over the series index and is vectorized over
+the data, so the number of steps depends on \\m\\ and on the largest
+\\\kappa\\, and not on the length of the vector. For \\m \> 1\\ the
+running products are then formed row by row. A series over these ratios
+therefore costs less than one quadrature per observation, and the von
+Mises distribution function is evaluated this way.
 
 [`bessel_i_ratio()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio.md)
-is the first of them and carries an asymptotic series from \\\kappa =
-30\\. There is no such branch here, and none is wanted: the recurrence
+is the first of these ratios and switches to an asymptotic series from
+\\\kappa = 30\\. No such branch is implemented here: the recurrence
 needs a starting index above \\\kappa\\, so its cost grows with the
-concentration, and a caller that far out is already past the point where
-a series in these ratios converges in any useful number of terms.
+concentration, and at such concentrations a series in these ratios does
+not converge in a useful number of terms.
 
 ## See also
 

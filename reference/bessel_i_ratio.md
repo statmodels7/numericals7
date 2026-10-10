@@ -4,7 +4,7 @@ Computes \\A(\kappa) = I_1(\kappa)/I_0(\kappa)\\, a strictly increasing
 bijection from \\(0, \infty)\\ onto \\(0, 1)\\. For a von Mises
 distribution it is the mean resultant length, the expected cosine of the
 deviation from the mean direction, so it is the map between a
-concentration and the moment a method of moments estimates.
+concentration and the moment that a method of moments estimates.
 
 ## Usage
 
@@ -32,7 +32,7 @@ in its argument.
 ## Details
 
 The ratio is evaluated in compiled code without the Bessel functions
-themselves, which overflow from about \\\kappa = 700\\ and,
+themselves, which overflow from about \\\kappa = 709\\ and,
 exponentially scaled, underflow between \\10^5\\ and \\10^6\\. Below
 \\\kappa = 0.5\\ it is the power series of \\A\\ at zero; from there to
 \\\kappa = 30\\ it is the continued fraction \\A = \kappa/(2 +

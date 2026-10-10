@@ -19,7 +19,7 @@ for the function and 2 for the scaled function."><meta property="og:image" conte
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.22.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -93,7 +93,8 @@ computation may use. Defaults to <code>1L</code>.</p></dd>
     <p>The computation is R's own: the routine RKBESL of W. J. Cody and L. Stoltz,
 after J. B. Campbell's implementation of Temme's algorithm, as R carries it,
 copied with the warnings R raises from it removed and with its work array
-on the stack rather than in R's memory pool. A warning calls into the R API,
+on the stack (allocated with <code>malloc()</code> beyond 64 orders) instead of in R's
+memory pool. A warning calls into the R API,
 and R's allocator is not safe to call from a worker thread.</p>
     </div>
     <div class="section level2">

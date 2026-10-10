@@ -4,14 +4,16 @@ respect to the argument. The first is the ratio identity
 \((\log I_\nu)' = \nu/x + I_{\nu+1}/I_\nu\), with the ratio formed as the
 exponential of a difference of logarithms and therefore finite wherever the
 logarithms are. The higher orders follow from the modified Bessel equation
-and cost no further Bessel evaluations, so the whole table is the price of
-two."><meta property="og:description" content="Computes \(\log I_\nu(x)\) together with its first four derivatives with
+and need no further Bessel evaluations, so the value and the four
+derivatives require two evaluations of \(\log I\), at the orders \(\nu\)
+and \(\nu + 1\)."><meta property="og:description" content="Computes \(\log I_\nu(x)\) together with its first four derivatives with
 respect to the argument. The first is the ratio identity
 \((\log I_\nu)' = \nu/x + I_{\nu+1}/I_\nu\), with the ratio formed as the
 exponential of a difference of logarithms and therefore finite wherever the
 logarithms are. The higher orders follow from the modified Bessel equation
-and cost no further Bessel evaluations, so the whole table is the price of
-two."><meta property="og:image" content="https://statmodels7.github.io/numericals7/logo.png"></head><body>
+and need no further Bessel evaluations, so the value and the four
+derivatives require two evaluations of \(\log I\), at the orders \(\nu\)
+and \(\nu + 1\)."><meta property="og:image" content="https://statmodels7.github.io/numericals7/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -19,7 +21,7 @@ two."><meta property="og:image" content="https://statmodels7.github.io/numerical
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.22.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -51,8 +53,9 @@ respect to the <em>argument</em>. The first is the ratio identity
 \((\log I_\nu)' = \nu/x + I_{\nu+1}/I_\nu\), with the ratio formed as the
 exponential of a difference of logarithms and therefore finite wherever the
 logarithms are. The higher orders follow from the modified Bessel equation
-and cost no further Bessel evaluations, so the whole table is the price of
-two.</p>
+and need no further Bessel evaluations, so the value and the four
+derivatives require two evaluations of \(\log I\), at the orders \(\nu\)
+and \(\nu + 1\).</p>
     </div>
 
     <div class="section level2">
@@ -114,7 +117,7 @@ Supercomputing (ICS '24)</em>. arXiv:2409.08729.</p>
 <span class="r-in"><span><span class="co"># Elsewhere, against one stencil on the value itself.</span></span></span>
 <span class="r-in"><span><span class="fu">log_bessel_i_derivs</span><span class="op">(</span><span class="fl">3</span>, <span class="fl">2</span><span class="op">)</span><span class="op">$</span><span class="va">d1</span> <span class="op">-</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="fd_derivative.html">fd_derivative</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">z</span><span class="op">)</span> <span class="fu"><a href="log_bessel_i.html">log_bessel_i</a></span><span class="op">(</span><span class="va">z</span>, <span class="fl">2</span><span class="op">)</span>, <span class="fl">3</span>, <span class="fl">1</span>, accuracy <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 5.262457e-14</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 7.771561e-14</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

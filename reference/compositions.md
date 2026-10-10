@@ -3,7 +3,7 @@
 Enumerates the weak compositions of \\n\\ into \\k\\ parts: every vector
 of \\k\\ non-negative whole numbers summing to \\n\\, returned one per
 row of an integer matrix. *Weak* means a part may be zero, so the set is
-the whole lattice simplex of counts and includes its faces. There are
+the whole simplex of integer counts and includes its faces. There are
 \\\binom{n + k - 1}{k - 1}\\ rows.
 
 ## Usage
@@ -17,13 +17,13 @@ compositions(n, k)
 - n:
 
   The total, a non-negative whole number. Neither argument is validated.
-  A negative `n` returns a matrix that answers no question, since the
-  recursion walks `0:n` and that sequence runs downwards.
+  A negative `n` returns a matrix whose rows contain negative parts,
+  since the recursion walks `0:n` and that sequence runs downwards.
 
 - k:
 
-  The number of parts, a positive whole number. Zero recurses until the
-  stack overflows.
+  The number of parts, a positive whole number. Zero recurses until R
+  signals an infinite-recursion error.
 
 ## Value
 
@@ -49,12 +49,13 @@ The whole matrix is materialized and the count grows quickly, which
 bounds the practical size: \\n = 20\\ with \\k = 5\\ is 10626 rows, and
 the same \\n\\ with \\k = 10\\ is 10015005.
 
-## Where the set turns up
+## Uses of the set
 
-It is exactly the support of a multinomial with total \\n\\ over \\k\\
-categories, and of any other distribution on a fixed total. An
-expectation under such a law is therefore a finite sum over these rows,
-evaluated exactly, where a continuous family would need a quadrature.
+It is the support of a multinomial with total \\n\\ over \\k\\
+categories with positive probabilities, and it contains the support of
+any other distribution on a fixed total. An expectation under such a law
+is therefore a finite sum over these rows, evaluated exactly, where a
+continuous family would need a quadrature.
 
 ## See also
 

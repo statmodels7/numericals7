@@ -1,8 +1,9 @@
 # The Mills Ratio and Its Derivative
 
-Returns \\R(t) = \phi(t)/\Phi(t)\\ and \\R'(t) = -R(t)\\t + R(t)\\\\,
-the two quantities every derivative of a skew normal log-density is
-built from.
+Returns \\R(t) = \phi(t)/\Phi(t)\\, often called the inverse Mills
+ratio, and its derivative \\R'(t) = -R(t)\\t + R(t)\\\\. Every
+derivative of a skew normal log-density is built from these two
+quantities.
 
 ## Usage
 
@@ -14,8 +15,9 @@ mills_ratio(t)
 
 - t:
 
-  A numeric vector of any values, the whole real line included. No
-  argument is out of range and none is special-cased.
+  A numeric vector. Large finite values of either sign are handled on
+  the log scale and are not special-cased. An infinite value gives `NaN`
+  in `dr`, and `-Inf` gives `NaN` in `r` as well.
 
 ## Value
 
@@ -24,7 +26,8 @@ A list of two numeric vectors, each the length of `t`:
 - `r`:
 
   the ratio \\R(t) = \phi(t)/\Phi(t)\\, positive and decreasing,
-  asymptotic to \\-t\\ as \\t \to -\infty\\.
+  asymptotic to \\-t\\ as \\t \to -\infty\\. In double precision it
+  underflows to zero above about \\t = 38.6\\.
 
 - `dr`:
 

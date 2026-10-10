@@ -15,7 +15,7 @@ step with fd_step()."><meta property="og:image" content="https://statmodels7.git
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.22.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,8 +94,10 @@ derivatives.</p></dd>
 <dt id="arg-side">side<a class="anchor" aria-label="anchor" href="#arg-side"></a></dt>
 <dd><p><code>"central"</code> away from boundaries, <code>"forward"</code> or <code>"backward"</code>
 where a symmetric stencil would leave the domain. All three use
-\(2r + 1\) nodes, so a one-sided estimate costs the same and is one order
-less accurate.</p></dd>
+\(2r + 1\) nodes. At an even order a one-sided estimate costs the same as
+the central one and is one order less accurate; at an odd order it has the
+same order of accuracy and costs one more evaluation, because the central
+stencil has a zero weight at the origin.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -103,25 +105,27 @@ less accurate.</p></dd>
     <p>A numeric vector of the same length as <code>x</code>.</p>
     </div>
     <div class="section level2">
-    <h2 id="one-stencil-never-nested">One stencil, never nested<a class="anchor" aria-label="anchor" href="#one-stencil-never-nested"></a></h2>
-    <p>This is the applicator every numerical fallback in the toolkit speaks
-through, and it enforces the rule they share: one stencil of the order
-requested, never a composition of lower-order differences. Each numerical
-differentiation multiplies the error of the one before it, so a fourth
-derivative reached by four nested first differences is noise.</p>
+    <h2 id="single-stencils-and-nested-differences">Single stencils and nested differences<a class="anchor" aria-label="anchor" href="#single-stencils-and-nested-differences"></a></h2>
+    <p>The numerical fallbacks of the toolkit's packages apply their stencils
+through this function. It applies one stencil of the requested order and
+never composes lower-order differences. Each numerical differentiation
+multiplies the error of the one before it, so a fourth derivative reached by
+four nested first differences, each taken at the step chosen for a first
+derivative, is dominated by rounding error.</p>
     </div>
     <div class="section level2">
-    <h2 id="what-it-deliberately-leaves-to-the-caller">What it deliberately leaves to the caller<a class="anchor" aria-label="anchor" href="#what-it-deliberately-leaves-to-the-caller"></a></h2>
-    <p>The policy around the stencil. Which order to fall back from, when a
-reference can be trusted, and what to do at a domain boundary beyond keeping
-the nodes inside are all decisions that need to know what is being
-differentiated, and this function does not.</p>
+    <h2 id="choices-left-to-the-caller">Choices left to the caller<a class="anchor" aria-label="anchor" href="#choices-left-to-the-caller"></a></h2>
+    <p>The policy around the stencil is not part of this function. The order from
+which to fall back, the conditions under which a reference value is
+reliable, and the treatment of a domain boundary beyond keeping the nodes
+inside all depend on the function being differentiated, and <code>fd_derivative()</code>
+receives only its values.</p>
     </div>
     <div class="section level2">
     <h2 id="vectorization">Vectorization<a class="anchor" aria-label="anchor" href="#vectorization"></a></h2>
     <p><code>f</code> must be vectorized in its argument. <code>x</code> and <code>h</code> may be vectors, and the
-stencil is applied elementwise, so a whole vector of points costs
-\(2r + 1\) calls to <code>f</code> and no more.</p>
+stencil is applied elementwise, so a whole vector of points costs at most
+\(2r + 1\) calls to <code>f</code>, one per node with a nonzero weight.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
@@ -141,8 +145,8 @@ this assembles.</p></div>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         acc2         acc4 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3.798628e-12 1.665335e-14 </span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># At a boundary, one-sided with a step that keeps the nodes inside. The</span></span></span>
-<span class="r-in"><span><span class="co"># central stencil would reach below zero, where sqrt is not defined.</span></span></span>
+<span class="r-in"><span><span class="co"># At a boundary, a one-sided stencil with a step that keeps the nodes</span></span></span>
+<span class="r-in"><span><span class="co"># inside the domain.</span></span></span>
 <span class="r-in"><span><span class="fu">fd_derivative</span><span class="op">(</span><span class="va">sqrt</span>, <span class="fl">1e-4</span>, order <span class="op">=</span> <span class="fl">1</span>, side <span class="op">=</span> <span class="st">"forward"</span>,</span></span>
 <span class="r-in"><span>              h <span class="op">=</span> <span class="fu"><a href="fd_step.html">fd_step</a></span><span class="op">(</span><span class="fl">1e-4</span>, <span class="fl">1</span>, bounds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 49.9589</span>

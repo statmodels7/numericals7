@@ -4,8 +4,8 @@ Enumerates the multi-indices that key a list of partial derivatives:
 every non-decreasing tuple \\(i_1 \le \cdots \le i_k)\\ drawn from
 `1:d`, where \\k\\ is the derivative order and \\d\\ the number of
 variables. There is one tuple per distinct partial derivative, because a
-mixed partial does not depend on the order the variables are
-differentiated in, so the count is \\\binom{d + k - 1}{k}\\.
+mixed partial does not depend on the order in which the variables are
+differentiated, so the count is \\\binom{d + k - 1}{k}\\.
 
 ## Usage
 
@@ -18,31 +18,33 @@ tuple_indices(d, order = 2L)
 - d:
 
   The number of variables, a non-negative whole number. Zero gives an
-  empty list. A negative value throws, from
-  [`seq_len()`](https://rdrr.io/r/base/seq.html), with a message about
-  coercion to a non-negative integer.
+  empty list. A negative value signals an error: at orders one and two
+  it comes from [`seq_len()`](https://rdrr.io/r/base/seq.html) and
+  concerns coercion to a non-negative integer, and at orders three and
+  four it comes from
+  [`utils::combn()`](https://rdrr.io/r/utils/combn.html).
 
 - order:
 
-  The derivative order \\k\\, one of `1`, `2`, `3` or `4`. Anything else
-  throws: the enumeration is written out only that far, because a fourth
-  derivative is as high as the toolkit carries.
+  The derivative order \\k\\, one of `1`, `2`, `3` or `4`. Any other
+  value signals an error, because the enumeration is written out only to
+  order four.
 
 ## Value
 
 A list of \\\binom{d + k - 1}{k}\\ integer vectors, each of length
 `order`, each non-decreasing. An empty list when `d` is zero.
 
-## The ordering is part of the interface
+## The ordering
 
 At order two the diagonal comes first, \\(1,1), (2,2), \dots, (d,d)\\,
-and the off-diagonal pairs follow in lexicographic order. That is the
-order a Hessian consumer indexes by. At orders three and four the
-enumeration is plain lexicographic over non-decreasing tuples.
+and the off-diagonal pairs follow in lexicographic order, which is the
+order used to index a Hessian. At orders three and four the enumeration
+is plain lexicographic over non-decreasing tuples.
 
 Every object in the toolkit holding derivatives over \\d\\ variables
-keys its components by this enumeration, so two of them meet without
-either being reordered. Treat the order as fixed.
+keys its components by this enumeration, so two such objects can be
+combined without reordering either. The order is fixed.
 
 ## Counts
 
@@ -54,7 +56,7 @@ the number of multisets of size \\k\\ drawn from \\d\\ symbols. At \\d =
 ## See also
 
 [`set_partitions()`](https://statmodels7.github.io/numericals7/reference/set_partitions.md),
-the other enumeration a higher-order chain rule needs, and
+the other enumeration that a higher-order chain rule needs, and
 [`compositions()`](https://statmodels7.github.io/numericals7/reference/compositions.md)
 for the ordered sums.
 

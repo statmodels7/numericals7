@@ -8,10 +8,10 @@ primitive the toolkit uses is generated from the absolute value:
 \mathbb{1}(u \geq 0) = \frac{1 + \operatorname{sign}(u)}{2}, \qquad
 (u)\_{+} = \frac{u + \lvert u\rvert}{2},\$\$
 
-so one contract serves them all. The smooth sign is \\s'\\, the smooth
-step \\(1 + s'(u))/2\\ and the smooth hinge \\(u + s(u))/2\\ follow by
-composition, and a consumer that replaces \\\lvert u\rvert\\ by \\s(u)\\
-has replaced every one of them consistently.
+so a single object of this class serves all of them. The smooth sign is
+\\s'\\, the smooth step \\(1 + s'(u))/2\\ and the smooth hinge \\(u +
+s(u))/2\\ follow by composition, and a consumer that replaces \\\lvert
+u\rvert\\ by \\s(u)\\ replaces every one of them consistently.
 
 ## Usage
 
@@ -79,34 +79,36 @@ abs_smoother(
 An S7 object of class `abs_smoother` carrying the eight properties
 above.
 
-## What a smoother buys
+## Uses of a smoother
 
 A break-point term smoothed this way becomes an ordinary nonlinear term
 whose design block is the true Jacobian, so a random or penalized
-development of its break-points becomes fittable. A kinked penalty
-smoothed this way becomes a proper separable one, at the price of the
-exact zeros the kink produced.
+development of its break-points can be fitted. A kinked penalty smoothed
+this way becomes a smooth separable penalty, and the exact zeros
+produced by the kink are lost.
 
-## The derivatives are functions
+## The derivatives as functions
 
-They are functions and not expressions. A piecewise smoother, the
-quintic here, has branches that
-[`stats::deriv()`](https://rdrr.io/r/stats/deriv.html) does not read,
-and with the derivatives written out in the constructor those branches
-are ordinary code. Each takes `(u, width)` and vectorizes in both, so a
-per-group width is one value per observation.
+The derivatives are stored as functions and not as expressions. A
+piecewise smoother such as the quintic has branches that
+[`stats::deriv()`](https://rdrr.io/r/stats/deriv.html) cannot
+differentiate, so the derivatives are written out in the constructor,
+where the branches are ordinary code. Each function takes `(u, width)`
+and vectorizes in both, so a per-group width is one value per
+observation.
 
 ## The width
 
 `width` is the transition scale: `h` for a smoother whose parameter is a
 length, the bent-cable reading of a transition of width \\h\\, and `c`
-for the hyperbolic, whose parameter is a squared length. `NULL`, the
-default of all three constructors, asks the consumer to resolve it from
-the data at build through
+for the hyperbolic, whose parameter is a squared length. With `NULL`,
+the default of all three constructors, the consumer resolves the width
+from the data at build through
 [`smoother_width()`](https://statmodels7.github.io/numericals7/reference/smoother_width.md);
-a break-point term hands it the median spacing of its covariate.
-`per_group` asks for one width per group where a grouping is available,
-the validity window of a Laplace approximation being per-subject.
+a break-point term passes it the median spacing of its covariate. With
+`per_group = TRUE` the width is resolved once per group where a grouping
+is available, because the validity window of a Laplace approximation is
+per subject.
 
 ## The scale correction
 
@@ -145,7 +147,7 @@ and
 [`smoother_width_floor()`](https://statmodels7.github.io/numericals7/reference/smoother_width_floor.md)
 for the width,
 [`check_abs_smoother()`](https://statmodels7.github.io/numericals7/reference/check_abs_smoother.md)
-to verify one of your own.
+to verify a user-written smoother.
 
 ## Examples
 
@@ -166,8 +168,8 @@ smoother_deriv(sm, u, order = 1)                    # smooth sign
 (u + smoother_deriv(sm, u, order = 0)) / 2          # smooth hinge
 #> [1] 3.362337e-05 7.627083e-02 1.196827e-01 1.762708e-01 1.000034e+00
 
-# Three widths out they agree with the sharp versions to five decimals,
-# and inside the transition they are what replaces them.
+# Four widths out they agree with the sharp versions to five decimals,
+# and inside the transition they replace them.
 far <- c(-1.2, -0.9, 0.9, 1.2)
 round(smoother_deriv(sm, far, order = 1) - sign(far), 5)
 #> [1]  0.00006  0.00270 -0.00270 -0.00006

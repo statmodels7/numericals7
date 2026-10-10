@@ -11,7 +11,7 @@ that resolved the width at build evaluates without mutating the object."><meta p
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.22.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,8 +67,9 @@ and given none here is rejected, with the two ways to supply one named.</p></dd>
 
 
 <dt id="arg-order">order<a class="anchor" aria-label="anchor" href="#arg-order"></a></dt>
-<dd><p>The derivative order, a whole number from 0 to 5. <code>0L</code> by
-default, which is \(s\) itself. Anything outside that range is rejected.</p></dd>
+<dd><p>The derivative order, an integer from 0 to 5; a fractional
+value is truncated toward zero. <code>0L</code> by default, which is \(s\) itself.
+A value outside that range is rejected.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -80,12 +81,13 @@ default, which is \(s\) itself. Anything outside that range is rejected.</p></dd
     <p>A vector <code>width</code> is one value per point, which is how a per-group width
 arrives: a break-point term with <code>per_group = TRUE</code> resolves one width per
 subject and passes the whole vector.</p>
-<p>The derivatives are the ones the smoother carries, evaluated directly. None
-is differenced, so order five is as accurate as order zero.</p>
+<p>The derivatives are the functions carried by the smoother, evaluated
+directly. None is obtained by differencing, so order five is as accurate as
+order zero.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="abs_smoother.html">abs_smoother()</a></code> for the contract, <code><a href="smoother_width.html">smoother_width()</a></code> for
+    <div class="dont-index"><p><code><a href="abs_smoother.html">abs_smoother()</a></code> for the class, <code><a href="smoother_width.html">smoother_width()</a></code> for
 resolving a width, <code><a href="check_abs_smoother.html">check_abs_smoother()</a></code> for verifying the derivatives.</p></div>
     </div>
 

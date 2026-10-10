@@ -1,9 +1,9 @@
 # The Smallest Width a Consumer May Use
 
-Returns the floor of the width, derived from the expression that binds.
-A consumer resolving a width from data takes the larger of this and
-[`smoother_width()`](https://statmodels7.github.io/numericals7/reference/smoother_width.md)'s
-answer.
+Returns the floor of the width, derived from the conditioning of the
+design. A consumer resolving a width from data takes the larger of this
+floor and the width returned by
+[`smoother_width()`](https://statmodels7.github.io/numericals7/reference/smoother_width.md).
 
 ## Usage
 
@@ -28,7 +28,7 @@ smoother_width_floor(smoother, scale)
 
 A single number, on the smoother's own width scale.
 
-## Where the bound comes from
+## Derivation of the bound
 
 The derivatives of a smoother scale as \\s^{(k)} \sim h^{1-k}\\, so the
 Jacobian column of a smoothed break-point carries \\s''(0)/2 \sim 1/h\\
@@ -46,12 +46,10 @@ and its square, `2.22e-14`, for
 The floor goes through the same `width_from_spacing` as a spacing does,
 so for
 [`smooth_quintic()`](https://statmodels7.github.io/numericals7/reference/smooth_quintic.md)
-it is \\5/(2\log 2)\\ times larger, which only makes it more
-conservative.
+it is \\5/(2\log 2)\\ times larger, which makes it more conservative.
 
-The bound is derived, which is the toolkit's rule for a guard constant,
-and it is the same argument the break-point schedule's own scaling floor
-rests on.
+The bound follows from this argument and is not a tuned constant. The
+scaling floor of the break-point schedule rests on the same argument.
 
 ## See also
 

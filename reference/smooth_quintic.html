@@ -13,7 +13,7 @@ one that is not analytic."><meta property="og:image" content="https://statmodels
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.22.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,38 +79,34 @@ seam. At the kink \(s(0) = 5h/16\).</p>
     </div>
     <div class="section level2">
     <h2 id="exact-outside-the-transition">Exact outside the transition<a class="anchor" aria-label="anchor" href="#exact-outside-the-transition"></a></h2>
-    <p>The smoothing bias is exactly zero outside \([-h, h]\), which is the
-cleanest fixed-width choice: measured at \(h = 0.3\) the excess over
-\(\lvert u\rvert\) is <code>0</code> at \(u = 1\) and at \(u = 3\), where
-<code><a href="smooth_probit.html">smooth_probit()</a></code> leaves <code>6.7e-05</code> and <code><a href="smooth_hyperbolic.html">smooth_hyperbolic()</a></code> <code>4.4e-02</code>. The
-smoother declares an <code>exact_radius</code>, so a consumer can say where its answer
-is the sharp model's.</p>
-<p>The branches are why <code><a href="abs_smoother.html">abs_smoother()</a></code> carries the derivatives as functions:
-<code><a href="https://rdrr.io/r/stats/deriv.html" class="external-link">stats::deriv()</a></code> does not read a clamp, and written out in the constructor
-the branches are ordinary code.</p>
+    <p>The smoothing bias is exactly zero outside \([-h, h]\). At \(h = 0.3\)
+the excess over \(\lvert u\rvert\) is <code>0</code> at \(u = 1\) and at
+\(u = 3\), where <code><a href="smooth_probit.html">smooth_probit()</a></code> leaves <code>6.7e-05</code> at \(u = 1\) and
+<code><a href="smooth_hyperbolic.html">smooth_hyperbolic()</a></code> <code>4.4e-02</code>. The smoother declares an <code>exact_radius</code>,
+so a consumer can report where the smoothed model equals the sharp one.</p>
+<p>These branches are the reason why <code><a href="abs_smoother.html">abs_smoother()</a></code> carries the derivatives
+as functions: <code><a href="https://rdrr.io/r/stats/deriv.html" class="external-link">stats::deriv()</a></code> cannot differentiate a branch, and in the
+constructor the branches are ordinary code.</p>
 <p>There is no convolution identity here, so <code>tau_correction</code> is <code>NULL</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="the-width-resolved-from-data">The width resolved from data<a class="anchor" aria-label="anchor" href="#the-width-resolved-from-data"></a></h2>
-    <p>Exactness outside the transition has a cost for a break-point. The
+    <p>Exactness outside the transition has a cost for a break-point. The second
 derivative of \(s\) in the break-point is \(s''\), which is zero outside
 \([-h, h]\), so where no observation falls within \(h\) of the fitted
 break-point the break-point has no curvature at all and is not identified.
-At a width of one median spacing this happens in 25 to 55 per cent of fits
-of a discontinuous break-point on a uniform covariate, because a quarter of
-the gaps are wider than \(2h\). The width resolved from a spacing \(g\)
-is therefore</p>
+At a width of one median spacing this happens often for a discontinuous
+break-point on a uniform covariate, because a quarter of the gaps are wider
+than \(2h\). The width resolved from a spacing \(g\) is therefore</p>
 <p>$$h = \frac{5}{2\log 2}\,g \approx 3.61\,g,$$</p>
 <p>which puts five observations inside \([-h, h]\) on average for a uniform
 covariate, whose median spacing is \(\log 2\) times its mean spacing.
-Measured on the same fits, this removes the unidentified break-point and
-brings its error to that of <code><a href="smooth_probit.html">smooth_probit()</a></code>, at a fit error on a true
-sharp step 10 to 15 per cent above the probit's. It does not guarantee an
-observation inside the width for a covariate with large gaps, since the
-largest of \(n\) gaps is about \(\log_2 n\) median spacings, so a
-consumer that passes the largest gap to <code><a href="smoother_width.html">smoother_width()</a></code> also has the
-width raised to at least \(0.55\) times it. A width supplied as <code>h</code> is
-used as it stands.</p>
+This width does not guarantee an observation inside the transition for a
+covariate with large gaps, since the largest of \(n\) gaps is about
+\((\log n + \gamma)/\log 2\) median spacings, with \(\gamma\) Euler's
+constant, so a consumer that passes the largest gap to
+<code><a href="smoother_width.html">smoother_width()</a></code> also has the width raised to at least \(0.55\) times
+that gap. A width supplied as <code>h</code> is used as it stands.</p>
     </div>
     <div class="section level2">
     <h2 id="under-an-outer-criterion">Under an outer criterion<a class="anchor" aria-label="anchor" href="#under-an-outer-criterion"></a></h2>
@@ -119,16 +115,13 @@ there. An exact outer gradient of a marginal criterion reads the fourth
 derivative of \(s\) through a break-point term and an exact outer Hessian
 reads the fifth, so over the hyperparameters the criterion is smooth only
 between the values at which an observation crosses \(\psi \pm h\), and the
-Hessian leaves out the point masses. Measured on a random break-point under
-REML, the jump of the gradient at such a crossing is below the resolution of
-a step of \(10^{-4}\) in the hyperparameter, and the exact gradient agrees
-with a difference of the criterion to \(2.7 \times 10^{-7}\).
-<code><a href="smooth_probit.html">smooth_probit()</a></code>, which is analytic, has neither effect and is the choice
-where a criterion is estimated over a smoothed break-point.</p>
+Hessian leaves out the point masses. <code><a href="smooth_probit.html">smooth_probit()</a></code>, which is analytic,
+has neither effect and is the smoother to use when a criterion is estimated
+over a smoothed break-point.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="abs_smoother.html">abs_smoother()</a></code> for the contract, <code><a href="smooth_probit.html">smooth_probit()</a></code> for the
+    <div class="dont-index"><p><code><a href="abs_smoother.html">abs_smoother()</a></code> for the class, <code><a href="smooth_probit.html">smooth_probit()</a></code> for the
 recommended default, <code><a href="smooth_hyperbolic.html">smooth_hyperbolic()</a></code> for the simplest form,
 <code><a href="check_abs_smoother.html">check_abs_smoother()</a></code> to verify it.</p></div>
     </div>

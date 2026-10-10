@@ -1,8 +1,8 @@
 # The Student t Distribution Function
 
 Computes \\T\_\nu(q) = P(T \le q)\\ for a Student \\t\\ variable with
-\\\nu \> 0\\ degrees of freedom, real-valued, or the upper tail, on the
-natural or the log scale. The values are those of
+\\\nu \> 0\\ degrees of freedom, which need not be an integer, or its
+upper tail, on the natural or the log scale. The values are those of
 [`stats::pt()`](https://rdrr.io/r/stats/TDist.html), from a compiled
 function that never reaches the R API, so that it may be called from a
 worker thread. Its C entry point is `n7_pt`, resolved with

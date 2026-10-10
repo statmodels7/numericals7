@@ -3,11 +3,11 @@
 Computes \\\log K\_\nu(x)\\ in vectorized R, through the same branches
 and the same formulas as the compiled kernel behind
 [`log_bessel_k()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md).
-It exists as the independent reference the tests compare that kernel
-against, so a change to either side that is not a change to both shows
-up as a disagreement. Not called on any production path;
-[`log_bessel_k()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md)
-is.
+It serves as the independent reference against which the tests compare
+that kernel, so a change to one side that is not made to the other shows
+up as a disagreement. No production code calls it; the production route
+is
+[`log_bessel_k()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md).
 
 ## Usage
 
@@ -37,14 +37,13 @@ negative or either argument is missing.
 the order enters as \\\|\nu\|\\, \\K\\ being even in it. The branches
 are the large-argument and large-order expansions, R's own scaled
 `besselK` in the moderate region, and the Rothwell integral in the
-corner where that scaled value overflows.
-
-The compiled route measured 2.9x faster on a mixed workload spanning
-every branch, so the twin costs little to keep.
+corner where that scaled value overflows or comes close to it, as
+described on the page of
+[`log_bessel_k()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md).
 
 ## See also
 
 [`log_bessel_k()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md),
-the compiled kernel this mirrors, and
+the compiled kernel that this function mirrors, and
 [`log_bessel_i()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i.md)
 for the first-kind counterpart.

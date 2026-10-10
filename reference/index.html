@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.22.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -34,7 +34,7 @@
     <div class="section level2">
       <h2 id="enumerations">Enumerations<a class="anchor" aria-label="anchor" href="#enumerations"></a></h2>
 
-      <div class="section-desc"><p>The combinatorial objects a higher-order chain rule sums over, each in one copy so that an enumeration cannot disagree with itself.</p></div>
+      <div class="section-desc"><p>The combinatorial objects over which a higher-order chain rule sums, defined once so that every package uses the same ordering.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -64,7 +64,7 @@
       </dl></div><div class="section level2">
       <h2 id="finite-differences">Finite differences<a class="anchor" aria-label="anchor" href="#finite-differences"></a></h2>
 
-      <div class="section-desc"><p>One stencil library: weights from the Vandermonde system, offsets sized from order and accuracy, a balanced step, and an applicator that never composes lower-order differences.</p></div>
+      <div class="section-desc"><p>Finite-difference stencils: weights from the Vandermonde system, offsets sized from the order and the accuracy, a step that balances truncation against rounding, and an applicator that never composes lower-order differences.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -101,7 +101,7 @@
       </dl></div><div class="section level2">
       <h2 id="quadrature-and-series">Quadrature and series<a class="anchor" aria-label="anchor" href="#quadrature-and-series"></a></h2>
 
-      <div class="section-desc"><p>Integrals and sums vectorized over the parameters: one matrix evaluation for many parameter values, adaptivity batched by row, and NA with a named row where the requested accuracy cannot be reached.</p></div>
+      <div class="section-desc"><p>Integrals and sums vectorized over the parameters: one matrix evaluation for many parameter values, adaptivity batched by row, and NA with a warning for a row that does not reach the requested accuracy.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -131,7 +131,7 @@
       </dl></div><div class="section level2">
       <h2 id="threads">Threads<a class="anchor" aria-label="anchor" href="#threads"></a></h2>
 
-      <div class="section-desc"><p>The thread policy of the toolkit, one object passed as an argument from the fit entry points down to the compiled kernels. The result does not depend on the count, bit for bit.</p></div>
+      <div class="section-desc"><p>The thread policy of the toolkit, one object passed as an argument from the fit entry points down to the compiled kernels. Each kernel returns the same bits at any thread count.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -268,7 +268,7 @@
       </dl></div><div class="section level2">
       <h2 id="smoothers-of-the-absolute-value">Smoothers of the absolute value<a class="anchor" aria-label="anchor" href="#smoothers-of-the-absolute-value"></a></h2>
 
-      <div class="section-desc"><p>A smooth replacement for the absolute value with its derivatives up to order five, from which the smooth sign, step and hinge follow by composition. A break-point term smoothed this way has a true Jacobian block, and the validator checks a smoother written outside the package.</p></div>
+      <div class="section-desc"><p>A smooth replacement for the absolute value with its derivatives up to order five, from which the smooth sign, step and hinge follow by composition. A break-point term smoothed this way has a true Jacobian block, and the validator checks a user-written smoother.</p></div>
 
       <dl></dl></div><div class="section level2">
 

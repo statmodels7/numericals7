@@ -15,7 +15,7 @@ identities built on it. The number of partitions is the Bell number
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.21.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.22.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,9 +59,9 @@ identities built on it. The number of partitions is the Bell number
 
 
 <dl><dt id="arg-n">n<a class="anchor" aria-label="anchor" href="#arg-n"></a></dt>
-<dd><p>A positive whole number. The recursion has no base case below one,
-so zero and negative values recurse until the stack overflows instead of
-throwing.</p></dd>
+<dd><p>A positive whole number. The argument is not checked, and the
+recursion has no base case below one, so a zero, negative or fractional
+value recurses until R signals a stack overflow error.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -75,12 +75,12 @@ enumerations agree and a block may be compared against <code>1:n</code> with
     </div>
     <div class="section level2">
     <h2 id="how-they-are-built">How they are built<a class="anchor" aria-label="anchor" href="#how-they-are-built"></a></h2>
-    <p>By the standard recursion. The partitions of <code>1:n</code> come from those of
-<code>1:(n-1)</code> by putting \(n\) into each existing block in turn, and then into
-a block of its own.</p>
+    <p>The partitions are built by the standard recursion: the partitions of <code>1:n</code>
+come from those of <code>1:(n-1)</code> by putting \(n\) into each existing block in
+turn, and then into a block of its own.</p>
 <p>The cost is therefore \(B_n\), which grows faster than any exponential:
-\(B_8\) is 4140 and \(B_{10}\) is 115975. Four is as high as the
-toolkit's derivatives go, where the sum has fifteen terms.</p>
+\(B_8\) is 4140 and \(B_{10}\) is 115975. A chain rule of order four
+has fifteen terms, and one of order five has 52.</p>
     </div>
     <div class="section level2">
     <h2 id="the-blocks-index-positions">The blocks index positions<a class="anchor" aria-label="anchor" href="#the-blocks-index-positions"></a></h2>
@@ -89,7 +89,8 @@ repeated in that multi-index therefore counts with its correct multiplicity
 and needs no bookkeeping of its own: differentiating three times in one
 variable and once in another sums over the same fifteen partitions as four
 distinct variables do, and what differs is which derivative each block
-names. <code><a href="tuple_indices.html">tuple_indices()</a></code> supplies the multi-index the positions point into.</p>
+names. <code><a href="tuple_indices.html">tuple_indices()</a></code> supplies the multi-index into which the positions
+point.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
@@ -99,7 +100,7 @@ Society</em> <strong>348</strong>, 503-520.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="tuple_indices.html">tuple_indices()</a></code> for the multi-indices the blocks index into, and
+    <div class="dont-index"><p><code><a href="tuple_indices.html">tuple_indices()</a></code> for the multi-indices into which the blocks index, and
 <code><a href="compositions.html">compositions()</a></code> for the ordered sums.</p></div>
     </div>
 
