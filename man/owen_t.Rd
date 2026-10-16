@@ -10,7 +10,7 @@ owen_t(h, a)
 \item{h}{A numeric vector, the offset, of any sign and size.}
 
 \item{a}{A numeric vector of slopes, recycled against \code{h}, of any sign and
-size, \code{Inf} included.}
+size, including \code{Inf}.}
 }
 \value{
 A numeric vector of the recycled length of \code{h} and \code{a}, bounded in

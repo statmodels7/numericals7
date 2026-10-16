@@ -15,7 +15,7 @@ NULL
 #' an estimate of a derivative. The weights are the unique solution of the
 #' Vandermonde system that makes the stencil exact on polynomials, so a stencil
 #' on `n` nodes reproduces the derivative of every polynomial of degree `n - 1`
-#' or less without error. They are returned for a **unit step**: divide by
+#' or less without error. They are returned for a unit step: divide by
 #' `h^order` before using them at spacing `h`, or call [fd_derivative()], which
 #' assembles the whole expression.
 #'
@@ -28,14 +28,15 @@ NULL
 #' \deqn{\sum_{j=1}^{n} w_j\, s_j^{\,m} \;=\; d!\;[\,m = d\,],
 #'       \qquad m = 0, 1, \dots, n-1,}
 #'
-#' one equation per polynomial degree the stencil must reproduce. The matrix is
+#' one equation for each polynomial degree that the stencil must reproduce. The
+#' matrix is
 #' Vandermonde in the offsets, so it is nonsingular exactly when they are
 #' distinct and the weights exist and are unique.
 #'
-#' Two properties of the answer are cheap to check against a returned vector.
-#' The weights sum to zero for every \eqn{d \ge 1}, this being the \eqn{m = 0}
-#' condition. On a symmetric stencil they are antisymmetric for odd \eqn{d} and
-#' symmetric for even \eqn{d}.
+#' The weights sum to zero for every \eqn{d \ge 1}, which is the \eqn{m = 0}
+#' condition, and on a symmetric stencil they are antisymmetric for odd \eqn{d}
+#' and symmetric for even \eqn{d}. Both properties can be checked on a returned
+#' vector.
 #'
 #' # Applying them
 #'
@@ -50,7 +51,7 @@ NULL
 #' # Accuracy
 #'
 #' Because the stencil is exact to degree \eqn{n-1}, the leading error is the
-#' first term it cannot reproduce, giving an estimate accurate to
+#' first term that it cannot reproduce, giving an estimate accurate to
 #' \eqn{O(h^{\,n-d})} with constant
 #'
 #' \deqn{\frac{1}{n!}\sum_{j=1}^{n} w_j\, s_j^{\,n}.}
@@ -65,26 +66,27 @@ NULL
 #' # Single stencils and nested differences
 #'
 #' Reaching a high order by composing low-order differences multiplies the error
-#' of each stage into the next, and a fourth derivative built from four nested
-#' first differences, each taken at the step chosen for a first derivative, is
-#' dominated by rounding error. Every numerical fallback in
+#' of each stage into the next. A fourth derivative built from four nested
+#' first differences is dominated by rounding error when each difference is
+#' taken at the step chosen for a first derivative. Every numerical fallback in
 #' the toolkit uses one stencil of the order that it needs, with the weights
 #' returned by this function.
 #'
 #' @param offsets A numeric vector of distinct offsets, in units of the step.
 #'   They need not be sorted, symmetric, or whole numbers: `0:2` gives a
 #'   one-sided stencil for use at a boundary, and `c(-1, 0, 3)` an uneven one.
-#'   At least `order + 1` of them are needed. Duplicated offsets throw an error,
-#'   the Vandermonde system being singular.
+#'   At least `order + 1` of them are needed. Duplicated offsets make the
+#'   Vandermonde system singular and signal an error.
 #' @param order The derivative order: a single non-negative whole number,
-#'   **strictly smaller than `length(offsets)`**. Order `0` is legal and returns
-#'   interpolation weights at the origin. Anything else throws: an order at or
-#'   above the node count with a message naming both numbers, and a negative,
-#'   fractional, `NA` or non-scalar order with a message naming the
+#'   strictly smaller than `length(offsets)`. Order `0` is allowed and returns
+#'   interpolation weights at the origin. Any other value signals an error: an
+#'   order at or above the node count with a message naming both numbers, and a
+#'   negative, fractional, `NA` or non-scalar order with a message naming the
 #'   requirement.
 #'
 #' @return A numeric vector of weights for a unit step, one per offset and in
-#'   the order the offsets were given. For `order >= 1` the entries sum to zero.
+#'   the order in which the offsets were given. For `order >= 1` the entries
+#'   sum to zero.
 #'
 #' @seealso [fd_offsets()] for the offsets to pass in, [fd_step()] for the step
 #'   to divide by, and [fd_derivative()] for all three assembled into a
@@ -177,11 +179,11 @@ fd_weights <- function(offsets, order) {
 #' A central stencil is symmetric, so the odd powers cancel from its error
 #' expansion and the accuracy of the central stencil is always even. An odd
 #' accuracy is therefore replaced by an even neighbor, and the parity of
-#' \eqn{d + a} decides which one. The observed orders on \eqn{\exp}, obtained
+#' \eqn{d + a} determines which one. The observed orders on \eqn{\exp}, obtained
 #' by halving the step, are:
 #'
 #' \tabular{lrrrr}{
-#'   \strong{order}    \tab 1 \tab 2 \tab 3 \tab 4 \cr
+#'   order      \tab 1 \tab 2 \tab 3 \tab 4 \cr
 #'   accuracy 2 \tab 2 \tab 2 \tab 2 \tab 2 \cr
 #'   accuracy 3 \tab 2 \tab 4 \tab 2 \tab 4 \cr
 #'   accuracy 4 \tab 4 \tab 4 \tab 4 \tab 4
@@ -191,14 +193,14 @@ fd_weights <- function(offsets, order) {
 #' at an even order it is rounded up and the stencil gains two nodes. An even
 #' accuracy is used as given.
 #'
-#' @param order The derivative order \eqn{d}. Not validated here, though
-#'   [fd_weights()] rejects anything but a non-negative whole number when the
-#'   offsets reach it.
+#' @param order The derivative order \eqn{d}. This function does not validate
+#'   it, but [fd_weights()] rejects anything other than a non-negative whole
+#'   number when the offsets reach it.
 #' @param accuracy The order of the error term, a positive integer, `2` by
 #'   default. A value below one signals an error. The section on odd
 #'   accuracy describes the treatment of an odd value.
 #'
-#' @return A list of four components:
+#' @return A list with the components:
 #'   \describe{
 #'     \item{`reach`}{integer, the half-width \eqn{r}, at least 1.}
 #'     \item{`central`}{integer vector `-r:r`, the symmetric stencil.}
@@ -256,7 +258,7 @@ fd_offsets <- function(order, accuracy = 2L) {
 #' Truncation grows like \eqn{h^{a}} and rounding like \eqn{\varepsilon h^{-d}},
 #' and this is where the two meet. The factor \eqn{\max(1, \lvert x \rvert)}
 #' makes the step relative for a large argument and absolute for a small one, so
-#' a point near zero does not get a step below the resolution of its own
+#' the step at a point near zero is not below the resolution of its own
 #' neighborhood.
 #'
 #' At the default accuracy the exponent is \eqn{1/4} for a second derivative and
@@ -273,15 +275,15 @@ fd_offsets <- function(order, accuracy = 2L) {
 #'
 #' # A point on a bound
 #'
-#' A point sitting exactly on a finite bound gets a step of **zero**, and a
-#' stencil divided by \eqn{h^{d}} is then `NaN`. The function does not check the
+#' At a point exactly on a finite bound the step is zero, and a stencil divided
+#' by \eqn{h^{d}} is then `NaN`. The function does not check the
 #' evaluation point. For a point on a bound the caller moves the point strictly
 #' inside the domain, or applies a one-sided stencil with an explicitly chosen
 #' step.
 #'
 #' @param x A numeric vector of evaluation points.
 #' @param order The derivative order \eqn{d}.
-#' @param accuracy The accuracy the stencil will be built at, `2` by default.
+#' @param accuracy The accuracy at which the stencil is built, `2` by default.
 #'   Matches [fd_offsets()]'s argument of the same name.
 #' @param bounds An optional numeric vector of two domain bounds, either of
 #'   which may be infinite. `NULL`, the default, applies no clamp.
@@ -290,8 +292,8 @@ fd_offsets <- function(order, accuracy = 2L) {
 #'   positive at a point strictly inside `bounds`, zero at a point on a finite
 #'   bound, and negative at a point outside the bounds.
 #'
-#' @seealso [fd_derivative()], which calls this when no step is given,
-#'   [fd_offsets()] for the reach the clamp divides by.
+#' @seealso [fd_derivative()], which calls this when the caller supplies no
+#'   step, [fd_offsets()] for the reach by which the clamp divides.
 #'
 #' @examples
 #' # Magnitude-scaled: absolute near zero, relative far from it.
@@ -334,8 +336,8 @@ fd_step <- function(x, order, accuracy = 2L, bounds = NULL) {
 #' through this function. It applies one stencil of the requested order and
 #' never composes lower-order differences. Each numerical differentiation
 #' multiplies the error of the one before it, so a fourth derivative reached by
-#' four nested first differences, each taken at the step chosen for a first
-#' derivative, is dominated by rounding error.
+#' four nested first differences is dominated by rounding error when each
+#' difference is taken at the step chosen for a first derivative.
 #'
 #' # Choices left to the caller
 #'
@@ -353,9 +355,9 @@ fd_step <- function(x, order, accuracy = 2L, bounds = NULL) {
 #'
 #' @param f A vectorized function of one numeric argument.
 #' @param x A numeric vector of evaluation points.
-#' @param order The derivative order. One to four is what the toolkit uses and
-#'   what the step rule is tuned for. A higher order is accepted and sized by
-#'   [fd_offsets()], but nothing is claimed about its accuracy.
+#' @param order The derivative order. The toolkit uses orders one to four, and
+#'   the step rule is tuned for them. A higher order is accepted and sized by
+#'   [fd_offsets()], but its accuracy is not guaranteed.
 #' @param h A numeric vector of steps, recycled against `x`. `NULL`, the
 #'   default, takes [fd_step()] at the same order and accuracy, with no bounds;
 #'   pass a step explicitly when the domain is bounded.
@@ -372,7 +374,7 @@ fd_step <- function(x, order, accuracy = 2L, bounds = NULL) {
 #' @return A numeric vector of the same length as `x`.
 #'
 #' @seealso [fd_weights()], [fd_offsets()] and [fd_step()], the three pieces
-#'   this assembles.
+#'   that this function assembles.
 #'
 #' @examples
 #' # The third derivative of exp is exp.

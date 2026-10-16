@@ -16,10 +16,10 @@ policy.}
 A single integer, at least 1.
 }
 \description{
-Returns the thread count an \code{\link[=n_threads]{n_threads()}} object carries, as a single
-integer. An entry point calls it once to validate the \code{threads} argument it
-was given, then passes the plain count down to the kernels, which receive a
-number and not the policy object.
+Returns the thread count that an \code{\link[=n_threads]{n_threads()}} object carries, as a single
+integer. An entry point calls it once to validate the \code{threads} argument
+that it receives, then passes the plain count down to the kernels, which
+receive a number and not the policy object.
 }
 \examples{
 thread_count(n_threads())

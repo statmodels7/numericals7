@@ -18,9 +18,9 @@ fd_derivative(
 
 \item{x}{A numeric vector of evaluation points.}
 
-\item{order}{The derivative order. One to four is what the toolkit uses and
-what the step rule is tuned for. A higher order is accepted and sized by
-\code{\link[=fd_offsets]{fd_offsets()}}, but nothing is claimed about its accuracy.}
+\item{order}{The derivative order. The toolkit uses orders one to four, and
+the step rule is tuned for them. A higher order is accepted and sized by
+\code{\link[=fd_offsets]{fd_offsets()}}, but its accuracy is not guaranteed.}
 
 \item{h}{A numeric vector of steps, recycled against \code{x}. \code{NULL}, the
 default, takes \code{\link[=fd_step]{fd_step()}} at the same order and accuracy, with no bounds;
@@ -52,8 +52,8 @@ The numerical fallbacks of the toolkit's packages apply their stencils
 through this function. It applies one stencil of the requested order and
 never composes lower-order differences. Each numerical differentiation
 multiplies the error of the one before it, so a fourth derivative reached by
-four nested first differences, each taken at the step chosen for a first
-derivative, is dominated by rounding error.
+four nested first differences is dominated by rounding error when each
+difference is taken at the step chosen for a first derivative.
 }
 
 \section{Choices left to the caller}{
@@ -90,5 +90,5 @@ fd_derivative(sin, c(0, pi / 4, pi / 2), order = 1) - cos(c(0, pi / 4, pi / 2))
 }
 \seealso{
 \code{\link[=fd_weights]{fd_weights()}}, \code{\link[=fd_offsets]{fd_offsets()}} and \code{\link[=fd_step]{fd_step()}}, the three pieces
-this assembles.
+that this function assembles.
 }

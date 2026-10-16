@@ -1,3 +1,13 @@
+# numericals7 0.23.1
+
+* Documentation and messages: relative clauses without a relative pronoun,
+  stranded prepositions, absolute constructions, sentences without a verb,
+  emphasis in bold and personified descriptions of the code rewritten as
+  plain clauses. The error of `thread_count()` and `worker_count()` now
+  reads "'threads' must be an object returned by n_threads()", and the
+  error of `quad_vec()` for an unreachable `rtol` is reworded. No change to
+  the code.
+
 # numericals7 0.23.0
 
 * New `fd_tensor()` computes partial derivatives of a function of several

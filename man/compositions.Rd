@@ -7,8 +7,8 @@
 compositions(n, k)
 }
 \arguments{
-\item{n}{The total, a non-negative whole number. Neither argument is
-validated. A negative \code{n} returns a matrix whose rows contain negative
+\item{n}{The total, a non-negative whole number. The function validates
+neither argument. A negative \code{n} returns a matrix whose rows contain negative
 parts, since the recursion walks \code{0:n} and that sequence runs downwards.}
 
 \item{k}{The number of parts, a positive whole number. Zero recurses until
@@ -35,9 +35,9 @@ units.
 }
 
 \section{Order and cost}{
-Rows come out in lexicographic order, the first part ascending from zero to
+Rows come out in lexicographic order, so the first part ascends from zero to
 \eqn{n}. The recursion runs on the number of parts, so the rows are produced
-in that order directly and no full grid is built and filtered.
+in that order directly, without building and filtering a full grid.
 
 The whole matrix is materialized and the count grows quickly, which bounds
 the practical size: \eqn{n = 20} with \eqn{k = 5} is 10626 rows, and the

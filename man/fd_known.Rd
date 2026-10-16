@@ -10,7 +10,7 @@ fd_known(fun, order = NULL, indices = NULL)
 \item{fun}{A function of one argument, the named list of coordinates.}
 
 \item{order}{A single non-negative whole number, the total order of every
-derivative \code{fun} returns, or \code{NULL}.}
+derivative that \code{fun} returns, or \code{NULL}.}
 
 \item{indices}{An integer matrix of counts with one row per returned
 derivative and one column per coordinate, or \code{NULL}. Exactly one of
@@ -23,7 +23,7 @@ and \code{indices}.
 \description{
 Declares a function that returns analytic partial derivatives of the
 function differentiated by \code{\link[=fd_tensor]{fd_tensor()}}, together with the multi-indices
-of the derivatives it returns. \code{\link[=fd_tensor]{fd_tensor()}} differences these values
+of the derivatives that it returns. \code{\link[=fd_tensor]{fd_tensor()}} differences these values
 instead of the function itself wherever that leaves a lower order to the
 stencil.
 }
@@ -31,7 +31,7 @@ stencil.
 A multi-index is a vector of counts, one per coordinate of \code{x}: the row
 \code{c(2, 0, 1)} over the coordinates \verb{(a, b, c)} is
 \eqn{\partial^3 f / \partial a^2 \partial c}. The rows of \code{indices} are the
-multi-indices of the values \code{fun} returns, in the order in which it
+multi-indices of the values that \code{fun} returns, in the order in which it
 returns them. With \code{order = k} the rows are every multi-index of total
 order \eqn{k}, in the order of \code{\link[=tuple_indices]{tuple_indices(p, k)}} over
 the \eqn{p} coordinates; \code{\link[=fd_tensor]{fd_tensor()}} expands the shortcut from the

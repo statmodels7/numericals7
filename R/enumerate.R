@@ -114,8 +114,8 @@ tuple_indices <- function(d, order = 2L) {
 #' repeated in that multi-index therefore counts with its correct multiplicity
 #' and needs no bookkeeping of its own: differentiating three times in one
 #' variable and once in another sums over the same fifteen partitions as four
-#' distinct variables do, and what differs is which derivative each block
-#' names. [tuple_indices()] supplies the multi-index into which the positions
+#' distinct variables do, and only the derivative that each block names
+#' differs. [tuple_indices()] supplies the multi-index into which the positions
 #' point.
 #'
 #' @param n A positive whole number. The argument is not checked, and the
@@ -200,9 +200,9 @@ set_partitions <- function(n) {
 #'
 #' # Order and cost
 #'
-#' Rows come out in lexicographic order, the first part ascending from zero to
+#' Rows come out in lexicographic order, so the first part ascends from zero to
 #' \eqn{n}. The recursion runs on the number of parts, so the rows are produced
-#' in that order directly and no full grid is built and filtered.
+#' in that order directly, without building and filtering a full grid.
 #'
 #' The whole matrix is materialized and the count grows quickly, which bounds
 #' the practical size: \eqn{n = 20} with \eqn{k = 5} is 10626 rows, and the
@@ -216,8 +216,8 @@ set_partitions <- function(n) {
 #' under such a law is therefore a finite sum over these rows, evaluated
 #' exactly, where a continuous family would need a quadrature.
 #'
-#' @param n The total, a non-negative whole number. Neither argument is
-#'   validated. A negative `n` returns a matrix whose rows contain negative
+#' @param n The total, a non-negative whole number. The function validates
+#'   neither argument. A negative `n` returns a matrix whose rows contain negative
 #'   parts, since the recursion walks `0:n` and that sequence runs downwards.
 #' @param k The number of parts, a positive whole number. Zero recurses until
 #'   R signals an infinite-recursion error.

@@ -10,26 +10,27 @@ fd_weights(offsets, order)
 \item{offsets}{A numeric vector of distinct offsets, in units of the step.
 They need not be sorted, symmetric, or whole numbers: \code{0:2} gives a
 one-sided stencil for use at a boundary, and \code{c(-1, 0, 3)} an uneven one.
-At least \code{order + 1} of them are needed. Duplicated offsets throw an error,
-the Vandermonde system being singular.}
+At least \code{order + 1} of them are needed. Duplicated offsets make the
+Vandermonde system singular and signal an error.}
 
 \item{order}{The derivative order: a single non-negative whole number,
-\strong{strictly smaller than \code{length(offsets)}}. Order \code{0} is legal and returns
-interpolation weights at the origin. Anything else throws: an order at or
-above the node count with a message naming both numbers, and a negative,
-fractional, \code{NA} or non-scalar order with a message naming the
+strictly smaller than \code{length(offsets)}. Order \code{0} is allowed and returns
+interpolation weights at the origin. Any other value signals an error: an
+order at or above the node count with a message naming both numbers, and a
+negative, fractional, \code{NA} or non-scalar order with a message naming the
 requirement.}
 }
 \value{
 A numeric vector of weights for a unit step, one per offset and in
-the order the offsets were given. For \code{order >= 1} the entries sum to zero.
+the order in which the offsets were given. For \code{order >= 1} the entries
+sum to zero.
 }
 \description{
 Solves for the weights that combine function values at the given offsets into
 an estimate of a derivative. The weights are the unique solution of the
 Vandermonde system that makes the stencil exact on polynomials, so a stencil
 on \code{n} nodes reproduces the derivative of every polynomial of degree \code{n - 1}
-or less without error. They are returned for a \strong{unit step}: divide by
+or less without error. They are returned for a unit step: divide by
 \code{h^order} before using them at spacing \code{h}, or call \code{\link[=fd_derivative]{fd_derivative()}}, which
 assembles the whole expression.
 }
@@ -40,14 +41,15 @@ weights \eqn{w} solve the \eqn{n} moment conditions
 \deqn{\sum_{j=1}^{n} w_j\, s_j^{\,m} \;=\; d!\;[\,m = d\,],
       \qquad m = 0, 1, \dots, n-1,}
 
-one equation per polynomial degree the stencil must reproduce. The matrix is
+one equation for each polynomial degree that the stencil must reproduce. The
+matrix is
 Vandermonde in the offsets, so it is nonsingular exactly when they are
 distinct and the weights exist and are unique.
 
-Two properties of the answer are cheap to check against a returned vector.
-The weights sum to zero for every \eqn{d \ge 1}, this being the \eqn{m = 0}
-condition. On a symmetric stencil they are antisymmetric for odd \eqn{d} and
-symmetric for even \eqn{d}.
+The weights sum to zero for every \eqn{d \ge 1}, which is the \eqn{m = 0}
+condition, and on a symmetric stencil they are antisymmetric for odd \eqn{d}
+and symmetric for even \eqn{d}. Both properties can be checked on a returned
+vector.
 }
 
 \section{Applying them}{
@@ -62,7 +64,7 @@ the order and \code{\link[=fd_derivative]{fd_derivative()}} puts the three toget
 
 \section{Accuracy}{
 Because the stencil is exact to degree \eqn{n-1}, the leading error is the
-first term it cannot reproduce, giving an estimate accurate to
+first term that it cannot reproduce, giving an estimate accurate to
 \eqn{O(h^{\,n-d})} with constant
 
 \deqn{\frac{1}{n!}\sum_{j=1}^{n} w_j\, s_j^{\,n}.}
@@ -77,9 +79,9 @@ requested accuracy.
 
 \section{Single stencils and nested differences}{
 Reaching a high order by composing low-order differences multiplies the error
-of each stage into the next, and a fourth derivative built from four nested
-first differences, each taken at the step chosen for a first derivative, is
-dominated by rounding error. Every numerical fallback in
+of each stage into the next. A fourth derivative built from four nested
+first differences is dominated by rounding error when each difference is
+taken at the step chosen for a first derivative. Every numerical fallback in
 the toolkit uses one stencil of the order that it needs, with the weights
 returned by this function.
 }

@@ -28,13 +28,13 @@ for real orders \eqn{\nu}. The values are those of \code{\link[base:Bessel]{base
 compiled function that never reaches the R API, so that it may be called
 from a worker thread. Its C entry point is \code{n7_bessel_k}, resolved with
 \code{R_GetCCallable("numericals7", "n7_bessel_k")} and taking the arguments
-\verb{(x, alpha, expo)} that R's C function \code{bessel_k()} takes, \code{expo} being 1
+\verb{(x, alpha, expo)} that R's C function \code{bessel_k()} takes, where \code{expo} is 1
 for the function and 2 for the scaled function.
 }
 \details{
 The computation is R's own: the routine RKBESL of W. J. Cody and L. Stoltz,
 after J. B. Campbell's implementation of Temme's algorithm, as R carries it,
-copied with the warnings R raises from it removed and with its work array
+copied without the warnings that R raises from it and with its work array
 on the stack (allocated with \code{malloc()} beyond 64 orders) instead of in R's
 memory pool. A warning calls into the R API,
 and R's allocator is not safe to call from a worker thread.

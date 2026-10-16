@@ -26,7 +26,8 @@ A numeric vector the length of \code{kappa}: the derivative of the
 inverse map at \eqn{\rho = A(\kappa)}.
 }
 \description{
-Compute the derivatives of the inverse map \eqn{\kappa(\rho) =
+These functions compute the derivatives of the inverse map
+\eqn{\kappa(\rho) =
 A^{-1}(\rho)} in \eqn{\rho}, one function per order, evaluated at
 \eqn{\rho = A(\kappa)}. They take the concentration rather than \eqn{\rho},
 so a caller that has already inverted \eqn{\rho} does not invert it again.
@@ -45,10 +46,10 @@ large concentrations, so the formulas are evaluated on \eqn{w = 1/A'} and
 the ratios \eqn{r_j = A^{(j)}/A'},
 
 \deqn{\kappa'' = -r_2 w^2, \qquad \kappa''' = (3r_2^2 - r_3)\,w^3, \qquad
-      \kappa'''' = (-15r_2^3 + 10r_2r_3 - r_4)\,w^4,}
+      \kappa'''' = (-15r_2^3 + 10r_2r_3 - r_4)\,w^4.}
 
-with the ratios taken from the asymptotic series without its powers of
-\eqn{1/\kappa} from \eqn{\kappa = 30}. Each derivative is finite and
+From \eqn{\kappa = 30} the ratios are taken from the asymptotic series
+without its powers of \eqn{1/\kappa}. Each derivative is finite and
 accurate until the derivative itself overflows (near
 \eqn{\kappa = 10^{60}} for the fourth).
 }

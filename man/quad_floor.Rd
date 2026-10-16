@@ -2,7 +2,7 @@
 % Please edit documentation in R/quadrature.R
 \name{quad_floor}
 \alias{quad_floor}
-\title{The Smallest Relative Budget a Quadrature Rule Can Meet}
+\title{The Smallest Relative Budget That a Quadrature Rule Can Meet}
 \usage{
 quad_floor(rule)
 }
@@ -17,8 +17,8 @@ A single positive number.
 Returns \eqn{\lvert\sum w_k - \sum w_g\rvert / 2} plus the machine epsilon:
 the relative error estimate that an embedded pair gives on a constant
 integrand, on every panel, together with the rounding of the two sums.
-\code{\link[=quad_vec]{quad_vec()}} rejects a relative budget below it when no absolute budget is
-given.
+\code{\link[=quad_vec]{quad_vec()}} rejects a relative budget below it when the caller gives no
+absolute budget.
 }
 \details{
 On a constant integrand both rules are exact up to their weight sums, so the

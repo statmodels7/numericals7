@@ -14,7 +14,7 @@ NULL
 #' @description
 #' Declares a function that returns analytic partial derivatives of the
 #' function differentiated by [fd_tensor()], together with the multi-indices
-#' of the derivatives it returns. [fd_tensor()] differences these values
+#' of the derivatives that it returns. [fd_tensor()] differences these values
 #' instead of the function itself wherever that leaves a lower order to the
 #' stencil.
 #'
@@ -22,7 +22,7 @@ NULL
 #' A multi-index is a vector of counts, one per coordinate of `x`: the row
 #' `c(2, 0, 1)` over the coordinates `(a, b, c)` is
 #' \eqn{\partial^3 f / \partial a^2 \partial c}. The rows of `indices` are the
-#' multi-indices of the values `fun` returns, in the order in which it
+#' multi-indices of the values that `fun` returns, in the order in which it
 #' returns them. With `order = k` the rows are every multi-index of total
 #' order \eqn{k}, in the order of [`tuple_indices(p, k)`][tuple_indices] over
 #' the \eqn{p} coordinates; [fd_tensor()] expands the shortcut from the
@@ -36,7 +36,7 @@ NULL
 #'
 #' @param fun A function of one argument, the named list of coordinates.
 #' @param order A single non-negative whole number, the total order of every
-#'   derivative `fun` returns, or `NULL`.
+#'   derivative that `fun` returns, or `NULL`.
 #' @param indices An integer matrix of counts with one row per returned
 #'   derivative and one column per coordinate, or `NULL`. Exactly one of
 #'   `order` and `indices` is given.
@@ -352,7 +352,8 @@ fd_tensor <- function(f, x, order = NULL, components = NULL, known = list(),
 #' Helpers of the Tensor Stencil
 #'
 #' @description
-#' Internal functions of [fd_tensor()]. `tensor_plan()` returns the plan of a
+#' These are internal functions of [fd_tensor()]. `tensor_plan()` returns the
+#' plan of a
 #' request from the session's cache, computing it in C++ on the first call
 #' with that key. `is_whole()` tests for a single finite whole number.
 #' `counts_of_order()` returns the multi-indices of one total order as rows of
@@ -364,8 +365,8 @@ fd_tensor <- function(f, x, order = NULL, components = NULL, known = list(),
 #' @param key A string identifying the request: the accuracy, the number of
 #'   coordinates, the components and the declarations.
 #' @param comp,m An integer matrix of counts, one row per multi-index.
-#' @param kidx A list of such matrices, the first being the function's own
-#'   zero row.
+#' @param kidx A list of such matrices, of which the first is the function's
+#'   own zero row.
 #' @param accuracy The order of accuracy of the stencils.
 #' @param x A value to test.
 #' @param p,k The number of coordinates and a total order; in `as_columns()`,

@@ -1,9 +1,10 @@
 #' @title S7 Class for Smoothers of the Absolute Value
 #'
 #' @description
-#' A smooth replacement \eqn{s(u)} for \eqn{\lvert u \rvert}, carrying its
-#' derivatives in \eqn{u} up to order five as functions. Every non-smooth
-#' primitive the toolkit uses is generated from the absolute value:
+#' An `abs_smoother` is a smooth replacement \eqn{s(u)} for
+#' \eqn{\lvert u \rvert} that carries its derivatives in \eqn{u} up to order
+#' five as functions. Every non-smooth primitive that the toolkit uses is
+#' generated from the absolute value:
 #'
 #' \deqn{\operatorname{sign}(u) = \frac{d\lvert u\rvert}{du}, \qquad
 #'   \mathbb{1}(u \geq 0) = \frac{1 + \operatorname{sign}(u)}{2}, \qquad
@@ -44,20 +45,22 @@
 #'
 #' # The scale correction
 #'
-#' `tau_correction` is a property of the mollifier and of no model. The probit
-#' smoother satisfies an exact convolution identity, smoothing with width
-#' \eqn{h} being the same as convolving the break-point with \eqn{N(0, h^2)},
-#' so an apparent scale \eqn{\tau} of a random break-point composes as
-#' \eqn{\tau^2_{\mathrm{true}} = \tau^2 - h^2} and the smoother declares that
-#' correction. Smoothers with no such identity declare `NULL`, and a consumer
-#' then reports the apparent scale alone.
+#' `tau_correction` is a property of the mollifier and not of a model. The
+#' probit smoother satisfies an exact convolution identity: smoothing with
+#' width \eqn{h} is the same as convolving the break-point with
+#' \eqn{N(0, h^2)}. An apparent scale \eqn{\tau} of a random break-point
+#' therefore composes as \eqn{\tau^2_{\mathrm{true}} = \tau^2 - h^2}, and the
+#' smoother declares that correction. Smoothers without such an identity
+#' declare `NULL`, and a consumer then reports the apparent scale without a
+#' correction.
 #'
 #' @param smoother_name A single non-empty string naming the smoother, used by
 #'   `print()` and by a consumer reporting which smoother a term carries.
 #' @param width The transition width, a single positive number, or `NULL` to be
 #'   resolved at build.
-#' @param width_name What the width parameter is called, a single non-empty
-#'   string: `"h"` for a length and `"c"` for a squared one. `"h"` by default.
+#' @param width_name The name of the width parameter, a single non-empty
+#'   string: `"h"` for a length and `"c"` for a squared one. The default is
+#'   `"h"`.
 #' @param per_group `TRUE` when the width is resolved per group, `FALSE` (the
 #'   default) for one width throughout.
 #' @param s A list of exactly six functions of `(u, width)`: \eqn{s} and its
@@ -72,8 +75,8 @@
 #'   beyond which \eqn{s(u) = \lvert u\rvert} exactly. Only the quintic has
 #'   one.
 #'
-#' @return An S7 object of class `abs_smoother` carrying the eight properties
-#'   above.
+#' @return An S7 object of class `abs_smoother` whose properties are the
+#'   arguments above.
 #'
 #' @references
 #' Bacon, D. W. and Watts, D. G. (1971). Estimating the transition between
@@ -170,9 +173,9 @@ abs_smoother <- S7::new_class(
 #' # The closed form
 #'
 #' \deqn{s(u) = u\,\bigl(2\Phi(u/h) - 1\bigr) + 2h\,\phi(u/h), \qquad
-#'   s'(u) = 2\Phi(u/h) - 1, \qquad s''(u) = \frac{2}{h}\,\phi(u/h),}
+#'   s'(u) = 2\Phi(u/h) - 1, \qquad s''(u) = \frac{2}{h}\,\phi(u/h).}
 #'
-#' with the third to fifth derivatives following from
+#' The third to fifth derivatives follow from
 #' \eqn{\phi'(z) = -z\phi(z)}. At the kink \eqn{s(0) = 2h\phi(0) \approx
 #' 0.798h}, which is the intrinsic scale by which [check_abs_smoother()]
 #' places its grid.
@@ -258,17 +261,17 @@ smooth_probit <- function(h = NULL, per_group = FALSE) {
 #'
 #' @description
 #' \eqn{s(u) = \sqrt{u^2 + c}}, the simplest smoother of the three and the one
-#' with the worst tails. Its parameter \eqn{c} is a **squared** length, so the
+#' with the worst tails. Its parameter \eqn{c} is a squared length, so the
 #' transition width in covariate units is \eqn{\sqrt{c}}.
 #'
 #' @details
 #' # The closed form
 #'
 #' \deqn{s(u) = \sqrt{u^2 + c}, \qquad s'(u) = \frac{u}{\sqrt{u^2 + c}},
-#'   \qquad s''(u) = \frac{c}{(u^2 + c)^{3/2}},}
+#'   \qquad s''(u) = \frac{c}{(u^2 + c)^{3/2}}.}
 #'
-#' every order a rational function of \eqn{u} over a half-integer power, so
-#' every order is computed without special functions or branches.
+#' Every order is a rational function of \eqn{u} over a half-integer power, so
+#' it is computed without special functions or branches.
 #'
 #' # The tails
 #'
@@ -281,10 +284,10 @@ smooth_probit <- function(h = NULL, per_group = FALSE) {
 #'
 #' There is no convolution identity relating \eqn{c} to the scale of a random
 #' break-point, so `tau_correction` is `NULL` and a consumer reports the
-#' apparent scale alone.
+#' apparent scale without a correction.
 #'
 #' @param c The squared transition width, a single positive number, or `NULL`
-#'   (the default) to be resolved at build as the **square** of the covariate's
+#'   (the default) to be resolved at build as the square of the covariate's
 #'   spacing, through [smoother_width()].
 #'
 #' @return An [abs_smoother()] named `"hyperbolic"`, with `width_name` `"c"`, a
@@ -332,8 +335,9 @@ smooth_hyperbolic <- function(c = NULL) {
 #' The Quintic Smoother of the Absolute Value
 #'
 #' @description
-#' \eqn{\lvert u\rvert} replaced inside \eqn{[-h, h]} by the even polynomial
-#' matching it to third order at the seam, and **exact** outside. It is the
+#' The quintic smoother replaces \eqn{\lvert u\rvert} inside \eqn{[-h, h]} by
+#' the even polynomial that matches it to third order at the seam, and is
+#' exact outside that interval. It is the
 #' only smoother here whose bias is zero beyond a finite radius, and the only
 #' one that is not analytic.
 #'
@@ -368,8 +372,9 @@ smooth_hyperbolic <- function(c = NULL) {
 #'
 #' Exactness outside the transition has a cost for a break-point. The second
 #' derivative of \eqn{s} in the break-point is \eqn{s''}, which is zero outside
-#' \eqn{[-h, h]}, so where no observation falls within \eqn{h} of the fitted
-#' break-point the break-point has no curvature at all and is not identified.
+#' \eqn{[-h, h]}. If the interval of half-width \eqn{h} around the fitted
+#' break-point contains no observation, the break-point has no curvature at all
+#' and is not identified.
 #' At a width of one median spacing this happens often for a discontinuous
 #' break-point on a uniform covariate, because a quarter of the gaps are wider
 #' than \eqn{2h}. The width resolved from a spacing \eqn{g} is therefore
@@ -474,17 +479,18 @@ smooth_quintic <- function(h = NULL) {
 #' subject and passes the whole vector.
 #'
 #' The derivatives are the functions carried by the smoother, evaluated
-#' directly. None is obtained by differencing, so order five is as accurate as
-#' order zero.
+#' directly and never by differencing, so order five is as accurate as order
+#' zero.
 #'
 #' @param smoother An [abs_smoother()]. Anything else is rejected.
 #' @param u A numeric vector of points.
 #' @param width The width, a single positive number or one per point, or `NULL`
 #'   (the default) for the smoother's own. A smoother built with `width = NULL`
-#'   and given none here is rejected, with the two ways to supply one named.
+#'   and given no width here is rejected, and the error message names the two
+#'   ways to supply one.
 #' @param order The derivative order, an integer from 0 to 5; a fractional
-#'   value is truncated toward zero. `0L` by default, which is \eqn{s} itself.
-#'   A value outside that range is rejected.
+#'   value is truncated toward zero. The default is `0L`, which is \eqn{s}
+#'   itself. A value outside that range is rejected.
 #'
 #' @return A numeric vector as long as `u`.
 #'
@@ -536,12 +542,13 @@ smoother_deriv <- function(smoother, u, width = NULL, order = 0L) {
 #' given on its page.
 #'
 #' A smoother that declares an `exact_radius` is equal to \eqn{\lvert u\rvert}
-#' beyond that radius, so a break-point smoothed with it has no curvature where
-#' no observation falls within the radius, and a gap in the covariate wider
-#' than twice the radius can hold such a break-point. Where `max_gap` is given,
-#' the width is therefore raised until the radius is at least
-#' \eqn{0.55} times it, the radius being taken to grow in proportion to the
-#' width, which holds for [smooth_quintic()], whose radius is its width. The
+#' beyond that radius, so a break-point smoothed with it has no curvature if
+#' the interval within the radius contains no observation, and a gap in the
+#' covariate wider than twice the radius can hold such a break-point. Where
+#' `max_gap` is given, the width is therefore raised until the radius is at
+#' least \eqn{0.55} times it. The function assumes that the radius grows in
+#' proportion to the width, which holds for [smooth_quintic()], whose radius
+#' is its width. The
 #' median spacing does not bound the largest gap: among \eqn{n} uniform points
 #' the largest gap is about \eqn{(\log n + \gamma)/\log 2} median spacings,
 #' with \eqn{\gamma} Euler's constant (9.5 at
@@ -554,12 +561,12 @@ smoother_deriv <- function(smoother, u, width = NULL, order = 0L) {
 #'
 #' @param smoother An [abs_smoother()]. Anything else is rejected.
 #' @param spacing A spacing in covariate units, one value or one per group.
-#'   Every entry must be positive and none may be missing; the check is not
-#'   made when the smoother already carries a width.
+#'   Every entry must be positive and not missing; the check is not made when
+#'   the smoother already carries a width.
 #' @param max_gap `NULL` (the default), or the largest gap between consecutive
-#'   distinct values of the covariate over the range a break-point may take,
-#'   one value or one per entry of `spacing`. Read only by a smoother with an
-#'   `exact_radius`.
+#'   distinct values of the covariate over the range that a break-point may
+#'   take, one value or one per entry of `spacing`. Only a smoother with an
+#'   `exact_radius` reads it.
 #'
 #' @return The width, on the smoother's own scale. The same length as `spacing`
 #'   when resolved from it, and a single number when the smoother carries one.
@@ -581,7 +588,7 @@ smoother_deriv <- function(smoother, u, width = NULL, order = 0L) {
 #' smoother_width(smooth_quintic(), 0.01, max_gap = 0.1)
 #' smoother_width(smooth_probit(), 0.01, max_gap = 0.1)
 #'
-#' @seealso [smoother_width_floor()] for the lower bound the arithmetic
+#' @seealso [smoother_width_floor()] for the lower bound that the arithmetic
 #'   imposes, [abs_smoother()] for what a width means.
 #' @export
 smoother_width <- function(smoother, spacing, max_gap = NULL) {
@@ -611,7 +618,7 @@ smoother_width <- function(smoother, spacing, max_gap = NULL) {
   ifelse(r < need, w * need / r, w)
 }
 
-#' The Smallest Width a Consumer May Use
+#' The Smallest Width That a Consumer May Use
 #'
 #' @description
 #' Returns the floor of the width, derived from the conditioning of the
@@ -657,7 +664,7 @@ smoother_width <- function(smoother, spacing, max_gap = NULL) {
 #' max(smoother_width(smooth_probit(), 0.3),
 #'     smoother_width_floor(smooth_probit(), scale = 10))
 #'
-#' @seealso [smoother_width()] for the width the data suggests,
+#' @seealso [smoother_width()] for the width resolved from the data,
 #'   [abs_smoother()] for what a width means.
 #' @export
 smoother_width_floor <- function(smoother, scale) {
@@ -678,8 +685,8 @@ smoother_width_floor <- function(smoother, scale) {
 #'
 #' @description
 #' Writes one line naming the smoother and its width, and adds a line for each
-#' of the two optional properties it declares: a scale correction for a random
-#' break-point, and exactness outside the transition.
+#' optional property that the smoother declares: a scale correction for a
+#' random break-point, and exactness outside the transition.
 #'
 #' @details
 #' The width line reads `h resolved at build` where the smoother carries none,
@@ -719,7 +726,7 @@ S7::method(print, abs_smoother) <- function(x, ...) {
 #' Check a Smoother of the Absolute Value Numerically
 #'
 #' @description
-#' Compares a smoother against the properties every smoother of
+#' Compares a smoother against the properties that every smoother of
 #' \eqn{\lvert u\rvert} must have, and each derivative order against one
 #' numerical differentiation of the analytic order below it. Returns one row
 #' per check with the worst error and a pass or fail. Applied to a
@@ -728,7 +735,8 @@ S7::method(print, abs_smoother) <- function(x, ...) {
 #' @details
 #' # The rows
 #'
-#' Ten checks, and two more for a smoother declaring a scale correction:
+#' The table lists the checks. The last two rows apply only to a smoother that
+#' declares a scale correction.
 #'
 #' | row | what it asserts |
 #' |---|---|
@@ -741,7 +749,7 @@ S7::method(print, abs_smoother) <- function(x, ...) {
 #' | `tau_correction bounded by tau` | the correction never increases a scale |
 #' | `tau_correction is the identity at width zero` | it vanishes as the smoothing does |
 #'
-#' Order \eqn{k} goes against \pkg{numDeriv} applied **once** to the analytic
+#' Order \eqn{k} goes against \pkg{numDeriv} applied once to the analytic
 #' order \eqn{k-1}, so a wrong derivative is caught against an independent
 #' route while the reference never degenerates into a difference of
 #' differences. For the three shipped smoothers every row passes, with errors
@@ -756,8 +764,8 @@ S7::method(print, abs_smoother) <- function(x, ...) {
 #'
 #' The grid spans the transition and the tails, placed by the smoother's own
 #' intrinsic scale \eqn{s(0)}, which is of order the transition width for any
-#' smoother of the absolute value, so no reading of what the width parameter
-#' means is needed. Every point sits off zero and off the seam, because a
+#' smoother of the absolute value, so the placement does not depend on what the
+#' width parameter means. Every point sits off zero and off the seam, because a
 #' piecewise smoother has isolated points at which only one-sided derivatives
 #' exist, and a difference that straddles such a point is meaningless.
 #'
@@ -769,11 +777,12 @@ S7::method(print, abs_smoother) <- function(x, ...) {
 #' The examples below reproduce it.
 #'
 #' @param smoother An [abs_smoother()]. Anything else is rejected.
-#' @param width The width to check at, a single positive number, or `NULL` (the
-#'   default) for the smoother's own. A smoother carrying none is checked at
-#'   `0.5`, a scale chosen to exercise the formulas and unrelated to any data.
-#' @param tol The relative error above which a row is reported as `FAILED`. A
-#'   single positive number, `1e-6` by default. The errors of the three shipped
+#' @param width The width at which the smoother is checked, a single positive
+#'   number, or `NULL` (the default) for the smoother's own. A smoother carrying
+#'   none is checked at `0.5`, a scale chosen to exercise the formulas and
+#'   unrelated to any data.
+#' @param tol The relative error above which a row is reported as `FAILED`. It
+#'   is a single positive number and defaults to `1e-6`. The errors of the three shipped
 #'   smoothers are of order `1e-10`, about four orders of magnitude below it, so
 #'   the default separates a correct smoother from one whose derivative is wrong
 #'   in its fourth digit.
@@ -781,10 +790,10 @@ S7::method(print, abs_smoother) <- function(x, ...) {
 #'   the width, then the table without row names, and returns invisibly.
 #'   `FALSE` returns the table.
 #'
-#' @return A data frame with one row per check and three columns: `check`
+#' @return A data frame with one row per check and the columns `check`
 #'   (character), `max_error` (numeric) and `status` (character, `"OK"` or
-#'   `"FAILED"`). Ten rows, or twelve when the smoother declares a
-#'   `tau_correction`. Returned invisibly when `verbose` is `TRUE`.
+#'   `"FAILED"`). It has ten rows, or twelve when the smoother declares a
+#'   `tau_correction`, and it is returned invisibly when `verbose` is `TRUE`.
 #'
 #' @section Errors:
 #' \pkg{numDeriv} is in `Suggests` and every derivative row needs it, so the
@@ -811,7 +820,7 @@ S7::method(print, abs_smoother) <- function(x, ...) {
 #' bad[bad$status != "OK", c("check", "max_error")]
 #'
 #' @seealso [abs_smoother()] for the class being checked,
-#'   [smoother_deriv()] for the derivatives it reads,
+#'   [smoother_deriv()] for the derivatives that it reads,
 #'   `penalties7::check_penalty()` for the sibling on a penalty.
 #' @export
 check_abs_smoother <- function(smoother, width = NULL, tol = 1e-6,

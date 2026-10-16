@@ -165,7 +165,7 @@ NULL
 #' Two switching guards are tightened relative to the paper, measured on the
 #' Wronskian identity \eqn{I_\nu K_{\nu+1} + I_{\nu+1} K_\nu = 1/x}: the
 #' large-argument expansions are used only where their truncation error is
-#' below \eqn{10^{-11}}, the uniform expansion taking over otherwise.
+#' below \eqn{10^{-11}}, and the uniform expansion is used otherwise.
 #'
 #' The compiled kernel never calls the R API. It is also registered as the C
 #' entry point `n7_log_bessel_i`, resolved with
@@ -229,7 +229,7 @@ log_bessel_i <- function(x, nu, threads = 1L) {
 #' and the same formulas as the compiled kernel behind [log_bessel_i()]. It
 #' serves as the independent reference against which the tests compare that
 #' kernel, so a change to one side that is not made to the other shows up as a
-#' disagreement. No production code calls it; the production route is
+#' disagreement. Only the tests call it; the production route is
 #' [log_bessel_i()].
 #'
 #' @details
@@ -305,7 +305,8 @@ log_bessel_i <- function(x, nu, threads = 1L) {
 #' Rothwell (2006), evaluated on the log scale over a composite Simpson rule.
 #'
 #' @param x A numeric vector of arguments, recycled against `nu`. Positive; zero
-#'   gives `Inf`, \eqn{K} diverging there, and a negative value gives `NA`.
+#'   gives `Inf`, because \eqn{K} diverges there, and a negative value gives
+#'   `NA`.
 #' @param nu A numeric vector of orders, of any sign, entering as \eqn{|\nu|}.
 #'   Unlike [log_bessel_i()] this takes no `threads` argument: its hybrid branch
 #'   calls R's own scaled `besselK`, which can raise a warning, and a warning
@@ -353,12 +354,13 @@ log_bessel_k <- function(x, nu) {
 #' the same formulas as the compiled kernel behind [log_bessel_k()]. It serves
 #' as the independent reference against which the tests compare that kernel,
 #' so a change to one side that is not made to the other shows up as a
-#' disagreement. No production code calls it; the production route is
+#' disagreement. Only the tests call it; the production route is
 #' [log_bessel_k()].
 #'
 #' @details
 #' `x` and `nu` are recycled against each other to the longer length, and the
-#' order enters as \eqn{|\nu|}, \eqn{K} being even in it. The branches are the
+#' order enters as \eqn{|\nu|}, because \eqn{K} is even in it. The branches are
+#' the
 #' large-argument and large-order expansions, R's own scaled `besselK` in the
 #' moderate region, and the Rothwell integral in the corner where that scaled
 #' value overflows or comes close to it, as described on the page of
@@ -417,17 +419,17 @@ log_bessel_k <- function(x, nu) {
 #' @description
 #' Computes \eqn{\log I_\nu(x)} together with its first four derivatives with
 #' respect to the *argument*. The first is the ratio identity
-#' \eqn{(\log I_\nu)' = \nu/x + I_{\nu+1}/I_\nu}, with the ratio formed as the
-#' exponential of a difference of logarithms and therefore finite wherever the
-#' logarithms are. The higher orders follow from the modified Bessel equation
+#' \eqn{(\log I_\nu)' = \nu/x + I_{\nu+1}/I_\nu}, in which the ratio is formed
+#' as the exponential of a difference of logarithms and is therefore finite
+#' wherever the logarithms are. The higher orders follow from the modified Bessel equation
 #' and need no further Bessel evaluations, so the value and the four
 #' derivatives require two evaluations of \eqn{\log I}, at the orders \eqn{\nu}
 #' and \eqn{\nu + 1}.
 #'
 #' @details
 #' Derivatives with respect to the *order* have no elementary form and are not
-#' provided. A caller needing one differences [log_bessel_i()] with a single
-#' stencil from [fd_derivative()].
+#' provided. A caller who needs one can difference [log_bessel_i()] with a
+#' single stencil from [fd_derivative()].
 #'
 #' @param x A numeric vector of arguments, positive, recycled against `nu`.
 #' @param nu A numeric vector of orders, non-negative.
@@ -485,7 +487,8 @@ log_bessel_i_derivs <- function(x, nu) {
 #'
 #' @return A named list of five numeric vectors, each of the recycled length of
 #'   `x` and `nu`: `l`, the value, and `d1` to `d4`, its derivatives in the
-#'   argument. `d1` is negative at every order, `K` decreasing in its argument.
+#'   argument. `d1` is negative at every order, because \eqn{K} decreases in
+#'   its argument.
 #'
 #' @references
 #' Plesner, A., Sørensen, H. H. B., and Hauberg, S. (2024). Accurate

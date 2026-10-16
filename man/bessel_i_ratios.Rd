@@ -24,9 +24,9 @@ returns all \eqn{m} of them in one pass.
 }
 \section{The backward recurrence}{
 The three-term recurrence \eqn{I_{j-1} - I_{j+1} = (2j/\kappa) I_j} has two
-solutions, one growing and one decaying. Run upwards it should follow the
-decaying one and instead follows rounding error into the growing one, so it
-is unstable. Run downwards the roles swap and it is stable, which is
+solutions: one grows and the other decays. The ratios are the decaying
+solution, and computed upwards the recurrence is unstable, because rounding
+error excites the growing one. Computed downwards it is stable, which is
 Miller's algorithm. The ratios \eqn{r_j = I_j/I_{j-1}} satisfy
 \eqn{r_j = 1/(2j/\kappa + r_{j+1})}, started from \eqn{r_{n_0+1} = 0} at
 an index far enough above both \eqn{m} and \eqn{\kappa}; the result is
@@ -43,8 +43,8 @@ therefore costs less than one quadrature per observation, and the von Mises
 distribution function is evaluated this way.
 
 \code{\link[=bessel_i_ratio]{bessel_i_ratio()}} is the first of these ratios and switches to an
-asymptotic series from \eqn{\kappa = 30}. No such branch is implemented
-here: the recurrence needs a starting index above \eqn{\kappa}, so its cost
+asymptotic series from \eqn{\kappa = 30}. This function has no such branch:
+the recurrence needs a starting index above \eqn{\kappa}, so its cost
 grows with the concentration, and at such concentrations a series in these
 ratios does not converge in a useful number of terms.
 }

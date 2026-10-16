@@ -11,7 +11,7 @@ fd_step(x, order, accuracy = 2L, bounds = NULL)
 
 \item{order}{The derivative order \eqn{d}.}
 
-\item{accuracy}{The accuracy the stencil will be built at, \code{2} by default.
+\item{accuracy}{The accuracy at which the stencil is built, \code{2} by default.
 Matches \code{\link[=fd_offsets]{fd_offsets()}}'s argument of the same name.}
 
 \item{bounds}{An optional numeric vector of two domain bounds, either of
@@ -34,7 +34,7 @@ inside the domain.
 Truncation grows like \eqn{h^{a}} and rounding like \eqn{\varepsilon h^{-d}},
 and this is where the two meet. The factor \eqn{\max(1, \lvert x \rvert)}
 makes the step relative for a large argument and absolute for a small one, so
-a point near zero does not get a step below the resolution of its own
+the step at a point near zero is not below the resolution of its own
 neighborhood.
 
 At the default accuracy the exponent is \eqn{1/4} for a second derivative and
@@ -51,8 +51,8 @@ margin is 0.49 of the distance to the bound, divided by the reach.
 }
 
 \section{A point on a bound}{
-A point sitting exactly on a finite bound gets a step of \strong{zero}, and a
-stencil divided by \eqn{h^{d}} is then \code{NaN}. The function does not check the
+At a point exactly on a finite bound the step is zero, and a stencil divided
+by \eqn{h^{d}} is then \code{NaN}. The function does not check the
 evaluation point. For a point on a bound the caller moves the point strictly
 inside the domain, or applies a one-sided stencil with an explicitly chosen
 step.
@@ -73,6 +73,6 @@ fd_step(0, 2, bounds = c(0, Inf))
 
 }
 \seealso{
-\code{\link[=fd_derivative]{fd_derivative()}}, which calls this when no step is given,
-\code{\link[=fd_offsets]{fd_offsets()}} for the reach the clamp divides by.
+\code{\link[=fd_derivative]{fd_derivative()}}, which calls this when the caller supplies no
+step, \code{\link[=fd_offsets]{fd_offsets()}} for the reach by which the clamp divides.
 }

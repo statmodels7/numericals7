@@ -8,7 +8,8 @@ log_bessel_k(x, nu)
 }
 \arguments{
 \item{x}{A numeric vector of arguments, recycled against \code{nu}. Positive; zero
-gives \code{Inf}, \eqn{K} diverging there, and a negative value gives \code{NA}.}
+gives \code{Inf}, because \eqn{K} diverges there, and a negative value gives
+\code{NA}.}
 
 \item{nu}{A numeric vector of orders, of any sign, entering as \eqn{|\nu|}.
 Unlike \code{\link[=log_bessel_i]{log_bessel_i()}} this takes no \code{threads} argument: its hybrid branch

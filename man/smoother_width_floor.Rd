@@ -2,7 +2,7 @@
 % Please edit documentation in R/abs_smoother.R
 \name{smoother_width_floor}
 \alias{smoother_width_floor}
-\title{The Smallest Width a Consumer May Use}
+\title{The Smallest Width That a Consumer May Use}
 \usage{
 smoother_width_floor(smoother, scale)
 }
@@ -54,6 +54,6 @@ max(smoother_width(smooth_probit(), 0.3),
 
 }
 \seealso{
-\code{\link[=smoother_width]{smoother_width()}} for the width the data suggests,
+\code{\link[=smoother_width]{smoother_width()}} for the width resolved from the data,
 \code{\link[=abs_smoother]{abs_smoother()}} for what a width means.
 }

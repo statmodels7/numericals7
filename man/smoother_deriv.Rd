@@ -13,11 +13,12 @@ smoother_deriv(smoother, u, width = NULL, order = 0L)
 
 \item{width}{The width, a single positive number or one per point, or \code{NULL}
 (the default) for the smoother's own. A smoother built with \code{width = NULL}
-and given none here is rejected, with the two ways to supply one named.}
+and given no width here is rejected, and the error message names the two
+ways to supply one.}
 
 \item{order}{The derivative order, an integer from 0 to 5; a fractional
-value is truncated toward zero. \code{0L} by default, which is \eqn{s} itself.
-A value outside that range is rejected.}
+value is truncated toward zero. The default is \code{0L}, which is \eqn{s}
+itself. A value outside that range is rejected.}
 }
 \value{
 A numeric vector as long as \code{u}.
@@ -33,8 +34,8 @@ arrives: a break-point term with \code{per_group = TRUE} resolves one width per
 subject and passes the whole vector.
 
 The derivatives are the functions carried by the smoother, evaluated
-directly. None is obtained by differencing, so order five is as accurate as
-order zero.
+directly and never by differencing, so order five is as accurate as order
+zero.
 }
 \examples{
 # The smooth sign: odd, bounded by one, and passing through zero.

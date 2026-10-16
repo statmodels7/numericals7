@@ -21,12 +21,13 @@ Computes \eqn{\log K_\nu(x)} in vectorized R, through the same branches and
 the same formulas as the compiled kernel behind \code{\link[=log_bessel_k]{log_bessel_k()}}. It serves
 as the independent reference against which the tests compare that kernel,
 so a change to one side that is not made to the other shows up as a
-disagreement. No production code calls it; the production route is
+disagreement. Only the tests call it; the production route is
 \code{\link[=log_bessel_k]{log_bessel_k()}}.
 }
 \details{
 \code{x} and \code{nu} are recycled against each other to the longer length, and the
-order enters as \eqn{|\nu|}, \eqn{K} being even in it. The branches are the
+order enters as \eqn{|\nu|}, because \eqn{K} is even in it. The branches are
+the
 large-argument and large-order expansions, R's own scaled \code{besselK} in the
 moderate region, and the Rothwell integral in the corner where that scaled
 value overflows or comes close to it, as described on the page of

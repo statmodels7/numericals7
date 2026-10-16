@@ -22,8 +22,9 @@ abs_smoother(
 \item{width}{The transition width, a single positive number, or \code{NULL} to be
 resolved at build.}
 
-\item{width_name}{What the width parameter is called, a single non-empty
-string: \code{"h"} for a length and \code{"c"} for a squared one. \code{"h"} by default.}
+\item{width_name}{The name of the width parameter, a single non-empty
+string: \code{"h"} for a length and \code{"c"} for a squared one. The default is
+\code{"h"}.}
 
 \item{per_group}{\code{TRUE} when the width is resolved per group, \code{FALSE} (the
 default) for one width throughout.}
@@ -44,13 +45,14 @@ beyond which \eqn{s(u) = \lvert u\rvert} exactly. Only the quintic has
 one.}
 }
 \value{
-An S7 object of class \code{abs_smoother} carrying the eight properties
-above.
+An S7 object of class \code{abs_smoother} whose properties are the
+arguments above.
 }
 \description{
-A smooth replacement \eqn{s(u)} for \eqn{\lvert u \rvert}, carrying its
-derivatives in \eqn{u} up to order five as functions. Every non-smooth
-primitive the toolkit uses is generated from the absolute value:
+An \code{abs_smoother} is a smooth replacement \eqn{s(u)} for
+\eqn{\lvert u \rvert} that carries its derivatives in \eqn{u} up to order
+five as functions. Every non-smooth primitive that the toolkit uses is
+generated from the absolute value:
 
 \deqn{\operatorname{sign}(u) = \frac{d\lvert u\rvert}{du}, \qquad
   \mathbb{1}(u \geq 0) = \frac{1 + \operatorname{sign}(u)}{2}, \qquad
@@ -89,13 +91,14 @@ window of a Laplace approximation is per subject.
 }
 
 \section{The scale correction}{
-\code{tau_correction} is a property of the mollifier and of no model. The probit
-smoother satisfies an exact convolution identity, smoothing with width
-\eqn{h} being the same as convolving the break-point with \eqn{N(0, h^2)},
-so an apparent scale \eqn{\tau} of a random break-point composes as
-\eqn{\tau^2_{\mathrm{true}} = \tau^2 - h^2} and the smoother declares that
-correction. Smoothers with no such identity declare \code{NULL}, and a consumer
-then reports the apparent scale alone.
+\code{tau_correction} is a property of the mollifier and not of a model. The
+probit smoother satisfies an exact convolution identity: smoothing with
+width \eqn{h} is the same as convolving the break-point with
+\eqn{N(0, h^2)}. An apparent scale \eqn{\tau} of a random break-point
+therefore composes as \eqn{\tau^2_{\mathrm{true}} = \tau^2 - h^2}, and the
+smoother declares that correction. Smoothers without such an identity
+declare \code{NULL}, and a consumer then reports the apparent scale without a
+correction.
 }
 
 \examples{

@@ -28,7 +28,8 @@ in double precision it underflows to zero beyond about
 \eqn{\kappa = 10^{154}}.
 }
 \description{
-Compute the derivatives of \eqn{A(\kappa) = I_1(\kappa)/I_0(\kappa)} in
+These functions compute the derivatives of
+\eqn{A(\kappa) = I_1(\kappa)/I_0(\kappa)} in
 \eqn{\kappa}, one function per order: \code{bessel_i_ratio_d1()} returns
 \eqn{A'}, \code{bessel_i_ratio_d2()} \eqn{A''}, and so on to the fourth. Each
 computes its own order and the orders below it that the computation
@@ -41,7 +42,7 @@ differentiated repeatedly:
 \deqn{A'' = -\frac{A'}{\kappa} + \frac{A}{\kappa^2} - 2AA', \qquad
       A''' = -\frac{A''}{\kappa} + \frac{2A'}{\kappa^2} -
       \frac{2A}{\kappa^3} - 2(A')^2 - 2AA'',}
-and the fourth in the same pattern. In double precision this identity
+and the fourth follows the same pattern. In double precision this identity
 cancels at both ends of the range: at small \eqn{\kappa} its terms are of
 order \eqn{\kappa^{-n}} at derivative \eqn{n} while the result is of order
 one or \eqn{\kappa}, and at large \eqn{\kappa} the derivative \eqn{A'} is

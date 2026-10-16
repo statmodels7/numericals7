@@ -29,9 +29,9 @@ three that declares a scale correction for a random break-point.
 }
 \section{The closed form}{
 \deqn{s(u) = u\,\bigl(2\Phi(u/h) - 1\bigr) + 2h\,\phi(u/h), \qquad
-  s'(u) = 2\Phi(u/h) - 1, \qquad s''(u) = \frac{2}{h}\,\phi(u/h),}
+  s'(u) = 2\Phi(u/h) - 1, \qquad s''(u) = \frac{2}{h}\,\phi(u/h).}
 
-with the third to fifth derivatives following from
+The third to fifth derivatives follow from
 \eqn{\phi'(z) = -z\phi(z)}. At the kink \eqn{s(0) = 2h\phi(0) \approx
 0.798h}, which is the intrinsic scale by which \code{\link[=check_abs_smoother]{check_abs_smoother()}}
 places its grid.

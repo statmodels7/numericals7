@@ -23,7 +23,7 @@ Computes \eqn{\log I_\nu(x)} in vectorized R, through the same seven branches
 and the same formulas as the compiled kernel behind \code{\link[=log_bessel_i]{log_bessel_i()}}. It
 serves as the independent reference against which the tests compare that
 kernel, so a change to one side that is not made to the other shows up as a
-disagreement. No production code calls it; the production route is
+disagreement. Only the tests call it; the production route is
 \code{\link[=log_bessel_i]{log_bessel_i()}}.
 }
 \details{

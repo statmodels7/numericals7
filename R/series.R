@@ -5,9 +5,9 @@ NULL
 #'
 #' @description
 #' Computes \eqn{\sum_{k \ge k_0} t(k; \theta_i)} for every row \eqn{i} at once.
-#' Terms are evaluated in blocks as one matrix, and a row retires as soon as it
-#' converges, so rows that have converged are not evaluated again while slower
-#' rows continue. This is the discrete counterpart of [quad_vec()], written for
+#' Terms are evaluated in blocks as one matrix, and the summation of a row stops
+#' as soon as the row converges, so rows that have converged are not evaluated
+#' again while slower rows continue. This is the discrete counterpart of [quad_vec()], written for
 #' the same reason: the toolkit's sums are one series at many parameter values.
 #'
 #' @details
@@ -32,26 +32,26 @@ NULL
 #'
 #' \deqn{R = 2\,A_4\,\frac{q}{1 - q}.}
 #'
-#' A row retires when \eqn{q < 1} (or \eqn{A_4 = 0}), \eqn{R \le b}, and the
-#' last block contributed at most \eqn{b}.
+#' The summation of a row stops when \eqn{q < 1} (or \eqn{A_4 = 0}),
+#' \eqn{R \le b}, and the last block contributed at most \eqn{b}.
 #'
 #' The estimate bounds the tail of a series whose terms decay geometrically or
 #' faster. For terms that decay like \eqn{k^{-p}}, geometric continuation
 #' underestimates the tail by a factor that tends to \eqn{(p - 1)/p}, and the
-#' factor 2 covers every \eqn{p \ge 2}; a slower decay, \eqn{1/k^2} included,
+#' factor 2 covers every \eqn{p \ge 2}; a slower decay, including \eqn{1/k^2},
 #' does not reach its budget within the default `max_terms` and returns `NA`.
-#' The sum of \eqn{1/k^3} from one retires after about 75000 terms with a
+#' The sum of \eqn{1/k^3} from one stops after about 75000 terms with a
 #' relative error below the default `rtol`.
 #'
-#' Rising terms give \eqn{q > 1}, so a block that lies before the mode of a
-#' hump-shaped term does not retire its row, however small its terms are:
-#' `dpois(0:63, 300)` sums to 3.8e-62 and is still rising.
+#' Rising terms give \eqn{q > 1}, so the summation does not stop at a block
+#' that lies before the mode of a hump-shaped term, however small its terms
+#' are: `dpois(0:63, 300)` sums to 3.8e-62 and is still rising.
 #'
 #' # Rows of zeros
 #'
-#' A block whose terms are all zero retires a row only after the row has seen
-#' a nonzero term, so the zeros past a finite support end the sum. A row that
-#' has seen only zeros is probed ahead on a geometric grid of relative spacing
+#' A block whose terms are all zero stops the summation of a row only if the
+#' row already has a nonzero term, so the zeros past a finite support end the
+#' sum. A row whose terms have all been zero is probed ahead on a geometric grid of relative spacing
 #' 1/128, up to the index \eqn{2^{31}}, in one call to `term`. If every probe
 #' is zero the row is taken as identically zero and returns 0, as a
 #' structurally null component of an expected Hessian does; otherwise the
@@ -63,19 +63,19 @@ NULL
 #'
 #' # Rows that do not converge
 #'
-#' A row still unconverged after `max_terms` terms returns `NA`, and one
+#' A row that has not converged after `max_terms` terms returns `NA`, and one
 #' warning lists the first eight such rows (followed by an ellipsis if there
 #' are more).
 #'
 #' @param term The term function, a function of `k` and `i` as described above.
 #' @param n The number of parameter rows, a positive whole number. It fixes the
-#'   length of the answer and the range `i` takes.
+#'   length of the answer and the range of `i`.
 #' @param from The first summation index, `0` by default. Pass `1` for a series
 #'   indexed from one.
 #' @param atol,rtol The absolute and relative budgets per row, defaulting to
 #'   `1e-12` and `1e-10`. A row is judged against the larger of the two, so
 #'   `atol` governs a sum near zero and `rtol` a large one. Both are tighter
-#'   than [quad_vec()]'s, a term being cheaper than a panel.
+#'   than those of [quad_vec()], because a term is cheaper than a panel.
 #' @param max_terms The number of terms after which a row that has not
 #'   converged returns `NA`, `100000` by default. Terms are evaluated in whole
 #'   blocks, so a row may consume up to the first multiple of `block` at or

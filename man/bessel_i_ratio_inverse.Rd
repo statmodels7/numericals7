@@ -8,15 +8,15 @@ bessel_i_ratio_inverse(rho, threads = 1L)
 }
 \arguments{
 \item{rho}{A numeric vector of mean resultant lengths, strictly inside
-\eqn{(0, 1)}. Anything outside, the endpoints included, returns \code{NA}
-without a warning (at \eqn{\rho = 0} the inverse is the limit 0, and at
+\eqn{(0, 1)}. A value outside this interval, including the endpoints,
+returns \code{NA} without a warning (at \eqn{\rho = 0} the inverse is the limit 0, and at
 \eqn{\rho = 1} it diverges).}
 
 \item{threads}{The number of threads, a positive whole number.}
 }
 \value{
 A numeric vector of concentrations the length of \code{rho}, \code{NA}
-wherever \code{rho} left \eqn{(0, 1)}.
+wherever \code{rho} lies outside \eqn{(0, 1)}.
 }
 \description{
 Computes \eqn{\kappa = A^{-1}(\rho)}, the concentration whose ratio

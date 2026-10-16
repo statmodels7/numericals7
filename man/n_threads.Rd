@@ -3,7 +3,7 @@
 \name{n_threads}
 \alias{n_threads}
 \alias{print.n_threads}
-\title{How Many Threads and Worker Processes a Fit May Use}
+\title{How Many Threads and Worker Processes That a Fit May Use}
 \usage{
 n_threads(threads = 1, workers = 1)
 
@@ -20,15 +20,15 @@ warning followed by R's error "missing value where TRUE/FALSE needed".}
 
 \item{workers}{A single whole number, at least 1, and the default is \code{1}:
 how many R processes the independent units of a fit may use. \code{1} runs
-them in this process. Validated exactly as \code{threads} is.}
+them in this process. It is validated exactly as \code{threads} is.}
 
 \item{x}{An \code{n_threads} object.}
 
 \item{...}{Unused, and present because \code{print()} requires it.}
 }
 \value{
-\code{n_threads()} returns an object of class \code{"n_threads"}, a list of two
-components:
+\code{n_threads()} returns an object of class \code{"n_threads"}, a list with
+the components:
 \describe{
 \item{\code{threads}}{integer, the thread count, at least 1.}
 \item{\code{workers}}{integer, the worker-process count, at least 1.}
@@ -37,7 +37,7 @@ Read them with \code{\link[=thread_count]{thread_count()}} and \code{\link[=work
 first. \code{print()} returns its argument invisibly.
 }
 \description{
-Constructs the parallelism policy an entry point such as
+Constructs the parallelism policy that an entry point such as
 \code{statmodels7::statmod()} or \code{distributions7::fit_distrib()}
 accepts through its \code{threads} argument. The default, one thread and
 one process, takes exactly the sequential code path; a larger
@@ -53,8 +53,8 @@ thread, reductions are never split across threads, and a kernel returns the
 same bits at any count. A fold's fit is a complete independent computation,
 and the folds are collected in fold order however many processes ran them.
 
-Two properties of the drivers make that hold, and neither belongs to the
-kernels themselves. A worker installs the calling thread's floating-point
+This holds because of two properties of the drivers, and not of the
+kernels. A worker installs the calling thread's floating-point
 environment before running its chunk, because without it some of the
 platform's own math routines (among them R's \code{psigamma} at higher orders,
 \code{bessel_k}, and \code{pgamma} and \code{pbeta} on the log scale) can return results
@@ -62,19 +62,19 @@ that differ in the last bits between threads. The sequential branch also
 runs through the same compiled function as the parallel one, so a compiler
 cannot optimize the two differently.
 
-One qualification. In the dense assembly products of \pkg{statmodels7},
-raising the count first \emph{engages} a threaded kernel where a BLAS expression
-stood. That kernel is a second implementation of the same sum: bit-exact
-against the reference BLAS R ships, and within the rounding of one dot
-product against an optimized BLAS such as OpenBLAS or Accelerate, whose
-accumulation order is its own.
+The dense assembly products of \pkg{statmodels7} are an exception. There,
+a count above 1 replaces a BLAS expression by a threaded kernel, which is a
+second implementation of the same sum. Its result is bit-exact against the
+reference BLAS shipped with R, and agrees within the rounding of one dot
+product with an optimized BLAS such as OpenBLAS or Accelerate, which
+accumulates in its own order.
 
 The guarantee is a design constraint on any kernel added later.
 }
 
 \section{The sequential path}{
-At \code{threads = 1} no parallel region is entered and the process-level thread
-setting is left unchanged. The code taken is the sequential one, not a
+At \code{threads = 1} the code enters no parallel region and leaves the
+process-level thread setting unchanged. The code taken is the sequential one, not a
 parallel path running on a single thread.
 
 Each kernel carries an internal threshold as well, measured where the cost of
@@ -84,8 +84,8 @@ sequential regardless of the count.
 
 \section{Threads inside worker processes}{
 A fit running inside a worker process is sequential by construction, so
-\code{workers = 4} opens up to four processes, each fitting on one thread, never
-\code{4 * threads} of them.
+\code{workers = 4} opens up to four processes, and each of them fits on one
+thread; it never opens \code{4 * threads} of them.
 
 Worker processes are separate R sessions that load the installed packages,
 which makes them safe for the S7 objects carried by a fold's fit; this is
@@ -95,9 +95,9 @@ only when each fold takes longer than that.
 }
 
 \section{Printing}{
-\code{print()} shows the call that would rebuild the object, with \code{workers} shown
-only when it is not 1, and appends \verb{[sequential]} when both counts are 1. It
-returns its argument invisibly.
+\code{print()} shows the call that would rebuild the object, which includes
+\code{workers} only when it is not 1, and appends \verb{[sequential]} when both counts
+are 1. It returns its argument invisibly.
 }
 
 \examples{

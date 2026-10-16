@@ -41,8 +41,8 @@ A block holds positions within a multi-index, not variables. A variable
 repeated in that multi-index therefore counts with its correct multiplicity
 and needs no bookkeeping of its own: differentiating three times in one
 variable and once in another sums over the same fifteen partitions as four
-distinct variables do, and what differs is which derivative each block
-names. \code{\link[=tuple_indices]{tuple_indices()}} supplies the multi-index into which the positions
+distinct variables do, and only the derivative that each block names
+differs. \code{\link[=tuple_indices]{tuple_indices()}} supplies the multi-index into which the positions
 point.
 }
 

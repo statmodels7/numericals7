@@ -25,8 +25,8 @@ coordinates, the components and the declarations.}
 
 \item{comp, m}{An integer matrix of counts, one row per multi-index.}
 
-\item{kidx}{A list of such matrices, the first being the function's own
-zero row.}
+\item{kidx}{A list of such matrices, of which the first is the function's
+own zero row.}
 
 \item{accuracy}{The order of accuracy of the stencils.}
 
@@ -48,7 +48,8 @@ zero row.}
 integer matrix; \code{as_columns()} a list of double vectors.
 }
 \description{
-Internal functions of \code{\link[=fd_tensor]{fd_tensor()}}. \code{tensor_plan()} returns the plan of a
+These are internal functions of \code{\link[=fd_tensor]{fd_tensor()}}. \code{tensor_plan()} returns the
+plan of a
 request from the session's cache, computing it in C++ on the first call
 with that key. \code{is_whole()} tests for a single finite whole number.
 \code{counts_of_order()} returns the multi-indices of one total order as rows of

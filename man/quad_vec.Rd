@@ -26,17 +26,18 @@ either of which may be infinite. Every \code{lower} must be strictly below its
 to \code{1e-10} and \code{1e-8}. A row is judged against the larger of the two, so
 \code{atol} governs an integral near zero and \code{rtol} a large one. With
 \code{atol = 0} an \code{rtol} below the floor of the rule signals an error; with a
-positive \code{atol} any \code{rtol} is accepted, \code{rtol = 0} included.}
+positive \code{atol} any \code{rtol} is accepted, including \code{rtol = 0}.}
 
-\item{max_depth}{The greatest number of bisections one panel may undergo,
-\code{48} by default. It governs the integration of an endpoint singularity,
-and not every integrable singularity is reached: at the default the
+\item{max_depth}{The greatest number of bisections that one panel may
+undergo, \code{48} by default. It governs the integration of an endpoint
+singularity, and some integrable singularities remain out of reach: at the
+default the
 density of a gamma distribution with shape 0.5 is integrated and the one
 with shape 0.45 returns \code{NA}, while with \code{max_depth = 200} shape 0.2 is
 integrated and shape 0.1 returns \code{NA}. A row past the budget returns \code{NA}.}
 
-\item{max_panels}{The greatest number of panels one row may hold, \code{4096} by
-default. A row still over its budget once it holds that many returns \code{NA}.
+\item{max_panels}{The greatest number of panels that one row may hold,
+\code{4096} by default. A row still over its budget once it holds that many returns \code{NA}.
 It bounds the memory of a row whose error estimate does not fall with
 bisection, and at the default it admits \verb{cos(16000 x)} on the unit
 interval, which needs between 2048 and 4096 panels. The count is per row,
@@ -67,7 +68,7 @@ which that row belongs. It returns the values elementwise, either as a matrix sh
 \code{x} or as a vector in column-major order.
 
 Elementwise recycling does the indexing. For a gamma mean at parameter
-vectors of length \eqn{n}:
+vectors of length \eqn{n} the integrand is
 
 \if{html}{\out{<div class="sourceCode">}}\preformatted{f <- function(x, i) x * dgamma(x, shape = shp[i], rate = rt[i])
 }\if{html}{\out{</div>}}
@@ -77,7 +78,7 @@ vectors of length \eqn{n}:
 
 \section{Batched adaptivity}{
 Each panel carries the error estimate of its Gauss-Kronrod pair. A row
-converges when the \emph{sum} of its panel errors fits the budget
+converges when the sum of its panel errors fits the budget
 \eqn{\max(\mathrm{atol}, \mathrm{rtol}\,\lvert I_i \rvert)}. Until then the
 row's worst panels are bisected, and the splits from every row join the next
 single evaluation, so one hard row refines its own panels without
@@ -86,8 +87,9 @@ serializing the others.
 The budget is judged on the sum because the alternative of giving each panel
 a share proportional to its length cannot integrate an endpoint singularity
 at all: near such a point the error stays concentrated in the innermost
-panel however deep the bisection goes, so a per-length share demands of that
-panel an accuracy that no depth reaches. With the sum, the smooth panels
+panel however deep the bisection goes, so a share proportional to length
+would require of that panel an accuracy that bisection cannot reach at any
+depth. With the sum, the smooth panels
 absorb the error of the panel at the singularity.
 }
 
@@ -116,7 +118,7 @@ pass, and the count grows geometrically long before any panel reaches
 
 \section{The floor of the rule}{
 On a constant integrand the two rules of the pair differ by half the
-difference of their weight sums on every panel, so no refinement brings a
+difference of their weight sums on every panel, so refinement cannot bring a
 row's relative error estimate below that value plus the rounding of the
 sums. For \code{\link[=gauss_kronrod15]{gauss_kronrod15()}} it is \eqn{2.2 \times 10^{-16}} where the two
 computed sums agree to the last bit, as on x86_64, and

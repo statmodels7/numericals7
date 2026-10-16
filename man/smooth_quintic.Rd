@@ -17,8 +17,9 @@ An \code{\link[=abs_smoother]{abs_smoother()}} named \code{"quintic"}, with \cod
 \code{tau_correction}, and an \code{exact_radius} equal to the width.
 }
 \description{
-\eqn{\lvert u\rvert} replaced inside \eqn{[-h, h]} by the even polynomial
-matching it to third order at the seam, and \strong{exact} outside. It is the
+The quintic smoother replaces \eqn{\lvert u\rvert} inside \eqn{[-h, h]} by
+the even polynomial that matches it to third order at the seam, and is
+exact outside that interval. It is the
 only smoother here whose bias is zero beyond a finite radius, and the only
 one that is not analytic.
 }
@@ -51,8 +52,9 @@ There is no convolution identity here, so \code{tau_correction} is \code{NULL}.
 \section{The width resolved from data}{
 Exactness outside the transition has a cost for a break-point. The second
 derivative of \eqn{s} in the break-point is \eqn{s''}, which is zero outside
-\eqn{[-h, h]}, so where no observation falls within \eqn{h} of the fitted
-break-point the break-point has no curvature at all and is not identified.
+\eqn{[-h, h]}. If the interval of half-width \eqn{h} around the fitted
+break-point contains no observation, the break-point has no curvature at all
+and is not identified.
 At a width of one median spacing this happens often for a discontinuous
 break-point on a uniform covariate, because a quarter of the gaps are wider
 than \eqn{2h}. The width resolved from a spacing \eqn{g} is therefore

@@ -8,7 +8,7 @@ smooth_hyperbolic(c = NULL)
 }
 \arguments{
 \item{c}{The squared transition width, a single positive number, or \code{NULL}
-(the default) to be resolved at build as the \strong{square} of the covariate's
+(the default) to be resolved at build as the square of the covariate's
 spacing, through \code{\link[=smoother_width]{smoother_width()}}.}
 }
 \value{
@@ -18,15 +18,15 @@ An \code{\link[=abs_smoother]{abs_smoother()}} named \code{"hyperbolic"}, with \
 }
 \description{
 \eqn{s(u) = \sqrt{u^2 + c}}, the simplest smoother of the three and the one
-with the worst tails. Its parameter \eqn{c} is a \strong{squared} length, so the
+with the worst tails. Its parameter \eqn{c} is a squared length, so the
 transition width in covariate units is \eqn{\sqrt{c}}.
 }
 \section{The closed form}{
 \deqn{s(u) = \sqrt{u^2 + c}, \qquad s'(u) = \frac{u}{\sqrt{u^2 + c}},
-  \qquad s''(u) = \frac{c}{(u^2 + c)^{3/2}},}
+  \qquad s''(u) = \frac{c}{(u^2 + c)^{3/2}}.}
 
-every order a rational function of \eqn{u} over a half-integer power, so
-every order is computed without special functions or branches.
+Every order is a rational function of \eqn{u} over a half-integer power, so
+it is computed without special functions or branches.
 }
 
 \section{The tails}{
@@ -39,7 +39,7 @@ therefore perturbed far from the break-point as well as near it.
 
 There is no convolution identity relating \eqn{c} to the scale of a random
 break-point, so \code{tau_correction} is \code{NULL} and a consumer reports the
-apparent scale alone.
+apparent scale without a correction.
 }
 
 \examples{

@@ -15,8 +15,8 @@ A single integer, at least 1. One for a policy carrying no \code{workers}
 component.
 }
 \description{
-Returns the worker-process count an \code{\link[=n_threads]{n_threads()}} object carries, as a single
-integer. A policy stored before \code{workers} existed has no such component, and
+Returns the worker-process count that an \code{\link[=n_threads]{n_threads()}} object carries, as a
+single integer. A policy stored before \code{workers} existed has no such component, and
 this function returns 1 for it, so that an object saved with an earlier fit
 is read as sequential across folds.
 }

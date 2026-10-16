@@ -20,7 +20,8 @@ The thread count, invisibly: a single integer, at least 1.
 \description{
 Sets \pkg{RcppParallel}'s thread count to the policy's for the calling
 frame's lifetime and restores the previous process state when that frame
-exits. Called once at the entry of a fit; the count itself still travels
+exits. An entry point calls it once at the start of a fit; the count itself
+still travels
 to each kernel as an argument, and this call only sizes the worker pool from
 which the parallel regions draw.
 }
@@ -28,10 +29,10 @@ which the parallel regions draw.
 \code{RcppParallel::setThreadOptions()} writes a process-level variable, so a fit
 that set it and returned would leave it moved for whatever runs next. The
 restoration is therefore registered with \code{on.exit} in the caller's frame,
-which fires however the fit leaves, an error included.
+which runs however the fit exits, also on an error.
 
-At a count of 1 nothing is changed, so the sequential path does not touch
-the parallel machinery.
+At a count of 1 the function changes nothing, so the sequential path does not
+touch the parallel machinery.
 }
 \examples{
 f <- function() {

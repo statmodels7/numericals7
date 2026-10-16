@@ -15,7 +15,8 @@ value.}
 \value{
 A named list of five numeric vectors, each of the recycled length of
 \code{x} and \code{nu}: \code{l}, the value, and \code{d1} to \code{d4}, its derivatives in the
-argument. \code{d1} is negative at every order, \code{K} decreasing in its argument.
+argument. \code{d1} is negative at every order, because \eqn{K} decreases in
+its argument.
 }
 \description{
 Computes \eqn{\log K_\nu(x)} together with its first four derivatives with

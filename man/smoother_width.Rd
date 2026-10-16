@@ -10,13 +10,13 @@ smoother_width(smoother, spacing, max_gap = NULL)
 \item{smoother}{An \code{\link[=abs_smoother]{abs_smoother()}}. Anything else is rejected.}
 
 \item{spacing}{A spacing in covariate units, one value or one per group.
-Every entry must be positive and none may be missing; the check is not
-made when the smoother already carries a width.}
+Every entry must be positive and not missing; the check is not made when
+the smoother already carries a width.}
 
 \item{max_gap}{\code{NULL} (the default), or the largest gap between consecutive
-distinct values of the covariate over the range a break-point may take,
-one value or one per entry of \code{spacing}. Read only by a smoother with an
-\code{exact_radius}.}
+distinct values of the covariate over the range that a break-point may
+take, one value or one per entry of \code{spacing}. Only a smoother with an
+\code{exact_radius} reads it.}
 }
 \value{
 The width, on the smoother's own scale. The same length as \code{spacing}
@@ -38,12 +38,13 @@ for \code{\link[=smooth_hyperbolic]{smooth_hyperbolic()}}, whose parameter is a 
 given on its page.
 
 A smoother that declares an \code{exact_radius} is equal to \eqn{\lvert u\rvert}
-beyond that radius, so a break-point smoothed with it has no curvature where
-no observation falls within the radius, and a gap in the covariate wider
-than twice the radius can hold such a break-point. Where \code{max_gap} is given,
-the width is therefore raised until the radius is at least
-\eqn{0.55} times it, the radius being taken to grow in proportion to the
-width, which holds for \code{\link[=smooth_quintic]{smooth_quintic()}}, whose radius is its width. The
+beyond that radius, so a break-point smoothed with it has no curvature if
+the interval within the radius contains no observation, and a gap in the
+covariate wider than twice the radius can hold such a break-point. Where
+\code{max_gap} is given, the width is therefore raised until the radius is at
+least \eqn{0.55} times it. The function assumes that the radius grows in
+proportion to the width, which holds for \code{\link[=smooth_quintic]{smooth_quintic()}}, whose radius
+is its width. The
 median spacing does not bound the largest gap: among \eqn{n} uniform points
 the largest gap is about \eqn{(\log n + \gamma)/\log 2} median spacings,
 with \eqn{\gamma} Euler's constant (9.5 at
@@ -73,6 +74,6 @@ smoother_width(smooth_probit(), 0.01, max_gap = 0.1)
 
 }
 \seealso{
-\code{\link[=smoother_width_floor]{smoother_width_floor()}} for the lower bound the arithmetic
+\code{\link[=smoother_width_floor]{smoother_width_floor()}} for the lower bound that the arithmetic
 imposes, \code{\link[=abs_smoother]{abs_smoother()}} for what a width means.
 }

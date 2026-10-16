@@ -104,7 +104,7 @@ mills_ratio <- function(t) {
 #'
 #' @param h A numeric vector, the offset, of any sign and size.
 #' @param a A numeric vector of slopes, recycled against `h`, of any sign and
-#'   size, `Inf` included.
+#'   size, including `Inf`.
 #'
 #' @return A numeric vector of the recycled length of `h` and `a`, bounded in
 #'   \eqn{[-1/4, 1/4]}, with `NA` where either argument is missing.
@@ -237,9 +237,9 @@ bessel_i_ratio <- function(kappa, threads = 1L) {
 #' # The backward recurrence
 #'
 #' The three-term recurrence \eqn{I_{j-1} - I_{j+1} = (2j/\kappa) I_j} has two
-#' solutions, one growing and one decaying. Run upwards it should follow the
-#' decaying one and instead follows rounding error into the growing one, so it
-#' is unstable. Run downwards the roles swap and it is stable, which is
+#' solutions: one grows and the other decays. The ratios are the decaying
+#' solution, and computed upwards the recurrence is unstable, because rounding
+#' error excites the growing one. Computed downwards it is stable, which is
 #' Miller's algorithm. The ratios \eqn{r_j = I_j/I_{j-1}} satisfy
 #' \eqn{r_j = 1/(2j/\kappa + r_{j+1})}, started from \eqn{r_{n_0+1} = 0} at
 #' an index far enough above both \eqn{m} and \eqn{\kappa}; the result is
@@ -256,8 +256,8 @@ bessel_i_ratio <- function(kappa, threads = 1L) {
 #' distribution function is evaluated this way.
 #'
 #' [bessel_i_ratio()] is the first of these ratios and switches to an
-#' asymptotic series from \eqn{\kappa = 30}. No such branch is implemented
-#' here: the recurrence needs a starting index above \eqn{\kappa}, so its cost
+#' asymptotic series from \eqn{\kappa = 30}. This function has no such branch:
+#' the recurrence needs a starting index above \eqn{\kappa}, so its cost
 #' grows with the concentration, and at such concentrations a series in these
 #' ratios does not converge in a useful number of terms.
 #'
@@ -315,7 +315,8 @@ bessel_i_ratios <- function(kappa, m) {
 #' Derivatives of the Bessel Ratio
 #'
 #' @description
-#' Compute the derivatives of \eqn{A(\kappa) = I_1(\kappa)/I_0(\kappa)} in
+#' These functions compute the derivatives of
+#' \eqn{A(\kappa) = I_1(\kappa)/I_0(\kappa)} in
 #' \eqn{\kappa}, one function per order: `bessel_i_ratio_d1()` returns
 #' \eqn{A'}, `bessel_i_ratio_d2()` \eqn{A''}, and so on to the fourth. Each
 #' computes its own order and the orders below it that the computation
@@ -328,7 +329,7 @@ bessel_i_ratios <- function(kappa, m) {
 #' \deqn{A'' = -\frac{A'}{\kappa} + \frac{A}{\kappa^2} - 2AA', \qquad
 #'       A''' = -\frac{A''}{\kappa} + \frac{2A'}{\kappa^2} -
 #'       \frac{2A}{\kappa^3} - 2(A')^2 - 2AA'',}
-#' and the fourth in the same pattern. In double precision this identity
+#' and the fourth follows the same pattern. In double precision this identity
 #' cancels at both ends of the range: at small \eqn{\kappa} its terms are of
 #' order \eqn{\kappa^{-n}} at derivative \eqn{n} while the result is of order
 #' one or \eqn{\kappa}, and at large \eqn{\kappa} the derivative \eqn{A'} is
@@ -425,13 +426,13 @@ bessel_i_ratio_d4 <- function(kappa, threads = 1L) {
 #' ratio is the double `rho`, to the last bits, at any concentration.
 #'
 #' @param rho A numeric vector of mean resultant lengths, strictly inside
-#'   \eqn{(0, 1)}. Anything outside, the endpoints included, returns `NA`
-#'   without a warning (at \eqn{\rho = 0} the inverse is the limit 0, and at
+#'   \eqn{(0, 1)}. A value outside this interval, including the endpoints,
+#'   returns `NA` without a warning (at \eqn{\rho = 0} the inverse is the limit 0, and at
 #'   \eqn{\rho = 1} it diverges).
 #' @inheritParams bessel_i_ratio
 #'
 #' @return A numeric vector of concentrations the length of `rho`, `NA`
-#'   wherever `rho` left \eqn{(0, 1)}.
+#'   wherever `rho` lies outside \eqn{(0, 1)}.
 #'
 #' @seealso [bessel_i_ratio()] for the forward map,
 #'   [bessel_i_ratio_inverse_d1()] for the derivatives of the inverse.
@@ -452,7 +453,8 @@ bessel_i_ratio_inverse <- function(rho, threads = 1L) {
 #' Derivatives of the Inverse Bessel Ratio
 #'
 #' @description
-#' Compute the derivatives of the inverse map \eqn{\kappa(\rho) =
+#' These functions compute the derivatives of the inverse map
+#' \eqn{\kappa(\rho) =
 #' A^{-1}(\rho)} in \eqn{\rho}, one function per order, evaluated at
 #' \eqn{\rho = A(\kappa)}. They take the concentration rather than \eqn{\rho},
 #' so a caller that has already inverted \eqn{\rho} does not invert it again.
@@ -471,10 +473,10 @@ bessel_i_ratio_inverse <- function(rho, threads = 1L) {
 #' the ratios \eqn{r_j = A^{(j)}/A'},
 #'
 #' \deqn{\kappa'' = -r_2 w^2, \qquad \kappa''' = (3r_2^2 - r_3)\,w^3, \qquad
-#'       \kappa'''' = (-15r_2^3 + 10r_2r_3 - r_4)\,w^4,}
+#'       \kappa'''' = (-15r_2^3 + 10r_2r_3 - r_4)\,w^4.}
 #'
-#' with the ratios taken from the asymptotic series without its powers of
-#' \eqn{1/\kappa} from \eqn{\kappa = 30}. Each derivative is finite and
+#' From \eqn{\kappa = 30} the ratios are taken from the asymptotic series
+#' without its powers of \eqn{1/\kappa}. Each derivative is finite and
 #' accurate until the derivative itself overflows (near
 #' \eqn{\kappa = 10^{60}} for the fourth).
 #'

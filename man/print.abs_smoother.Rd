@@ -13,8 +13,8 @@
 }
 \description{
 Writes one line naming the smoother and its width, and adds a line for each
-of the two optional properties it declares: a scale correction for a random
-break-point, and exactness outside the transition.
+optional property that the smoother declares: a scale correction for a
+random break-point, and exactness outside the transition.
 }
 \details{
 The width line reads \verb{h resolved at build} where the smoother carries none,

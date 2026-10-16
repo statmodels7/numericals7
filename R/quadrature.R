@@ -15,8 +15,8 @@ NULL
 #' extension of the 7-point Gauss rule on \eqn{[-1, 1]}. One set of nodes
 #' carries both rules, so a single evaluation of the integrand gives an
 #' estimate and, from the difference of the two rules, an error for it. An
-#' adaptive routine uses that error to decide where to refine, and the error
-#' requires no evaluations of the integrand beyond those of the estimate.
+#' adaptive routine refines the panels where that error is largest, and the
+#' error requires no evaluations of the integrand beyond those of the estimate.
 #'
 #' @details
 #' The eight Kronrod-only nodes carry a Gauss weight of zero, so both rules are
@@ -28,7 +28,8 @@ NULL
 #' \eqn{\lvert\sum w_k - \sum w_g\rvert / 2} of the integral on every panel.
 #' With the Kronrod weights rounded to fifteen decimals they sum to
 #' \eqn{2 - 6.0 \times 10^{-15}}, and every error estimate would carry a floor
-#' of \eqn{3.4 \times 10^{-15}} of the integral that no bisection lowers. At
+#' of \eqn{3.4 \times 10^{-15}} of the integral, which bisection does not lower.
+#' At
 #' full precision both sums are 2 within the rounding of the sum. The tests pin
 #' the constants by their defining property, that the 7-point rule integrates
 #' polynomials of degree 13 exactly and the 15-point rule those of degree 23,
@@ -112,7 +113,7 @@ gauss_kronrod15 <- function() {
 #' `x` or as a vector in column-major order.
 #'
 #' Elementwise recycling does the indexing. For a gamma mean at parameter
-#' vectors of length \eqn{n}:
+#' vectors of length \eqn{n} the integrand is
 #'
 #' ```
 #' f <- function(x, i) x * dgamma(x, shape = shp[i], rate = rt[i])
@@ -123,7 +124,7 @@ gauss_kronrod15 <- function() {
 #' # Batched adaptivity
 #'
 #' Each panel carries the error estimate of its Gauss-Kronrod pair. A row
-#' converges when the *sum* of its panel errors fits the budget
+#' converges when the sum of its panel errors fits the budget
 #' \eqn{\max(\mathrm{atol}, \mathrm{rtol}\,\lvert I_i \rvert)}. Until then the
 #' row's worst panels are bisected, and the splits from every row join the next
 #' single evaluation, so one hard row refines its own panels without
@@ -132,8 +133,9 @@ gauss_kronrod15 <- function() {
 #' The budget is judged on the sum because the alternative of giving each panel
 #' a share proportional to its length cannot integrate an endpoint singularity
 #' at all: near such a point the error stays concentrated in the innermost
-#' panel however deep the bisection goes, so a per-length share demands of that
-#' panel an accuracy that no depth reaches. With the sum, the smooth panels
+#' panel however deep the bisection goes, so a share proportional to length
+#' would require of that panel an accuracy that bisection cannot reach at any
+#' depth. With the sum, the smooth panels
 #' absorb the error of the panel at the singularity.
 #'
 #' # Infinite endpoints
@@ -162,7 +164,7 @@ gauss_kronrod15 <- function() {
 #' # The floor of the rule
 #'
 #' On a constant integrand the two rules of the pair differ by half the
-#' difference of their weight sums on every panel, so no refinement brings a
+#' difference of their weight sums on every panel, so refinement cannot bring a
 #' row's relative error estimate below that value plus the rounding of the
 #' sums. For [gauss_kronrod15()] it is \eqn{2.2 \times 10^{-16}} where the two
 #' computed sums agree to the last bit, as on x86_64, and
@@ -180,15 +182,16 @@ gauss_kronrod15 <- function() {
 #'   to `1e-10` and `1e-8`. A row is judged against the larger of the two, so
 #'   `atol` governs an integral near zero and `rtol` a large one. With
 #'   `atol = 0` an `rtol` below the floor of the rule signals an error; with a
-#'   positive `atol` any `rtol` is accepted, `rtol = 0` included.
-#' @param max_depth The greatest number of bisections one panel may undergo,
-#'   `48` by default. It governs the integration of an endpoint singularity,
-#'   and not every integrable singularity is reached: at the default the
+#'   positive `atol` any `rtol` is accepted, including `rtol = 0`.
+#' @param max_depth The greatest number of bisections that one panel may
+#'   undergo, `48` by default. It governs the integration of an endpoint
+#'   singularity, and some integrable singularities remain out of reach: at the
+#'   default the
 #'   density of a gamma distribution with shape 0.5 is integrated and the one
 #'   with shape 0.45 returns `NA`, while with `max_depth = 200` shape 0.2 is
 #'   integrated and shape 0.1 returns `NA`. A row past the budget returns `NA`.
-#' @param max_panels The greatest number of panels one row may hold, `4096` by
-#'   default. A row still over its budget once it holds that many returns `NA`.
+#' @param max_panels The greatest number of panels that one row may hold,
+#'   `4096` by default. A row still over its budget once it holds that many returns `NA`.
 #'   It bounds the memory of a row whose error estimate does not fall with
 #'   bisection, and at the default it admits `cos(16000 x)` on the unit
 #'   interval, which needs between 2048 and 4096 panels. The count is per row,
@@ -254,7 +257,7 @@ quad_vec <- function(f, lower, upper, atol = 1e-10, rtol = 1e-8,
       atol <= 0 && rtol < fl) {
     stop(sprintf(paste0(
       "quad_vec: rtol = %g is below the floor of the quadrature rule, %.3g,\n",
-      "  and atol = %g leaves no absolute budget to stop at instead.\n",
+      "  and atol = %g gives no absolute budget at which to stop instead.\n",
       "  Use rtol >= %.3g, or give a positive atol."), rtol, fl, atol, fl),
       call. = FALSE)
   }
@@ -431,14 +434,14 @@ quad_vec <- function(f, lower, upper, atol = 1e-10, rtol = 1e-8,
 }
 
 
-#' The Smallest Relative Budget a Quadrature Rule Can Meet
+#' The Smallest Relative Budget That a Quadrature Rule Can Meet
 #'
 #' @description
 #' Returns \eqn{\lvert\sum w_k - \sum w_g\rvert / 2} plus the machine epsilon:
 #' the relative error estimate that an embedded pair gives on a constant
 #' integrand, on every panel, together with the rounding of the two sums.
-#' [quad_vec()] rejects a relative budget below it when no absolute budget is
-#' given.
+#' [quad_vec()] rejects a relative budget below it when the caller gives no
+#' absolute budget.
 #'
 #' @details
 #' On a constant integrand both rules are exact up to their weight sums, so the

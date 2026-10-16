@@ -7,16 +7,16 @@
 fd_offsets(order, accuracy = 2L)
 }
 \arguments{
-\item{order}{The derivative order \eqn{d}. Not validated here, though
-\code{\link[=fd_weights]{fd_weights()}} rejects anything but a non-negative whole number when the
-offsets reach it.}
+\item{order}{The derivative order \eqn{d}. This function does not validate
+it, but \code{\link[=fd_weights]{fd_weights()}} rejects anything other than a non-negative whole
+number when the offsets reach it.}
 
 \item{accuracy}{The order of the error term, a positive integer, \code{2} by
 default. A value below one signals an error. The section on odd
 accuracy describes the treatment of an odd value.}
 }
 \value{
-A list of four components:
+A list with the components:
 \describe{
 \item{\code{reach}}{integer, the half-width \eqn{r}, at least 1.}
 \item{\code{central}}{integer vector \code{-r:r}, the symmetric stencil.}
@@ -50,11 +50,11 @@ five-point stencils for the first and second.
 A central stencil is symmetric, so the odd powers cancel from its error
 expansion and the accuracy of the central stencil is always even. An odd
 accuracy is therefore replaced by an even neighbor, and the parity of
-\eqn{d + a} decides which one. The observed orders on \eqn{\exp}, obtained
+\eqn{d + a} determines which one. The observed orders on \eqn{\exp}, obtained
 by halving the step, are:
 
 \tabular{lrrrr}{
-\strong{order}    \tab 1 \tab 2 \tab 3 \tab 4 \cr
+order      \tab 1 \tab 2 \tab 3 \tab 4 \cr
 accuracy 2 \tab 2 \tab 2 \tab 2 \tab 2 \cr
 accuracy 3 \tab 2 \tab 4 \tab 2 \tab 4 \cr
 accuracy 4 \tab 4 \tab 4 \tab 4 \tab 4

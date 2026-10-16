@@ -38,7 +38,7 @@ from a worker thread. Its C entry point is \code{n7_pt}, resolved with
 The computation is R's own: \code{pt()} from R's mathematical library and the
 incomplete beta ratio of Algorithm 708 of the ACM Transactions on
 Mathematical Software (Didonato and Morris, 1992) as R carries it, copied
-with the warnings R raises from them removed. A warning calls into the R
+without the warnings that R raises from them. A warning calls into the R
 API, and a call into the R API from a worker thread terminates the
 process.
 }

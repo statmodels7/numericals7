@@ -47,7 +47,7 @@ expansion, and the large-order uniform asymptotic expansion in the
 Two switching guards are tightened relative to the paper, measured on the
 Wronskian identity \eqn{I_\nu K_{\nu+1} + I_{\nu+1} K_\nu = 1/x}: the
 large-argument expansions are used only where their truncation error is
-below \eqn{10^{-11}}, the uniform expansion taking over otherwise.
+below \eqn{10^{-11}}, and the uniform expansion is used otherwise.
 
 The compiled kernel never calls the R API. It is also registered as the C
 entry point \code{n7_log_bessel_i}, resolved with
