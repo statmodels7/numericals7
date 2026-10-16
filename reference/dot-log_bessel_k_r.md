@@ -5,8 +5,7 @@ and the same formulas as the compiled kernel behind
 [`log_bessel_k()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md).
 It serves as the independent reference against which the tests compare
 that kernel, so a change to one side that is not made to the other shows
-up as a disagreement. No production code calls it; the production route
-is
+up as a disagreement. Only the tests call it; the production route is
 [`log_bessel_k()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md).
 
 ## Usage
@@ -34,10 +33,10 @@ negative or either argument is missing.
 ## Details
 
 `x` and `nu` are recycled against each other to the longer length, and
-the order enters as \\\|\nu\|\\, \\K\\ being even in it. The branches
-are the large-argument and large-order expansions, R's own scaled
-`besselK` in the moderate region, and the Rothwell integral in the
-corner where that scaled value overflows or comes close to it, as
+the order enters as \\\|\nu\|\\, because \\K\\ is even in it. The
+branches are the large-argument and large-order expansions, R's own
+scaled `besselK` in the moderate region, and the Rothwell integral in
+the corner where that scaled value overflows or comes close to it, as
 described on the page of
 [`log_bessel_k()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md).
 

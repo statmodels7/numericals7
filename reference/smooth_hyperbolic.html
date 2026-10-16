@@ -11,7 +11,7 @@ transition width in covariate units is \(\sqrt{c}\)."><meta property="og:image" 
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,7 +39,7 @@ transition width in covariate units is \(\sqrt{c}\)."><meta property="og:image" 
 
     <div class="ref-description section level2">
     <p>\(s(u) = \sqrt{u^2 + c}\), the simplest smoother of the three and the one
-with the worst tails. Its parameter \(c\) is a <strong>squared</strong> length, so the
+with the worst tails. Its parameter \(c\) is a squared length, so the
 transition width in covariate units is \(\sqrt{c}\).</p>
     </div>
 
@@ -54,7 +54,7 @@ transition width in covariate units is \(\sqrt{c}\).</p>
 
 <dl><dt id="arg-c">c<a class="anchor" aria-label="anchor" href="#arg-c"></a></dt>
 <dd><p>The squared transition width, a single positive number, or <code>NULL</code>
-(the default) to be resolved at build as the <strong>square</strong> of the covariate's
+(the default) to be resolved at build as the square of the covariate's
 spacing, through <code><a href="smoother_width.html">smoother_width()</a></code>.</p></dd>
 
 </dl></div>
@@ -67,9 +67,9 @@ spacing, through <code><a href="smoother_width.html">smoother_width()</a></code>
     <div class="section level2">
     <h2 id="the-closed-form">The closed form<a class="anchor" aria-label="anchor" href="#the-closed-form"></a></h2>
     <p>$$s(u) = \sqrt{u^2 + c}, \qquad s'(u) = \frac{u}{\sqrt{u^2 + c}},
-  \qquad s''(u) = \frac{c}{(u^2 + c)^{3/2}},$$</p>
-<p>every order a rational function of \(u\) over a half-integer power, so
-every order is computed without special functions or branches.</p>
+  \qquad s''(u) = \frac{c}{(u^2 + c)^{3/2}}.$$</p>
+<p>Every order is a rational function of \(u\) over a half-integer power, so
+it is computed without special functions or branches.</p>
     </div>
     <div class="section level2">
     <h2 id="the-tails">The tails<a class="anchor" aria-label="anchor" href="#the-tails"></a></h2>
@@ -81,7 +81,7 @@ at \(u = 1\) and <code>1.5e-02</code> at \(u = 3\), against <code>6.7e-05</code>
 therefore perturbed far from the break-point as well as near it.</p>
 <p>There is no convolution identity relating \(c\) to the scale of a random
 break-point, so <code>tau_correction</code> is <code>NULL</code> and a consumer reports the
-apparent scale alone.</p>
+apparent scale without a correction.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

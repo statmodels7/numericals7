@@ -1,8 +1,8 @@
 # The Hyperbolic Smoother of the Absolute Value
 
 \\s(u) = \sqrt{u^2 + c}\\, the simplest smoother of the three and the
-one with the worst tails. Its parameter \\c\\ is a **squared** length,
-so the transition width in covariate units is \\\sqrt{c}\\.
+one with the worst tails. Its parameter \\c\\ is a squared length, so
+the transition width in covariate units is \\\sqrt{c}\\.
 
 ## Usage
 
@@ -15,7 +15,7 @@ smooth_hyperbolic(c = NULL)
 - c:
 
   The squared transition width, a single positive number, or `NULL` (the
-  default) to be resolved at build as the **square** of the covariate's
+  default) to be resolved at build as the square of the covariate's
   spacing, through
   [`smoother_width()`](https://statmodels7.github.io/numericals7/reference/smoother_width.md).
 
@@ -29,10 +29,10 @@ that squares, and neither a `tau_correction` nor an `exact_radius`.
 ## The closed form
 
 \$\$s(u) = \sqrt{u^2 + c}, \qquad s'(u) = \frac{u}{\sqrt{u^2 + c}},
-\qquad s''(u) = \frac{c}{(u^2 + c)^{3/2}},\$\$
+\qquad s''(u) = \frac{c}{(u^2 + c)^{3/2}}.\$\$
 
-every order a rational function of \\u\\ over a half-integer power, so
-every order is computed without special functions or branches.
+Every order is a rational function of \\u\\ over a half-integer power,
+so it is computed without special functions or branches.
 
 ## The tails
 
@@ -47,7 +47,7 @@ from the break-point as well as near it.
 
 There is no convolution identity relating \\c\\ to the scale of a random
 break-point, so `tau_correction` is `NULL` and a consumer reports the
-apparent scale alone.
+apparent scale without a correction.
 
 ## See also
 

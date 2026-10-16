@@ -19,10 +19,10 @@ fd_offsets(order, accuracy = 2L)
 
 - order:
 
-  The derivative order \\d\\. Not validated here, though
+  The derivative order \\d\\. This function does not validate it, but
   [`fd_weights()`](https://statmodels7.github.io/numericals7/reference/fd_weights.md)
-  rejects anything but a non-negative whole number when the offsets
-  reach it.
+  rejects anything other than a non-negative whole number when the
+  offsets reach it.
 
 - accuracy:
 
@@ -32,7 +32,7 @@ fd_offsets(order, accuracy = 2L)
 
 ## Value
 
-A list of four components:
+A list with the components:
 
 - `reach`:
 
@@ -73,12 +73,12 @@ five-point stencils for the first and second.
 A central stencil is symmetric, so the odd powers cancel from its error
 expansion and the accuracy of the central stencil is always even. An odd
 accuracy is therefore replaced by an even neighbor, and the parity of
-\\d + a\\ decides which one. The observed orders on \\\exp\\, obtained
-by halving the step, are:
+\\d + a\\ determines which one. The observed orders on \\\exp\\,
+obtained by halving the step, are:
 
 |            |     |     |     |     |
 |------------|-----|-----|-----|-----|
-| **order**  | 1   | 2   | 3   | 4   |
+| order      | 1   | 2   | 3   | 4   |
 | accuracy 2 | 2   | 2   | 2   | 2   |
 | accuracy 3 | 2   | 4   | 2   | 4   |
 | accuracy 4 | 4   | 4   | 4   | 4   |

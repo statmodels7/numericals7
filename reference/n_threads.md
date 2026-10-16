@@ -1,6 +1,6 @@
-# How Many Threads and Worker Processes a Fit May Use
+# How Many Threads and Worker Processes That a Fit May Use
 
-Constructs the parallelism policy an entry point such as
+Constructs the parallelism policy that an entry point such as
 `statmodels7::statmod()` or `distributions7::fit_distrib()` accepts
 through its `threads` argument. The default, one thread and one process,
 takes exactly the sequential code path; a larger `threads` lets the
@@ -35,7 +35,7 @@ print(x, ...)
 
   A single whole number, at least 1, and the default is `1`: how many R
   processes the independent units of a fit may use. `1` runs them in
-  this process. Validated exactly as `threads` is.
+  this process. It is validated exactly as `threads` is.
 
 - x:
 
@@ -48,7 +48,7 @@ print(x, ...)
 
 ## Value
 
-`n_threads()` returns an object of class `"n_threads"`, a list of two
+`n_threads()` returns an object of class `"n_threads"`, a list with the
 components:
 
 - `threads`:
@@ -76,29 +76,29 @@ kernel returns the same bits at any count. A fold's fit is a complete
 independent computation, and the folds are collected in fold order
 however many processes ran them.
 
-Two properties of the drivers make that hold, and neither belongs to the
-kernels themselves. A worker installs the calling thread's
-floating-point environment before running its chunk, because without it
-some of the platform's own math routines (among them R's `psigamma` at
-higher orders, `bessel_k`, and `pgamma` and `pbeta` on the log scale)
-can return results that differ in the last bits between threads. The
+This holds because of two properties of the drivers, and not of the
+kernels. A worker installs the calling thread's floating-point
+environment before running its chunk, because without it some of the
+platform's own math routines (among them R's `psigamma` at higher
+orders, `bessel_k`, and `pgamma` and `pbeta` on the log scale) can
+return results that differ in the last bits between threads. The
 sequential branch also runs through the same compiled function as the
 parallel one, so a compiler cannot optimize the two differently.
 
-One qualification. In the dense assembly products of statmodels7,
-raising the count first *engages* a threaded kernel where a BLAS
-expression stood. That kernel is a second implementation of the same
-sum: bit-exact against the reference BLAS R ships, and within the
-rounding of one dot product against an optimized BLAS such as OpenBLAS
-or Accelerate, whose accumulation order is its own.
+The dense assembly products of statmodels7 are an exception. There, a
+count above 1 replaces a BLAS expression by a threaded kernel, which is
+a second implementation of the same sum. Its result is bit-exact against
+the reference BLAS shipped with R, and agrees within the rounding of one
+dot product with an optimized BLAS such as OpenBLAS or Accelerate, which
+accumulates in its own order.
 
 The guarantee is a design constraint on any kernel added later.
 
 ## The sequential path
 
-At `threads = 1` no parallel region is entered and the process-level
-thread setting is left unchanged. The code taken is the sequential one,
-not a parallel path running on a single thread.
+At `threads = 1` the code enters no parallel region and leaves the
+process-level thread setting unchanged. The code taken is the sequential
+one, not a parallel path running on a single thread.
 
 Each kernel carries an internal threshold as well, measured where the
 cost of opening a parallel region overtakes its gain. Below it the
@@ -107,8 +107,8 @@ kernel stays sequential regardless of the count.
 ## Threads inside worker processes
 
 A fit running inside a worker process is sequential by construction, so
-`workers = 4` opens up to four processes, each fitting on one thread,
-never `4 * threads` of them.
+`workers = 4` opens up to four processes, and each of them fits on one
+thread; it never opens `4 * threads` of them.
 
 Worker processes are separate R sessions that load the installed
 packages, which makes them safe for the S7 objects carried by a fold's
@@ -119,7 +119,7 @@ cross-validated path only when each fold takes longer than that.
 ## Printing
 
 [`print()`](https://rdrr.io/r/base/print.html) shows the call that would
-rebuild the object, with `workers` shown only when it is not 1, and
+rebuild the object, which includes `workers` only when it is not 1, and
 appends `[sequential]` when both counts are 1. It returns its argument
 invisibly.
 

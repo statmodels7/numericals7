@@ -1,6 +1,6 @@
 # Helpers of the Tensor Stencil
 
-Internal functions of
+These are internal functions of
 [`fd_tensor()`](https://statmodels7.github.io/numericals7/reference/fd_tensor.md).
 `tensor_plan()` returns the plan of a request from the session's cache,
 computing it in C++ on the first call with that key. `is_whole()` tests
@@ -38,7 +38,8 @@ as_columns(v, k, src)
 
 - kidx:
 
-  A list of such matrices, the first being the function's own zero row.
+  A list of such matrices, of which the first is the function's own zero
+  row.
 
 - accuracy:
 

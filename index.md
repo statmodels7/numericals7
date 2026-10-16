@@ -76,7 +76,7 @@ fd_derivative(exp, 1, order = 3L, accuracy = 4L) - exp(1)
 ## Quadrature and series, vectorized over the parameters
 
 A regression model gives every observation its own parameter value, so
-the integrals a fit needs come in families: the same integrand at
+the integrals that a fit needs come in families: the same integrand at
 hundreds of parameter rows.
 [`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)
 integrates all of them in one adaptive run, with a single call to the
@@ -105,8 +105,8 @@ Bessel functions recur across distributions: the von Mises carries
 $`I_0`$, and the Poisson-inverse Gaussian carries $`K_{y-1/2}`$.
 $`I_\nu(x)`$ overflows from about $`x = 709`$ and $`K_\nu(x)`$
 underflows to zero from about $`x = 705`$, while the exponentially
-scaled forms underflow past $`10^5`$ or lose large orders entirely.
-Following Plesner, Sørensen and Hauberg (ICS 2024, arXiv:2409.08729),
+scaled forms underflow past $`10^5`$ and at large orders. Following
+Plesner, Sørensen and Hauberg (ICS 2024, arXiv:2409.08729),
 [`log_bessel_i()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i.md)
 and
 [`log_bessel_k()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md)
@@ -153,8 +153,8 @@ bessel_i_ratio(bessel_i_ratio_inverse(0.7))
 ## Smoothers of the absolute value
 
 An `abs_smoother` replaces $`\lvert u \rvert`$ with a smooth $`s(u)`$
-carrying its derivatives to fifth order as functions. With it, a term
-with a break-point becomes an ordinary differentiable model.
+and carries the derivatives of $`s`$ to fifth order as functions. With
+it, a term with a break-point becomes an ordinary differentiable model.
 [`smooth_probit()`](https://statmodels7.github.io/numericals7/reference/smooth_probit.md)
 is the recommended default: its excess over $`\lvert u \rvert`$ has
 Gaussian tails, which fall to rounding error within a few widths, and
@@ -174,9 +174,9 @@ rbind(abs = abs(u), smooth = smoother_deriv(sm, u, order = 0))
 
 The width cannot be made arbitrarily small.
 [`smoother_width_floor()`](https://statmodels7.github.io/numericals7/reference/smoother_width_floor.md)
-derives the smallest one the design can carry, from the observation that
-the Jacobian column near the kink is of order $`1/h`$ against columns of
-order the range of the data.
+derives the smallest width that the design can carry, from the
+observation that the Jacobian column near the kink is of order $`1/h`$
+against columns of order the range of the data.
 
 ``` r
 

@@ -1,8 +1,9 @@
 # S7 Class for Smoothers of the Absolute Value
 
-A smooth replacement \\s(u)\\ for \\\lvert u \rvert\\, carrying its
-derivatives in \\u\\ up to order five as functions. Every non-smooth
-primitive the toolkit uses is generated from the absolute value:
+An `abs_smoother` is a smooth replacement \\s(u)\\ for \\\lvert u
+\rvert\\ that carries its derivatives in \\u\\ up to order five as
+functions. Every non-smooth primitive that the toolkit uses is generated
+from the absolute value:
 
 \$\$\operatorname{sign}(u) = \frac{d\lvert u\rvert}{du}, \qquad
 \mathbb{1}(u \geq 0) = \frac{1 + \operatorname{sign}(u)}{2}, \qquad
@@ -43,8 +44,8 @@ abs_smoother(
 
 - width_name:
 
-  What the width parameter is called, a single non-empty string: `"h"`
-  for a length and `"c"` for a squared one. `"h"` by default.
+  The name of the width parameter, a single non-empty string: `"h"` for
+  a length and `"c"` for a squared one. The default is `"h"`.
 
 - per_group:
 
@@ -76,7 +77,7 @@ abs_smoother(
 
 ## Value
 
-An S7 object of class `abs_smoother` carrying the eight properties
+An S7 object of class `abs_smoother` whose properties are the arguments
 above.
 
 ## Uses of a smoother
@@ -112,13 +113,14 @@ per subject.
 
 ## The scale correction
 
-`tau_correction` is a property of the mollifier and of no model. The
-probit smoother satisfies an exact convolution identity, smoothing with
-width \\h\\ being the same as convolving the break-point with \\N(0,
-h^2)\\, so an apparent scale \\\tau\\ of a random break-point composes
-as \\\tau^2\_{\mathrm{true}} = \tau^2 - h^2\\ and the smoother declares
-that correction. Smoothers with no such identity declare `NULL`, and a
-consumer then reports the apparent scale alone.
+`tau_correction` is a property of the mollifier and not of a model. The
+probit smoother satisfies an exact convolution identity: smoothing with
+width \\h\\ is the same as convolving the break-point with \\N(0,
+h^2)\\. An apparent scale \\\tau\\ of a random break-point therefore
+composes as \\\tau^2\_{\mathrm{true}} = \tau^2 - h^2\\, and the smoother
+declares that correction. Smoothers without such an identity declare
+`NULL`, and a consumer then reports the apparent scale without a
+correction.
 
 ## References
 

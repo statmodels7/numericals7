@@ -34,10 +34,10 @@ fd_derivative(
 
 - order:
 
-  The derivative order. One to four is what the toolkit uses and what
-  the step rule is tuned for. A higher order is accepted and sized by
+  The derivative order. The toolkit uses orders one to four, and the
+  step rule is tuned for them. A higher order is accepted and sized by
   [`fd_offsets()`](https://statmodels7.github.io/numericals7/reference/fd_offsets.md),
-  but nothing is claimed about its accuracy.
+  but its accuracy is not guaranteed.
 
 - h:
 
@@ -71,8 +71,8 @@ The numerical fallbacks of the toolkit's packages apply their stencils
 through this function. It applies one stencil of the requested order and
 never composes lower-order differences. Each numerical differentiation
 multiplies the error of the one before it, so a fourth derivative
-reached by four nested first differences, each taken at the step chosen
-for a first derivative, is dominated by rounding error.
+reached by four nested first differences is dominated by rounding error
+when each difference is taken at the step chosen for a first derivative.
 
 ## Choices left to the caller
 
@@ -94,7 +94,7 @@ most \\2r + 1\\ calls to `f`, one per node with a nonzero weight.
 [`fd_offsets()`](https://statmodels7.github.io/numericals7/reference/fd_offsets.md)
 and
 [`fd_step()`](https://statmodels7.github.io/numericals7/reference/fd_step.md),
-the three pieces this assembles.
+the three pieces that this function assembles.
 
 ## Examples
 

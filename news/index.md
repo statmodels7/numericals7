@@ -1,5 +1,19 @@
 # Changelog
 
+## numericals7 0.23.1
+
+- Documentation and messages: relative clauses without a relative
+  pronoun, stranded prepositions, absolute constructions, sentences
+  without a verb, emphasis in bold and personified descriptions of the
+  code rewritten as plain clauses. The error of
+  [`thread_count()`](https://statmodels7.github.io/numericals7/reference/thread_count.md)
+  and
+  [`worker_count()`](https://statmodels7.github.io/numericals7/reference/worker_count.md)
+  now reads “‘threads’ must be an object returned by n_threads()”, and
+  the error of
+  [`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)
+  for an unreachable `rtol` is reworded. No change to the code.
+
 ## numericals7 0.23.0
 
 - New

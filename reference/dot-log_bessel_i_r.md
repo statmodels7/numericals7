@@ -5,8 +5,7 @@ branches and the same formulas as the compiled kernel behind
 [`log_bessel_i()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i.md).
 It serves as the independent reference against which the tests compare
 that kernel, so a change to one side that is not made to the other shows
-up as a disagreement. No production code calls it; the production route
-is
+up as a disagreement. Only the tests call it; the production route is
 [`log_bessel_i()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i.md).
 
 ## Usage

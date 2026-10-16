@@ -27,14 +27,14 @@ smoother_deriv(smoother, u, width = NULL, order = 0L)
 
   The width, a single positive number or one per point, or `NULL` (the
   default) for the smoother's own. A smoother built with `width = NULL`
-  and given none here is rejected, with the two ways to supply one
-  named.
+  and given no width here is rejected, and the error message names the
+  two ways to supply one.
 
 - order:
 
   The derivative order, an integer from 0 to 5; a fractional value is
-  truncated toward zero. `0L` by default, which is \\s\\ itself. A value
-  outside that range is rejected.
+  truncated toward zero. The default is `0L`, which is \\s\\ itself. A
+  value outside that range is rejected.
 
 ## Value
 
@@ -47,8 +47,8 @@ arrives: a break-point term with `per_group = TRUE` resolves one width
 per subject and passes the whole vector.
 
 The derivatives are the functions carried by the smoother, evaluated
-directly. None is obtained by differencing, so order five is as accurate
-as order zero.
+directly and never by differencing, so order five is as accurate as
+order zero.
 
 ## See also
 

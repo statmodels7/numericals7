@@ -57,8 +57,8 @@ in the \\u_k(t)\\ polynomials, selected by the input-range table of that
 paper. Two switching guards are tightened relative to the paper,
 measured on the Wronskian identity \\I\_\nu K\_{\nu+1} + I\_{\nu+1}
 K\_\nu = 1/x\\: the large-argument expansions are used only where their
-truncation error is below \\10^{-11}\\, the uniform expansion taking
-over otherwise.
+truncation error is below \\10^{-11}\\, and the uniform expansion is
+used otherwise.
 
 The compiled kernel never calls the R API. It is also registered as the
 C entry point `n7_log_bessel_i`, resolved with

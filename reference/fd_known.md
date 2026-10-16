@@ -3,7 +3,7 @@
 Declares a function that returns analytic partial derivatives of the
 function differentiated by
 [`fd_tensor()`](https://statmodels7.github.io/numericals7/reference/fd_tensor.md),
-together with the multi-indices of the derivatives it returns.
+together with the multi-indices of the derivatives that it returns.
 [`fd_tensor()`](https://statmodels7.github.io/numericals7/reference/fd_tensor.md)
 differences these values instead of the function itself wherever that
 leaves a lower order to the stencil.
@@ -23,7 +23,7 @@ fd_known(fun, order = NULL, indices = NULL)
 - order:
 
   A single non-negative whole number, the total order of every
-  derivative `fun` returns, or `NULL`.
+  derivative that `fun` returns, or `NULL`.
 
 - indices:
 
@@ -41,9 +41,9 @@ An object of class `fd_known`, with the properties `fun`, `order` and
 A multi-index is a vector of counts, one per coordinate of `x`: the row
 `c(2, 0, 1)` over the coordinates `(a, b, c)` is \\\partial^3 f /
 \partial a^2 \partial c\\. The rows of `indices` are the multi-indices
-of the values `fun` returns, in the order in which it returns them. With
-`order = k` the rows are every multi-index of total order \\k\\, in the
-order of
+of the values that `fun` returns, in the order in which it returns them.
+With `order = k` the rows are every multi-index of total order \\k\\, in
+the order of
 [`tuple_indices(p, k)`](https://statmodels7.github.io/numericals7/reference/tuple_indices.md)
 over the \\p\\ coordinates;
 [`fd_tensor()`](https://statmodels7.github.io/numericals7/reference/fd_tensor.md)

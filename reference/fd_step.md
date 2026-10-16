@@ -23,7 +23,7 @@ fd_step(x, order, accuracy = 2L, bounds = NULL)
 
 - accuracy:
 
-  The accuracy the stencil will be built at, `2` by default. Matches
+  The accuracy at which the stencil is built, `2` by default. Matches
   [`fd_offsets()`](https://statmodels7.github.io/numericals7/reference/fd_offsets.md)'s
   argument of the same name.
 
@@ -45,7 +45,7 @@ negative at a point outside the bounds.
 Truncation grows like \\h^{a}\\ and rounding like \\\varepsilon
 h^{-d}\\, and this is where the two meet. The factor \\\max(1, \lvert x
 \rvert)\\ makes the step relative for a large argument and absolute for
-a small one, so a point near zero does not get a step below the
+a small one, so the step at a point near zero is not below the
 resolution of its own neighborhood.
 
 At the default accuracy the exponent is \\1/4\\ for a second derivative
@@ -63,18 +63,18 @@ the reach.
 
 ## A point on a bound
 
-A point sitting exactly on a finite bound gets a step of **zero**, and a
-stencil divided by \\h^{d}\\ is then `NaN`. The function does not check
-the evaluation point. For a point on a bound the caller moves the point
+At a point exactly on a finite bound the step is zero, and a stencil
+divided by \\h^{d}\\ is then `NaN`. The function does not check the
+evaluation point. For a point on a bound the caller moves the point
 strictly inside the domain, or applies a one-sided stencil with an
 explicitly chosen step.
 
 ## See also
 
 [`fd_derivative()`](https://statmodels7.github.io/numericals7/reference/fd_derivative.md),
-which calls this when no step is given,
+which calls this when the caller supplies no step,
 [`fd_offsets()`](https://statmodels7.github.io/numericals7/reference/fd_offsets.md)
-for the reach the clamp divides by.
+for the reach by which the clamp divides.
 
 ## Examples
 

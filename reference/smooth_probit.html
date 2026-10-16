@@ -15,7 +15,7 @@ three that declares a scale correction for a random break-point."><meta property
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -79,8 +79,8 @@ no <code>exact_radius</code>.</p>
     <div class="section level2">
     <h2 id="the-closed-form">The closed form<a class="anchor" aria-label="anchor" href="#the-closed-form"></a></h2>
     <p>$$s(u) = u\,\bigl(2\Phi(u/h) - 1\bigr) + 2h\,\phi(u/h), \qquad
-  s'(u) = 2\Phi(u/h) - 1, \qquad s''(u) = \frac{2}{h}\,\phi(u/h),$$</p>
-<p>with the third to fifth derivatives following from
+  s'(u) = 2\Phi(u/h) - 1, \qquad s''(u) = \frac{2}{h}\,\phi(u/h).$$</p>
+<p>The third to fifth derivatives follow from
 \(\phi'(z) = -z\phi(z)\). At the kink \(s(0) = 2h\phi(0) \approx
 0.798h\), which is the intrinsic scale by which <code><a href="check_abs_smoother.html">check_abs_smoother()</a></code>
 places its grid.</p>

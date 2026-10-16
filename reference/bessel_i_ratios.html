@@ -13,7 +13,7 @@ returns all \(m\) of them in one pass."><meta property="og:image" content="https
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,9 +72,9 @@ number of columns and, with <code>kappa</code>, the starting index of the recurr
     <div class="section level2">
     <h2 id="the-backward-recurrence">The backward recurrence<a class="anchor" aria-label="anchor" href="#the-backward-recurrence"></a></h2>
     <p>The three-term recurrence \(I_{j-1} - I_{j+1} = (2j/\kappa) I_j\) has two
-solutions, one growing and one decaying. Run upwards it should follow the
-decaying one and instead follows rounding error into the growing one, so it
-is unstable. Run downwards the roles swap and it is stable, which is
+solutions: one grows and the other decays. The ratios are the decaying
+solution, and computed upwards the recurrence is unstable, because rounding
+error excites the growing one. Computed downwards it is stable, which is
 Miller's algorithm. The ratios \(r_j = I_j/I_{j-1}\) satisfy
 \(r_j = 1/(2j/\kappa + r_{j+1})\), started from \(r_{n_0+1} = 0\) at
 an index far enough above both \(m\) and \(\kappa\); the result is
@@ -90,8 +90,8 @@ running products are then formed row by row. A series over these ratios
 therefore costs less than one quadrature per observation, and the von Mises
 distribution function is evaluated this way.</p>
 <p><code><a href="bessel_i_ratio.html">bessel_i_ratio()</a></code> is the first of these ratios and switches to an
-asymptotic series from \(\kappa = 30\). No such branch is implemented
-here: the recurrence needs a starting index above \(\kappa\), so its cost
+asymptotic series from \(\kappa = 30\). This function has no such branch:
+the recurrence needs a starting index above \(\kappa\), so its cost
 grows with the concentration, and at such concentrations a series in these
 ratios does not converge in a useful number of terms.</p>
     </div>

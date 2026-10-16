@@ -1,10 +1,10 @@
 # Derivatives of the Bessel Ratio
 
-Compute the derivatives of \\A(\kappa) = I_1(\kappa)/I_0(\kappa)\\ in
-\\\kappa\\, one function per order: `bessel_i_ratio_d1()` returns
-\\A'\\, `bessel_i_ratio_d2()` \\A''\\, and so on to the fourth. Each
-computes its own order and the orders below it that the computation
-needs, and nothing above.
+These functions compute the derivatives of \\A(\kappa) =
+I_1(\kappa)/I_0(\kappa)\\ in \\\kappa\\, one function per order:
+`bessel_i_ratio_d1()` returns \\A'\\, `bessel_i_ratio_d2()` \\A''\\, and
+so on to the fourth. Each computes its own order and the orders below it
+that the computation needs, and nothing above.
 
 ## Usage
 
@@ -43,7 +43,7 @@ consequence of \\I_0' = I_1\\ and \\I_1' = I_0 - I_1/\kappa\\,
 differentiated repeatedly: \$\$A'' = -\frac{A'}{\kappa} +
 \frac{A}{\kappa^2} - 2AA', \qquad A''' = -\frac{A''}{\kappa} +
 \frac{2A'}{\kappa^2} - \frac{2A}{\kappa^3} - 2(A')^2 - 2AA'',\$\$ and
-the fourth in the same pattern. In double precision this identity
+the fourth follows the same pattern. In double precision this identity
 cancels at both ends of the range: at small \\\kappa\\ its terms are of
 order \\\kappa^{-n}\\ at derivative \\n\\ while the result is of order
 one or \\\kappa\\, and at large \\\kappa\\ the derivative \\A'\\ is of

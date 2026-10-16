@@ -15,7 +15,7 @@ whole simplex of integer counts and includes its faces. There are
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,8 +59,8 @@ whole simplex of integer counts and includes its faces. There are
 
 
 <dl><dt id="arg-n">n<a class="anchor" aria-label="anchor" href="#arg-n"></a></dt>
-<dd><p>The total, a non-negative whole number. Neither argument is
-validated. A negative <code>n</code> returns a matrix whose rows contain negative
+<dd><p>The total, a non-negative whole number. The function validates
+neither argument. A negative <code>n</code> returns a matrix whose rows contain negative
 parts, since the recursion walks <code>0:n</code> and that sequence runs downwards.</p></dd>
 
 
@@ -84,9 +84,9 @@ units.</p>
     </div>
     <div class="section level2">
     <h2 id="order-and-cost">Order and cost<a class="anchor" aria-label="anchor" href="#order-and-cost"></a></h2>
-    <p>Rows come out in lexicographic order, the first part ascending from zero to
+    <p>Rows come out in lexicographic order, so the first part ascends from zero to
 \(n\). The recursion runs on the number of parts, so the rows are produced
-in that order directly and no full grid is built and filtered.</p>
+in that order directly, without building and filtering a full grid.</p>
 <p>The whole matrix is materialized and the count grows quickly, which bounds
 the practical size: \(n = 20\) with \(k = 5\) is 10626 rows, and the
 same \(n\) with \(k = 10\) is 10015005.</p>

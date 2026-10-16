@@ -36,11 +36,11 @@ spacing is the width), a `tau_correction`, and no `exact_radius`.
 ## The closed form
 
 \$\$s(u) = u\\\bigl(2\Phi(u/h) - 1\bigr) + 2h\\\phi(u/h), \qquad s'(u) =
-2\Phi(u/h) - 1, \qquad s''(u) = \frac{2}{h}\\\phi(u/h),\$\$
+2\Phi(u/h) - 1, \qquad s''(u) = \frac{2}{h}\\\phi(u/h).\$\$
 
-with the third to fifth derivatives following from \\\phi'(z) =
--z\phi(z)\\. At the kink \\s(0) = 2h\phi(0) \approx 0.798h\\, which is
-the intrinsic scale by which
+The third to fifth derivatives follow from \\\phi'(z) = -z\phi(z)\\. At
+the kink \\s(0) = 2h\phi(0) \approx 0.798h\\, which is the intrinsic
+scale by which
 [`check_abs_smoother()`](https://statmodels7.github.io/numericals7/reference/check_abs_smoother.md)
 places its grid.
 

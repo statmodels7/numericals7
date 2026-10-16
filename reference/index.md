@@ -54,7 +54,7 @@ the same bits at any thread count.
 
 - [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
   [`print(`*`<n_threads>`*`)`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
-  : How Many Threads and Worker Processes a Fit May Use
+  : How Many Threads and Worker Processes That a Fit May Use
 - [`thread_count()`](https://statmodels7.github.io/numericals7/reference/thread_count.md)
   : Read the Thread Count Off a Policy
 - [`worker_count()`](https://statmodels7.github.io/numericals7/reference/worker_count.md)
@@ -117,6 +117,6 @@ block, and the validator checks a user-written smoother.
 - [`smoother_width()`](https://statmodels7.github.io/numericals7/reference/smoother_width.md)
   : Resolve a Smoother's Width from a Spacing
 - [`smoother_width_floor()`](https://statmodels7.github.io/numericals7/reference/smoother_width_floor.md)
-  : The Smallest Width a Consumer May Use
+  : The Smallest Width That a Consumer May Use
 - [`check_abs_smoother()`](https://statmodels7.github.io/numericals7/reference/check_abs_smoother.md)
   : Check a Smoother of the Absolute Value Numerically

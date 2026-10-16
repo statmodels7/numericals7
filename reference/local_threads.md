@@ -2,9 +2,9 @@
 
 Sets RcppParallel's thread count to the policy's for the calling frame's
 lifetime and restores the previous process state when that frame exits.
-Called once at the entry of a fit; the count itself still travels to
-each kernel as an argument, and this call only sizes the worker pool
-from which the parallel regions draw.
+An entry point calls it once at the start of a fit; the count itself
+still travels to each kernel as an argument, and this call only sizes
+the worker pool from which the parallel regions draw.
 
 ## Usage
 
@@ -36,11 +36,11 @@ The thread count, invisibly: a single integer, at least 1.
 [`RcppParallel::setThreadOptions()`](https://rdrr.io/pkg/RcppParallel/man/setThreadOptions.html)
 writes a process-level variable, so a fit that set it and returned would
 leave it moved for whatever runs next. The restoration is therefore
-registered with `on.exit` in the caller's frame, which fires however the
-fit leaves, an error included.
+registered with `on.exit` in the caller's frame, which runs however the
+fit exits, also on an error.
 
-At a count of 1 nothing is changed, so the sequential path does not
-touch the parallel machinery.
+At a count of 1 the function changes nothing, so the sequential path
+does not touch the parallel machinery.
 
 ## See also
 

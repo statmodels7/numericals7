@@ -30,9 +30,9 @@ j)\\ is \\I_j(\kappa_i)/I_0(\kappa_i)\\, decreasing along a row.
 ## The backward recurrence
 
 The three-term recurrence \\I\_{j-1} - I\_{j+1} = (2j/\kappa) I_j\\ has
-two solutions, one growing and one decaying. Run upwards it should
-follow the decaying one and instead follows rounding error into the
-growing one, so it is unstable. Run downwards the roles swap and it is
+two solutions: one grows and the other decays. The ratios are the
+decaying solution, and computed upwards the recurrence is unstable,
+because rounding error excites the growing one. Computed downwards it is
 stable, which is Miller's algorithm. The ratios \\r_j = I_j/I\_{j-1}\\
 satisfy \\r_j = 1/(2j/\kappa + r\_{j+1})\\, started from \\r\_{n_0+1} =
 0\\ at an index far enough above both \\m\\ and \\\kappa\\; the result
@@ -50,8 +50,8 @@ Mises distribution function is evaluated this way.
 
 [`bessel_i_ratio()`](https://statmodels7.github.io/numericals7/reference/bessel_i_ratio.md)
 is the first of these ratios and switches to an asymptotic series from
-\\\kappa = 30\\. No such branch is implemented here: the recurrence
-needs a starting index above \\\kappa\\, so its cost grows with the
+\\\kappa = 30\\. This function has no such branch: the recurrence needs
+a starting index above \\\kappa\\, so its cost grows with the
 concentration, and at such concentrations a series in these ratios does
 not converge in a useful number of terms.
 

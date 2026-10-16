@@ -2,12 +2,12 @@
 
 Computes \\\log I\_\nu(x)\\ together with its first four derivatives
 with respect to the *argument*. The first is the ratio identity \\(\log
-I\_\nu)' = \nu/x + I\_{\nu+1}/I\_\nu\\, with the ratio formed as the
-exponential of a difference of logarithms and therefore finite wherever
-the logarithms are. The higher orders follow from the modified Bessel
-equation and need no further Bessel evaluations, so the value and the
-four derivatives require two evaluations of \\\log I\\, at the orders
-\\\nu\\ and \\\nu + 1\\.
+I\_\nu)' = \nu/x + I\_{\nu+1}/I\_\nu\\, in which the ratio is formed as
+the exponential of a difference of logarithms and is therefore finite
+wherever the logarithms are. The higher orders follow from the modified
+Bessel equation and need no further Bessel evaluations, so the value and
+the four derivatives require two evaluations of \\\log I\\, at the
+orders \\\nu\\ and \\\nu + 1\\.
 
 ## Usage
 
@@ -34,7 +34,7 @@ derivatives in the argument.
 ## Details
 
 Derivatives with respect to the *order* have no elementary form and are
-not provided. A caller needing one differences
+not provided. A caller who needs one can difference
 [`log_bessel_i()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i.md)
 with a single stencil from
 [`fd_derivative()`](https://statmodels7.github.io/numericals7/reference/fd_derivative.md).
@@ -70,5 +70,5 @@ log_bessel_i_derivs(2, 0.5)$d1 - (1 / tanh(2) - 1 / (2 * 2))
 # Elsewhere, against one stencil on the value itself.
 log_bessel_i_derivs(3, 2)$d1 -
   fd_derivative(function(z) log_bessel_i(z, 2), 3, 1, accuracy = 4)
-#> [1] 5.262457e-14
+#> [1] 7.771561e-14
 ```

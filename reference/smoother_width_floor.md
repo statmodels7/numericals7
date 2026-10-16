@@ -1,4 +1,4 @@
-# The Smallest Width a Consumer May Use
+# The Smallest Width That a Consumer May Use
 
 Returns the floor of the width, derived from the conditioning of the
 design. A consumer resolving a width from data takes the larger of this
@@ -54,7 +54,7 @@ scaling floor of the break-point schedule rests on the same argument.
 ## See also
 
 [`smoother_width()`](https://statmodels7.github.io/numericals7/reference/smoother_width.md)
-for the width the data suggests,
+for the width resolved from the data,
 [`abs_smoother()`](https://statmodels7.github.io/numericals7/reference/abs_smoother.md)
 for what a width means.
 

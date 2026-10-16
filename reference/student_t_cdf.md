@@ -50,8 +50,8 @@ probability, or its logarithm. A non-positive `df` gives `NaN`.
 The computation is R's own: [`pt()`](https://rdrr.io/r/stats/TDist.html)
 from R's mathematical library and the incomplete beta ratio of Algorithm
 708 of the ACM Transactions on Mathematical Software (Didonato and
-Morris, 1992) as R carries it, copied with the warnings R raises from
-them removed. A warning calls into the R API, and a call into the R API
+Morris, 1992) as R carries it, copied without the warnings that R raises
+from them. A warning calls into the R API, and a call into the R API
 from a worker thread terminates the process.
 
 ## References

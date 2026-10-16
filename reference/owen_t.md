@@ -22,7 +22,7 @@ owen_t(h, a)
 - a:
 
   A numeric vector of slopes, recycled against `h`, of any sign and
-  size, `Inf` included.
+  size, including `Inf`.
 
 ## Value
 

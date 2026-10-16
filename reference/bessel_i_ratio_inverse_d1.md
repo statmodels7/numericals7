@@ -1,9 +1,10 @@
 # Derivatives of the Inverse Bessel Ratio
 
-Compute the derivatives of the inverse map \\\kappa(\rho) =
-A^{-1}(\rho)\\ in \\\rho\\, one function per order, evaluated at \\\rho
-= A(\kappa)\\. They take the concentration rather than \\\rho\\, so a
-caller that has already inverted \\\rho\\ does not invert it again.
+These functions compute the derivatives of the inverse map
+\\\kappa(\rho) = A^{-1}(\rho)\\ in \\\rho\\, one function per order,
+evaluated at \\\rho = A(\kappa)\\. They take the concentration rather
+than \\\rho\\, so a caller that has already inverted \\\rho\\ does not
+invert it again.
 
 ## Usage
 
@@ -48,10 +49,10 @@ underflow at large concentrations, so the formulas are evaluated on \\w
 = 1/A'\\ and the ratios \\r_j = A^{(j)}/A'\\,
 
 \$\$\kappa'' = -r_2 w^2, \qquad \kappa''' = (3r_2^2 - r_3)\\w^3, \qquad
-\kappa'''' = (-15r_2^3 + 10r_2r_3 - r_4)\\w^4,\$\$
+\kappa'''' = (-15r_2^3 + 10r_2r_3 - r_4)\\w^4.\$\$
 
-with the ratios taken from the asymptotic series without its powers of
-\\1/\kappa\\ from \\\kappa = 30\\. Each derivative is finite and
+From \\\kappa = 30\\ the ratios are taken from the asymptotic series
+without its powers of \\1/\kappa\\. Each derivative is finite and
 accurate until the derivative itself overflows (near \\\kappa =
 10^{60}\\ for the fourth).
 

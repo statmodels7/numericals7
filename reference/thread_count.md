@@ -1,9 +1,9 @@
 # Read the Thread Count Off a Policy
 
-Returns the thread count an
+Returns the thread count that an
 [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
 object carries, as a single integer. An entry point calls it once to
-validate the `threads` argument it was given, then passes the plain
+validate the `threads` argument that it receives, then passes the plain
 count down to the kernels, which receive a number and not the policy
 object.
 
@@ -44,5 +44,5 @@ thread_count(n_threads(8))
 
 # A bare count is not a policy.
 try(thread_count(8))
-#> Error : 'threads' must be the object n_threads() returns, e.g. threads = n_threads(4).
+#> Error : 'threads' must be an object returned by n_threads(), e.g. threads = n_threads(4).
 ```

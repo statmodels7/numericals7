@@ -1,11 +1,12 @@
-# The Smallest Relative Budget a Quadrature Rule Can Meet
+# The Smallest Relative Budget That a Quadrature Rule Can Meet
 
 Returns \\\lvert\sum w_k - \sum w_g\rvert / 2\\ plus the machine
 epsilon: the relative error estimate that an embedded pair gives on a
 constant integrand, on every panel, together with the rounding of the
 two sums.
 [`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)
-rejects a relative budget below it when no absolute budget is given.
+rejects a relative budget below it when the caller gives no absolute
+budget.
 
 ## Usage
 

@@ -4,7 +4,7 @@ Returns the nodes and the two sets of weights of the 15-point Kronrod
 extension of the 7-point Gauss rule on \\\[-1, 1\]\\. One set of nodes
 carries both rules, so a single evaluation of the integrand gives an
 estimate and, from the difference of the two rules, an error for it. An
-adaptive routine uses that error to decide where to refine, and the
+adaptive routine refines the panels where that error is largest, and the
 error requires no evaluations of the integrand beyond those of the
 estimate.
 
@@ -41,11 +41,11 @@ the error, and on a constant integrand that difference is \\\lvert\sum
 w_k - \sum w_g\rvert / 2\\ of the integral on every panel. With the
 Kronrod weights rounded to fifteen decimals they sum to \\2 - 6.0 \times
 10^{-15}\\, and every error estimate would carry a floor of \\3.4 \times
-10^{-15}\\ of the integral that no bisection lowers. At full precision
-both sums are 2 within the rounding of the sum. The tests pin the
-constants by their defining property, that the 7-point rule integrates
-polynomials of degree 13 exactly and the 15-point rule those of degree
-23, and pin the two sums to a few units in the last place.
+10^{-15}\\ of the integral, which bisection does not lower. At full
+precision both sums are 2 within the rounding of the sum. The tests pin
+the constants by their defining property, that the 7-point rule
+integrates polynomials of degree 13 exactly and the 15-point rule those
+of degree 23, and pin the two sums to a few units in the last place.
 
 ## References
 

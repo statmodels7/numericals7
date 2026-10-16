@@ -13,7 +13,7 @@ resultant length into the concentration that produced it."><meta property="og:im
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,8 +57,8 @@ resultant length into the concentration that produced it.</p>
 
 <dl><dt id="arg-rho">rho<a class="anchor" aria-label="anchor" href="#arg-rho"></a></dt>
 <dd><p>A numeric vector of mean resultant lengths, strictly inside
-\((0, 1)\). Anything outside, the endpoints included, returns <code>NA</code>
-without a warning (at \(\rho = 0\) the inverse is the limit 0, and at
+\((0, 1)\). A value outside this interval, including the endpoints,
+returns <code>NA</code> without a warning (at \(\rho = 0\) the inverse is the limit 0, and at
 \(\rho = 1\) it diverges).</p></dd>
 
 
@@ -69,7 +69,7 @@ without a warning (at \(\rho = 0\) the inverse is the limit 0, and at
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A numeric vector of concentrations the length of <code>rho</code>, <code>NA</code>
-wherever <code>rho</code> left \((0, 1)\).</p>
+wherever <code>rho</code> lies outside \((0, 1)\).</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>

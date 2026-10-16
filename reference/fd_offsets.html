@@ -15,7 +15,7 @@ fd_derivative() to apply the whole thing."><meta property="og:image" content="ht
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,9 +59,9 @@ the domain. Pass them to <code><a href="fd_weights.html">fd_weights()</a></code>
 
 
 <dl><dt id="arg-order">order<a class="anchor" aria-label="anchor" href="#arg-order"></a></dt>
-<dd><p>The derivative order \(d\). Not validated here, though
-<code><a href="fd_weights.html">fd_weights()</a></code> rejects anything but a non-negative whole number when the
-offsets reach it.</p></dd>
+<dd><p>The derivative order \(d\). This function does not validate
+it, but <code><a href="fd_weights.html">fd_weights()</a></code> rejects anything other than a non-negative whole
+number when the offsets reach it.</p></dd>
 
 
 <dt id="arg-accuracy">accuracy<a class="anchor" aria-label="anchor" href="#arg-accuracy"></a></dt>
@@ -72,7 +72,7 @@ accuracy describes the treatment of an odd value.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A list of four components:</p><dl><dt><code>reach</code></dt>
+    <p>A list with the components:</p><dl><dt><code>reach</code></dt>
 <dd><p>integer, the half-width \(r\), at least 1.</p></dd>
 
 <dt><code>central</code></dt>
@@ -104,9 +104,9 @@ five-point stencils for the first and second.</p>
     <p>A central stencil is symmetric, so the odd powers cancel from its error
 expansion and the accuracy of the central stencil is always even. An odd
 accuracy is therefore replaced by an even neighbor, and the parity of
-\(d + a\) decides which one. The observed orders on \(\exp\), obtained
+\(d + a\) determines which one. The observed orders on \(\exp\), obtained
 by halving the step, are:</p>
-<table class="table table"><tr><td><strong>order</strong></td><td>1</td><td>2</td><td>3</td><td>4</td></tr><tr><td>accuracy 2</td><td>2</td><td>2</td><td>2</td><td>2</td></tr><tr><td>accuracy 3</td><td>2</td><td>4</td><td>2</td><td>4</td></tr><tr><td>accuracy 4</td><td>4</td><td>4</td><td>4</td><td>4</td></tr></table><p>At an odd order the accuracy is rounded down and the stencil keeps its size;
+<table class="table table"><tr><td>order</td><td>1</td><td>2</td><td>3</td><td>4</td></tr><tr><td>accuracy 2</td><td>2</td><td>2</td><td>2</td><td>2</td></tr><tr><td>accuracy 3</td><td>2</td><td>4</td><td>2</td><td>4</td></tr><tr><td>accuracy 4</td><td>4</td><td>4</td><td>4</td><td>4</td></tr></table><p>At an odd order the accuracy is rounded down and the stencil keeps its size;
 at an even order it is rounded up and the stencil gains two nodes. An even
 accuracy is used as given.</p>
     </div>

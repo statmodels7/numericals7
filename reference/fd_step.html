@@ -13,7 +13,7 @@ inside the domain."><meta property="og:image" content="https://statmodels7.githu
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,7 +64,7 @@ inside the domain.</p>
 
 
 <dt id="arg-accuracy">accuracy<a class="anchor" aria-label="anchor" href="#arg-accuracy"></a></dt>
-<dd><p>The accuracy the stencil will be built at, <code>2</code> by default.
+<dd><p>The accuracy at which the stencil is built, <code>2</code> by default.
 Matches <code><a href="fd_offsets.html">fd_offsets()</a></code>'s argument of the same name.</p></dd>
 
 
@@ -85,7 +85,7 @@ bound, and negative at a point outside the bounds.</p>
 <p>Truncation grows like \(h^{a}\) and rounding like \(\varepsilon h^{-d}\),
 and this is where the two meet. The factor \(\max(1, \lvert x \rvert)\)
 makes the step relative for a large argument and absolute for a small one, so
-a point near zero does not get a step below the resolution of its own
+the step at a point near zero is not below the resolution of its own
 neighborhood.</p>
 <p>At the default accuracy the exponent is \(1/4\) for a second derivative and
 \(1/6\) for a fourth, giving steps of about <code>1.2e-4</code> and <code>2.5e-3</code> at
@@ -101,16 +101,16 @@ margin is 0.49 of the distance to the bound, divided by the reach.</p>
     </div>
     <div class="section level2">
     <h2 id="a-point-on-a-bound">A point on a bound<a class="anchor" aria-label="anchor" href="#a-point-on-a-bound"></a></h2>
-    <p>A point sitting exactly on a finite bound gets a step of <strong>zero</strong>, and a
-stencil divided by \(h^{d}\) is then <code>NaN</code>. The function does not check the
+    <p>At a point exactly on a finite bound the step is zero, and a stencil divided
+by \(h^{d}\) is then <code>NaN</code>. The function does not check the
 evaluation point. For a point on a bound the caller moves the point strictly
 inside the domain, or applies a one-sided stencil with an explicitly chosen
 step.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="fd_derivative.html">fd_derivative()</a></code>, which calls this when no step is given,
-<code><a href="fd_offsets.html">fd_offsets()</a></code> for the reach the clamp divides by.</p></div>
+    <div class="dont-index"><p><code><a href="fd_derivative.html">fd_derivative()</a></code>, which calls this when the caller supplies no
+step, <code><a href="fd_offsets.html">fd_offsets()</a></code> for the reach by which the clamp divides.</p></div>
     </div>
 
     <div class="section level2">

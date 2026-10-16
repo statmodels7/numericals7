@@ -29,8 +29,8 @@ log_bessel_k_derivs(x, nu)
 
 A named list of five numeric vectors, each of the recycled length of `x`
 and `nu`: `l`, the value, and `d1` to `d4`, its derivatives in the
-argument. `d1` is negative at every order, `K` decreasing in its
-argument.
+argument. `d1` is negative at every order, because \\K\\ decreases in
+its argument.
 
 ## Details
 

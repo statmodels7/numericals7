@@ -1,10 +1,10 @@
 # Check a Smoother of the Absolute Value Numerically
 
-Compares a smoother against the properties every smoother of \\\lvert
-u\rvert\\ must have, and each derivative order against one numerical
-differentiation of the analytic order below it. Returns one row per
-check with the worst error and a pass or fail. Applied to a user-written
-smoother, it verifies the five derivatives.
+Compares a smoother against the properties that every smoother of
+\\\lvert u\rvert\\ must have, and each derivative order against one
+numerical differentiation of the analytic order below it. Returns one
+row per check with the worst error and a pass or fail. Applied to a
+user-written smoother, it verifies the five derivatives.
 
 ## Usage
 
@@ -22,17 +22,17 @@ check_abs_smoother(smoother, width = NULL, tol = 1e-06, verbose = TRUE)
 
 - width:
 
-  The width to check at, a single positive number, or `NULL` (the
-  default) for the smoother's own. A smoother carrying none is checked
-  at `0.5`, a scale chosen to exercise the formulas and unrelated to any
-  data.
+  The width at which the smoother is checked, a single positive number,
+  or `NULL` (the default) for the smoother's own. A smoother carrying
+  none is checked at `0.5`, a scale chosen to exercise the formulas and
+  unrelated to any data.
 
 - tol:
 
-  The relative error above which a row is reported as `FAILED`. A single
-  positive number, `1e-6` by default. The errors of the three shipped
-  smoothers are of order `1e-10`, about four orders of magnitude below
-  it, so the default separates a correct smoother from one whose
+  The relative error above which a row is reported as `FAILED`. It is a
+  single positive number and defaults to `1e-6`. The errors of the three
+  shipped smoothers are of order `1e-10`, about four orders of magnitude
+  below it, so the default separates a correct smoother from one whose
   derivative is wrong in its fourth digit.
 
 - verbose:
@@ -43,14 +43,15 @@ check_abs_smoother(smoother, width = NULL, tol = 1e-06, verbose = TRUE)
 
 ## Value
 
-A data frame with one row per check and three columns: `check`
-(character), `max_error` (numeric) and `status` (character, `"OK"` or
-`"FAILED"`). Ten rows, or twelve when the smoother declares a
-`tau_correction`. Returned invisibly when `verbose` is `TRUE`.
+A data frame with one row per check and the columns `check` (character),
+`max_error` (numeric) and `status` (character, `"OK"` or `"FAILED"`). It
+has ten rows, or twelve when the smoother declares a `tau_correction`,
+and it is returned invisibly when `verbose` is `TRUE`.
 
 ## The rows
 
-Ten checks, and two more for a smoother declaring a scale correction:
+The table lists the checks. The last two rows apply only to a smoother
+that declares a scale correction.
 
 |  |  |
 |----|----|
@@ -64,7 +65,7 @@ Ten checks, and two more for a smoother declaring a scale correction:
 | `tau_correction bounded by tau` | the correction never increases a scale |
 | `tau_correction is the identity at width zero` | it vanishes as the smoothing does |
 
-Order \\k\\ goes against numDeriv applied **once** to the analytic order
+Order \\k\\ goes against numDeriv applied once to the analytic order
 \\k-1\\, so a wrong derivative is caught against an independent route
 while the reference never degenerates into a difference of differences.
 For the three shipped smoothers every row passes, with errors of order
@@ -81,11 +82,11 @@ widths out.
 
 The grid spans the transition and the tails, placed by the smoother's
 own intrinsic scale \\s(0)\\, which is of order the transition width for
-any smoother of the absolute value, so no reading of what the width
-parameter means is needed. Every point sits off zero and off the seam,
-because a piecewise smoother has isolated points at which only one-sided
-derivatives exist, and a difference that straddles such a point is
-meaningless.
+any smoother of the absolute value, so the placement does not depend on
+what the width parameter means. Every point sits off zero and off the
+seam, because a piecewise smoother has isolated points at which only
+one-sided derivatives exist, and a difference that straddles such a
+point is meaningless.
 
 ## An example of a detected error
 
@@ -105,7 +106,7 @@ function stops when it is not installed.
 [`abs_smoother()`](https://statmodels7.github.io/numericals7/reference/abs_smoother.md)
 for the class being checked,
 [`smoother_deriv()`](https://statmodels7.github.io/numericals7/reference/smoother_deriv.md)
-for the derivatives it reads, `penalties7::check_penalty()` for the
+for the derivatives that it reads, `penalties7::check_penalty()` for the
 sibling on a penalty.
 
 ## Examples

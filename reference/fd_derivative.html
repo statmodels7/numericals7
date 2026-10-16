@@ -15,7 +15,7 @@ step with fd_step()."><meta property="og:image" content="https://statmodels7.git
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,9 +74,9 @@ step with <code><a href="fd_step.html">fd_step()</a></code>.</p>
 
 
 <dt id="arg-order">order<a class="anchor" aria-label="anchor" href="#arg-order"></a></dt>
-<dd><p>The derivative order. One to four is what the toolkit uses and
-what the step rule is tuned for. A higher order is accepted and sized by
-<code><a href="fd_offsets.html">fd_offsets()</a></code>, but nothing is claimed about its accuracy.</p></dd>
+<dd><p>The derivative order. The toolkit uses orders one to four, and
+the step rule is tuned for them. A higher order is accepted and sized by
+<code><a href="fd_offsets.html">fd_offsets()</a></code>, but its accuracy is not guaranteed.</p></dd>
 
 
 <dt id="arg-h">h<a class="anchor" aria-label="anchor" href="#arg-h"></a></dt>
@@ -110,8 +110,8 @@ stencil has a zero weight at the origin.</p></dd>
 through this function. It applies one stencil of the requested order and
 never composes lower-order differences. Each numerical differentiation
 multiplies the error of the one before it, so a fourth derivative reached by
-four nested first differences, each taken at the step chosen for a first
-derivative, is dominated by rounding error.</p>
+four nested first differences is dominated by rounding error when each
+difference is taken at the step chosen for a first derivative.</p>
     </div>
     <div class="section level2">
     <h2 id="choices-left-to-the-caller">Choices left to the caller<a class="anchor" aria-label="anchor" href="#choices-left-to-the-caller"></a></h2>
@@ -130,7 +130,7 @@ stencil is applied elementwise, so a whole vector of points costs at most
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="fd_weights.html">fd_weights()</a></code>, <code><a href="fd_offsets.html">fd_offsets()</a></code> and <code><a href="fd_step.html">fd_step()</a></code>, the three pieces
-this assembles.</p></div>
+that this function assembles.</p></div>
     </div>
 
     <div class="section level2">

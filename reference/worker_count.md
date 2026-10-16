@@ -1,6 +1,6 @@
 # Read the Worker Count Off a Policy
 
-Returns the worker-process count an
+Returns the worker-process count that an
 [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
 object carries, as a single integer. A policy stored before `workers`
 existed has no such component, and this function returns 1 for it, so

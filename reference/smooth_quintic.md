@@ -1,9 +1,9 @@
 # The Quintic Smoother of the Absolute Value
 
-\\\lvert u\rvert\\ replaced inside \\\[-h, h\]\\ by the even polynomial
-matching it to third order at the seam, and **exact** outside. It is the
-only smoother here whose bias is zero beyond a finite radius, and the
-only one that is not analytic.
+The quintic smoother replaces \\\lvert u\rvert\\ inside \\\[-h, h\]\\ by
+the even polynomial that matches it to third order at the seam, and is
+exact outside that interval. It is the only smoother here whose bias is
+zero beyond a finite radius, and the only one that is not analytic.
 
 ## Usage
 
@@ -64,12 +64,12 @@ There is no convolution identity here, so `tau_correction` is `NULL`.
 
 Exactness outside the transition has a cost for a break-point. The
 second derivative of \\s\\ in the break-point is \\s''\\, which is zero
-outside \\\[-h, h\]\\, so where no observation falls within \\h\\ of the
-fitted break-point the break-point has no curvature at all and is not
-identified. At a width of one median spacing this happens often for a
-discontinuous break-point on a uniform covariate, because a quarter of
-the gaps are wider than \\2h\\. The width resolved from a spacing \\g\\
-is therefore
+outside \\\[-h, h\]\\. If the interval of half-width \\h\\ around the
+fitted break-point contains no observation, the break-point has no
+curvature at all and is not identified. At a width of one median spacing
+this happens often for a discontinuous break-point on a uniform
+covariate, because a quarter of the gaps are wider than \\2h\\. The
+width resolved from a spacing \\g\\ is therefore
 
 \$\$h = \frac{5}{2\log 2}\\g \approx 3.61\\g,\$\$
 

@@ -16,9 +16,9 @@ bessel_i_ratio_inverse(rho, threads = 1L)
 - rho:
 
   A numeric vector of mean resultant lengths, strictly inside \\(0,
-  1)\\. Anything outside, the endpoints included, returns `NA` without a
-  warning (at \\\rho = 0\\ the inverse is the limit 0, and at \\\rho =
-  1\\ it diverges).
+  1)\\. A value outside this interval, including the endpoints, returns
+  `NA` without a warning (at \\\rho = 0\\ the inverse is the limit 0,
+  and at \\\rho = 1\\ it diverges).
 
 - threads:
 
@@ -27,7 +27,7 @@ bessel_i_ratio_inverse(rho, threads = 1L)
 ## Value
 
 A numeric vector of concentrations the length of `rho`, `NA` wherever
-`rho` left \\(0, 1)\\.
+`rho` lies outside \\(0, 1)\\.
 
 ## Details
 

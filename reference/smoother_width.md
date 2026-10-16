@@ -23,15 +23,15 @@ smoother_width(smoother, spacing, max_gap = NULL)
 - spacing:
 
   A spacing in covariate units, one value or one per group. Every entry
-  must be positive and none may be missing; the check is not made when
-  the smoother already carries a width.
+  must be positive and not missing; the check is not made when the
+  smoother already carries a width.
 
 - max_gap:
 
   `NULL` (the default), or the largest gap between consecutive distinct
-  values of the covariate over the range a break-point may take, one
-  value or one per entry of `spacing`. Read only by a smoother with an
-  `exact_radius`.
+  values of the covariate over the range that a break-point may take,
+  one value or one per entry of `spacing`. Only a smoother with an
+  `exact_radius` reads it.
 
 ## Value
 
@@ -54,11 +54,11 @@ for the reason given on its page.
 
 A smoother that declares an `exact_radius` is equal to \\\lvert
 u\rvert\\ beyond that radius, so a break-point smoothed with it has no
-curvature where no observation falls within the radius, and a gap in the
-covariate wider than twice the radius can hold such a break-point. Where
-`max_gap` is given, the width is therefore raised until the radius is at
-least \\0.55\\ times it, the radius being taken to grow in proportion to
-the width, which holds for
+curvature if the interval within the radius contains no observation, and
+a gap in the covariate wider than twice the radius can hold such a
+break-point. Where `max_gap` is given, the width is therefore raised
+until the radius is at least \\0.55\\ times it. The function assumes
+that the radius grows in proportion to the width, which holds for
 [`smooth_quintic()`](https://statmodels7.github.io/numericals7/reference/smooth_quintic.md),
 whose radius is its width. The median spacing does not bound the largest
 gap: among \\n\\ uniform points the largest gap is about \\(\log n +
@@ -75,7 +75,7 @@ two.
 ## See also
 
 [`smoother_width_floor()`](https://statmodels7.github.io/numericals7/reference/smoother_width_floor.md)
-for the lower bound the arithmetic imposes,
+for the lower bound that the arithmetic imposes,
 [`abs_smoother()`](https://statmodels7.github.io/numericals7/reference/abs_smoother.md)
 for what a width means.
 

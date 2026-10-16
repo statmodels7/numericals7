@@ -4,8 +4,8 @@ Solves for the weights that combine function values at the given offsets
 into an estimate of a derivative. The weights are the unique solution of
 the Vandermonde system that makes the stencil exact on polynomials, so a
 stencil on `n` nodes reproduces the derivative of every polynomial of
-degree `n - 1` or less without error. They are returned for a **unit
-step**: divide by `h^order` before using them at spacing `h`, or call
+degree `n - 1` or less without error. They are returned for a unit step:
+divide by `h^order` before using them at spacing `h`, or call
 [`fd_derivative()`](https://statmodels7.github.io/numericals7/reference/fd_derivative.md),
 which assembles the whole expression.
 
@@ -22,22 +22,23 @@ fd_weights(offsets, order)
   A numeric vector of distinct offsets, in units of the step. They need
   not be sorted, symmetric, or whole numbers: `0:2` gives a one-sided
   stencil for use at a boundary, and `c(-1, 0, 3)` an uneven one. At
-  least `order + 1` of them are needed. Duplicated offsets throw an
-  error, the Vandermonde system being singular.
+  least `order + 1` of them are needed. Duplicated offsets make the
+  Vandermonde system singular and signal an error.
 
 - order:
 
-  The derivative order: a single non-negative whole number, **strictly
-  smaller than `length(offsets)`**. Order `0` is legal and returns
-  interpolation weights at the origin. Anything else throws: an order at
-  or above the node count with a message naming both numbers, and a
-  negative, fractional, `NA` or non-scalar order with a message naming
-  the requirement.
+  The derivative order: a single non-negative whole number, strictly
+  smaller than `length(offsets)`. Order `0` is allowed and returns
+  interpolation weights at the origin. Any other value signals an error:
+  an order at or above the node count with a message naming both
+  numbers, and a negative, fractional, `NA` or non-scalar order with a
+  message naming the requirement.
 
 ## Value
 
 A numeric vector of weights for a unit step, one per offset and in the
-order the offsets were given. For `order >= 1` the entries sum to zero.
+order in which the offsets were given. For `order >= 1` the entries sum
+to zero.
 
 ## The system solved
 
@@ -47,14 +48,14 @@ weights \\w\\ solve the \\n\\ moment conditions
 \$\$\sum\_{j=1}^{n} w_j\\ s_j^{\\m} \\=\\ d!\\\[\\m = d\\\], \qquad m =
 0, 1, \dots, n-1,\$\$
 
-one equation per polynomial degree the stencil must reproduce. The
-matrix is Vandermonde in the offsets, so it is nonsingular exactly when
-they are distinct and the weights exist and are unique.
+one equation for each polynomial degree that the stencil must reproduce.
+The matrix is Vandermonde in the offsets, so it is nonsingular exactly
+when they are distinct and the weights exist and are unique.
 
-Two properties of the answer are cheap to check against a returned
-vector. The weights sum to zero for every \\d \ge 1\\, this being the
-\\m = 0\\ condition. On a symmetric stencil they are antisymmetric for
-odd \\d\\ and symmetric for even \\d\\.
+The weights sum to zero for every \\d \ge 1\\, which is the \\m = 0\\
+condition, and on a symmetric stencil they are antisymmetric for odd
+\\d\\ and symmetric for even \\d\\. Both properties can be checked on a
+returned vector.
 
 ## Applying them
 
@@ -73,7 +74,7 @@ puts the three together.
 ## Accuracy
 
 Because the stencil is exact to degree \\n-1\\, the leading error is the
-first term it cannot reproduce, giving an estimate accurate to
+first term that it cannot reproduce, giving an estimate accurate to
 \\O(h^{\\n-d})\\ with constant
 
 \$\$\frac{1}{n!}\sum\_{j=1}^{n} w_j\\ s_j^{\\n}.\$\$
@@ -89,11 +90,11 @@ sizes a stencil from the order and the requested accuracy.
 ## Single stencils and nested differences
 
 Reaching a high order by composing low-order differences multiplies the
-error of each stage into the next, and a fourth derivative built from
-four nested first differences, each taken at the step chosen for a first
-derivative, is dominated by rounding error. Every numerical fallback in
-the toolkit uses one stencil of the order that it needs, with the
-weights returned by this function.
+error of each stage into the next. A fourth derivative built from four
+nested first differences is dominated by rounding error when each
+difference is taken at the step chosen for a first derivative. Every
+numerical fallback in the toolkit uses one stencil of the order that it
+needs, with the weights returned by this function.
 
 ## See also
 
@@ -115,7 +116,7 @@ fd_weights(c(-1, 0, 1), 2)                 #    1,  -2,  1
 
 # Five nodes, first derivative: the familiar (1, -8, 0, 8, -1)/12.
 fd_weights(-2:2, 1) * 12
-#> [1]  1 -8  0  8 -1
+#> [1]  1.000000e+00 -8.000000e+00 -2.854859e-15  8.000000e+00 -1.000000e+00
 
 # The weights are for a unit step, so the caller divides by h^order.
 h <- 1e-3
@@ -130,7 +131,8 @@ exp(1)
 s <- -2:2
 w <- fd_weights(s, 1)
 vapply(0:5, function(m) sum(w * s^m), numeric(1))
-#> [1]  0  1  0  0  0 -4
+#> [1] -2.976135e-17  1.000000e+00  1.665335e-16  1.110223e-16  0.000000e+00
+#> [6] -4.000000e+00
 
 # That first failure is the error constant: -4/5! = -1/30.
 sum(w * s^5) / factorial(5)

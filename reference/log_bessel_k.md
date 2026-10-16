@@ -16,7 +16,8 @@ log_bessel_k(x, nu)
 - x:
 
   A numeric vector of arguments, recycled against `nu`. Positive; zero
-  gives `Inf`, \\K\\ diverging there, and a negative value gives `NA`.
+  gives `Inf`, because \\K\\ diverges there, and a negative value gives
+  `NA`.
 
 - nu:
 
