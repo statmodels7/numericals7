@@ -10,11 +10,9 @@ tuple_indices(d, order = 2L)
 \item{d}{The number of variables, a non-negative whole number. Zero gives an
 empty list. A negative value signals an error: at orders one and two it
 comes from \code{seq_len()} and concerns coercion to a non-negative integer,
-and at orders three and four it comes from \code{\link[utils:combn]{utils::combn()}}.}
+and from order three on it comes from \code{\link[utils:combn]{utils::combn()}}.}
 
-\item{order}{The derivative order \eqn{k}, one of \code{1}, \code{2}, \code{3} or \code{4}.
-Any other value signals an error, because the enumeration is written out
-only to order four.}
+\item{order}{The derivative order \eqn{k}, a single positive whole number.}
 }
 \value{
 A list of \eqn{\binom{d + k - 1}{k}} integer vectors, each of length
@@ -32,7 +30,7 @@ count is
 \section{The ordering}{
 At order two the diagonal comes first, \eqn{(1,1), (2,2), \dots, (d,d)}, and
 the off-diagonal pairs follow in lexicographic order, which is the order
-used to index a Hessian. At orders three and four the enumeration is plain
+used to index a Hessian. From order three on the enumeration is plain
 lexicographic over non-decreasing tuples.
 
 Every object in the toolkit holding derivatives over \eqn{d} variables keys

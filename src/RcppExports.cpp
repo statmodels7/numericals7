@@ -144,6 +144,36 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// fd_tensor_plan_cpp
+Rcpp::List fd_tensor_plan_cpp(Rcpp::IntegerMatrix comp, Rcpp::List known, int accuracy);
+RcppExport SEXP _numericals7_fd_tensor_plan_cpp(SEXP compSEXP, SEXP knownSEXP, SEXP accuracySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::IntegerMatrix >::type comp(compSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type known(knownSEXP);
+    Rcpp::traits::input_parameter< int >::type accuracy(accuracySEXP);
+    rcpp_result_gen = Rcpp::wrap(fd_tensor_plan_cpp(comp, known, accuracy));
+    return rcpp_result_gen;
+END_RCPP
+}
+// fd_tensor_combine_cpp
+Rcpp::List fd_tensor_combine_cpp(Rcpp::List vals, Rcpp::IntegerVector term_start, Rcpp::IntegerVector term_val, Rcpp::NumericVector term_w, Rcpp::List dens, int n, int threads);
+RcppExport SEXP _numericals7_fd_tensor_combine_cpp(SEXP valsSEXP, SEXP term_startSEXP, SEXP term_valSEXP, SEXP term_wSEXP, SEXP densSEXP, SEXP nSEXP, SEXP threadsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type vals(valsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type term_start(term_startSEXP);
+    Rcpp::traits::input_parameter< Rcpp::IntegerVector >::type term_val(term_valSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type term_w(term_wSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type dens(densSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< int >::type threads(threadsSEXP);
+    rcpp_result_gen = Rcpp::wrap(fd_tensor_combine_cpp(vals, term_start, term_val, term_w, dens, n, threads));
+    return rcpp_result_gen;
+END_RCPP
+}
 // lb_set_uk_cpp
 void lb_set_uk_cpp(List uk);
 RcppExport SEXP _numericals7_lb_set_uk_cpp(SEXP ukSEXP) {
@@ -219,6 +249,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_numericals7_bessel_ratio_inverse_d2_cpp", (DL_FUNC) &_numericals7_bessel_ratio_inverse_d2_cpp, 2},
     {"_numericals7_bessel_ratio_inverse_d3_cpp", (DL_FUNC) &_numericals7_bessel_ratio_inverse_d3_cpp, 2},
     {"_numericals7_bessel_ratio_inverse_d4_cpp", (DL_FUNC) &_numericals7_bessel_ratio_inverse_d4_cpp, 2},
+    {"_numericals7_fd_tensor_plan_cpp", (DL_FUNC) &_numericals7_fd_tensor_plan_cpp, 3},
+    {"_numericals7_fd_tensor_combine_cpp", (DL_FUNC) &_numericals7_fd_tensor_combine_cpp, 7},
     {"_numericals7_lb_set_uk_cpp", (DL_FUNC) &_numericals7_lb_set_uk_cpp, 1},
     {"_numericals7_log_bessel_i_cpp", (DL_FUNC) &_numericals7_log_bessel_i_cpp, 3},
     {"_numericals7_n7_log_bessel_i_probe", (DL_FUNC) &_numericals7_n7_log_bessel_i_probe, 2},

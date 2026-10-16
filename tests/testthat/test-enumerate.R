@@ -22,7 +22,14 @@ test_that("tuple_indices counts and orders as the contract says", {
   expect_identical(t2[4:6], list(c(1L, 2L), c(1L, 3L), c(2L, 3L)))
 
   expect_identical(tuple_indices(0, 2), list())
-  expect_error(tuple_indices(2, 5), "1, 2, 3 or 4")
+  expect_error(tuple_indices(2, 0), "positive whole number")
+  expect_error(tuple_indices(2, 1.5), "positive whole number")
+  # past order four the enumeration continues lexicographically
+  t5 <- tuple_indices(3, 5)
+  expect_length(t5, choose(3 + 5 - 1, 5))
+  expect_true(all(vapply(t5, function(i) !is.unsorted(i), logical(1))))
+  keys <- vapply(t5, function(i) sum(i * 10^(4:0)), numeric(1))
+  expect_false(is.unsorted(keys))
 })
 
 

@@ -45,6 +45,14 @@ bessel_ratio_inverse_d4_cpp <- function(kappa, threads = 1L) {
     .Call(`_numericals7_bessel_ratio_inverse_d4_cpp`, kappa, threads)
 }
 
+fd_tensor_plan_cpp <- function(comp, known, accuracy) {
+    .Call(`_numericals7_fd_tensor_plan_cpp`, comp, known, accuracy)
+}
+
+fd_tensor_combine_cpp <- function(vals, term_start, term_val, term_w, dens, n, threads) {
+    .Call(`_numericals7_fd_tensor_combine_cpp`, vals, term_start, term_val, term_w, dens, n, threads)
+}
+
 lb_set_uk_cpp <- function(uk) {
     invisible(.Call(`_numericals7_lb_set_uk_cpp`, uk))
 }

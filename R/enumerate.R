@@ -19,7 +19,7 @@
 #'
 #' At order two the diagonal comes first, \eqn{(1,1), (2,2), \dots, (d,d)}, and
 #' the off-diagonal pairs follow in lexicographic order, which is the order
-#' used to index a Hessian. At orders three and four the enumeration is plain
+#' used to index a Hessian. From order three on the enumeration is plain
 #' lexicographic over non-decreasing tuples.
 #'
 #' Every object in the toolkit holding derivatives over \eqn{d} variables keys
@@ -36,10 +36,8 @@
 #' @param d The number of variables, a non-negative whole number. Zero gives an
 #'   empty list. A negative value signals an error: at orders one and two it
 #'   comes from `seq_len()` and concerns coercion to a non-negative integer,
-#'   and at orders three and four it comes from [utils::combn()].
-#' @param order The derivative order \eqn{k}, one of `1`, `2`, `3` or `4`.
-#'   Any other value signals an error, because the enumeration is written out
-#'   only to order four.
+#'   and from order three on it comes from [utils::combn()].
+#' @param order The derivative order \eqn{k}, a single positive whole number.
 #'
 #' @return A list of \eqn{\binom{d + k - 1}{k}} integer vectors, each of length
 #'   `order`, each non-decreasing. An empty list when `d` is zero.
@@ -65,7 +63,11 @@
 #'
 #' @export
 tuple_indices <- function(d, order = 2L) {
-  if (!order %in% 1:4) stop("'order' must be 1, 2, 3 or 4.", call. = FALSE)
+  if (!is.numeric(order) || length(order) != 1L || !is.finite(order) ||
+      order < 1 || order != trunc(order)) {
+    stop("'order' must be a single positive whole number.", call. = FALSE)
+  }
+  order <- as.integer(order)
   if (d == 0L) return(list())
   if (order == 1L) return(lapply(seq_len(d), as.integer))
   if (order == 2L) {

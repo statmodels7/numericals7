@@ -42,13 +42,16 @@ reference:
   desc: >
     Finite-difference stencils: weights from the Vandermonde system, offsets
     sized from the order and the accuracy, a step that balances truncation
-    against rounding, and an applicator that never composes lower-order
-    differences.
+    against rounding, an applicator that never composes lower-order
+    differences, and a tensor-product stencil for partial derivatives of any
+    order taken from the highest analytic quantity available.
   contents:
   - fd_weights
   - fd_offsets
   - fd_step
   - fd_derivative
+  - fd_tensor
+  - fd_known
 
 - title: Quadrature and series
   desc: >

@@ -1,3 +1,26 @@
+# numericals7 0.23.0
+
+* New `fd_tensor()` computes partial derivatives of a function of several
+  coordinates, every component of one order or an arbitrary set of
+  multi-indices. Each component is one tensor product of central
+  one-dimensional stencils applied to the highest analytic quantity below
+  it, which is the function itself or a derivative declared through the new
+  `fd_known()`; a difference of a difference is never formed. The source with
+  the smallest residual order is used, then the declaration with more
+  derivatives, and within one declaration the analytic part takes the most
+  repeated coordinates first. The step of a component of residual order r
+  is `eps^(1/(r + a)) * max(1, |x|)`, reduced near a bound so that the widest
+  stencil of that order stays inside it. The attribute `"fd_source"` records
+  the source and the residual of each component. The plan (sources, distinct
+  nodes and weights) is computed in C++ and cached for the session, the
+  weights by Fornberg's recursion and exactly symmetric, and the weighted
+  sums over the vectors of length n are formed in C++. The default accuracy
+  is 4.
+
+* `tuple_indices()` accepts any positive order. From order three on the
+  enumeration is lexicographic, as it was at orders three and four; an order
+  above four signalled an error.
+
 # numericals7 0.22.1
 
 * The test of `owen_t()` against 50-digit values writes its reference at
