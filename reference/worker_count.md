@@ -43,7 +43,7 @@ worker_count(n_threads(2, workers = 4))
 #> [1] 4
 
 # A policy stored before workers existed still reads as sequential across
-# folds. Only the readers tolerate one; print() on it throws.
+# folds. Only the readers accept one; print() on it signals an error.
 worker_count(structure(list(threads = 3L), class = "n_threads"))
 #> [1] 1
 ```

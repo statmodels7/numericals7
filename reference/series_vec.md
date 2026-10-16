@@ -132,7 +132,7 @@ the continuous counterpart.
 ## Examples
 
 ``` r
-# Four geometric series against the closed form.
+# Four geometric series are compared with the closed form.
 r <- c(0.1, 0.5, 0.9, 0.99)
 series_vec(function(k, i) r[i]^k, n = 4) - 1 / (1 - r)
 #> [1]  0.000000e+00  0.000000e+00 -2.131628e-14 -4.614648e-09
@@ -143,7 +143,7 @@ series_vec(function(k, i) dpois(k, lam[i]), n = 3)
 #> [1] 1 1 1
 
 # The first 64 terms of a Poisson at rate 300 sum to almost nothing and are
-# still rising, so the row does not retire there.
+# still rising, so the row does not stop there.
 sum(dpois(0:63, 300))
 #> [1] 3.75793e-62
 series_vec(function(k, i) dpois(k, 300), n = 1)
@@ -154,14 +154,14 @@ series_vec(function(k, i) dpois(k, 300), n = 1)
 series_vec(function(k, i) dpois(k, 1e4), n = 1)
 #> [1] 1
 
-# Series indexed from one, against their closed forms: a factorial decay
-# and a polynomial one.
+# Series indexed from one are compared with their closed forms: a factorial
+# decay and a polynomial one.
 series_vec(function(k, i) 1 / factorial(k), n = 1, from = 1L) - (exp(1) - 1)
 #> [1] 2.220446e-16
 series_vec(function(k, i) 1 / k^4, n = 1, from = 1L) - pi^4 / 90
 #> [1] -7.228129e-11
 
-# A divergent series is refused, not estimated.
+# A divergent series is rejected, not estimated.
 suppressWarnings(series_vec(function(k, i) 1 / (k + 1), n = 1,
                             max_terms = 500L))
 #> [1] NA

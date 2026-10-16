@@ -124,8 +124,8 @@ smoother_deriv(sm, 0, order = 0)
 5 * 0.5 / 16
 #> [1] 0.15625
 
-# The second derivative vanishes to second order at the seam, which is
-# what makes it C^3 there.
+# The second derivative vanishes to second order at the seam, and this
+# makes the smoother C^3 there.
 smoother_deriv(sm, c(0.4, 0.49, 0.5, 0.51), order = 2)
 #> [1] 0.4860000 0.0058806 0.0000000 0.0000000
 ```

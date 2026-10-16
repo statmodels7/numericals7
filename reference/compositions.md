@@ -69,7 +69,7 @@ the other two enumerations collected here.
 ## Examples
 
 ``` r
-# The four ways to split 3 into two ordered non-negative parts.
+# There are four ways to split 3 into two ordered non-negative parts.
 compositions(3, 2)
 #>      [,1] [,2]
 #> [1,]    0    3

@@ -94,7 +94,7 @@ smoother_width(smooth_hyperbolic(), 0.3)
 smoother_width(smooth_probit(h = 0.5), 0.3)
 #> [1] 0.5
 
-# One width per group.
+# Each group has its own width.
 smoother_width(smooth_probit(per_group = TRUE), c(0.2, 0.4, 0.35))
 #> [1] 0.20 0.40 0.35
 

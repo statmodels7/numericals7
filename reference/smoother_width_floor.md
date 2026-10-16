@@ -61,13 +61,14 @@ for what a width means.
 ## Examples
 
 ``` r
-# A length-parametrized smoother: sqrt(eps) times the range.
+# For a length-parametrized smoother the floor is sqrt(eps) times the range.
 smoother_width_floor(smooth_probit(), scale = 10)
 #> [1] 1.490116e-07
 sqrt(.Machine$double.eps) * 10
 #> [1] 1.490116e-07
 
-# The hyperbolic's floor is the square of that, its parameter being one.
+# The floor of the hyperbolic is the square of that, because its parameter
+# is a squared length.
 smoother_width_floor(smooth_hyperbolic(), scale = 10)
 #> [1] 2.220446e-14
 

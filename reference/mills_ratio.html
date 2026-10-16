@@ -11,7 +11,7 @@ skew normal log-density is built from these two quantities."><meta property="og:
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,8 +88,8 @@ quotient and using \(\phi'(t) = -t\phi(t)\).</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">mills_ratio</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">0</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span><span class="op">$</span><span class="va">r</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 5.186503967 0.797884561 0.004437839</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># The point of the log-scale form. Written directly the ratio is 0/0 well</span></span></span>
-<span class="r-in"><span><span class="co"># inside the range a skew normal reaches, while the true value is finite</span></span></span>
+<span class="r-in"><span><span class="co"># The log-scale form avoids a failure: written directly, the ratio is 0/0</span></span></span>
+<span class="r-in"><span><span class="co"># well inside the range that a skew normal reaches, while the true value is finite</span></span></span>
 <span class="r-in"><span><span class="co"># and close to -t.</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="op">-</span><span class="fl">40</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">pnorm</a></span><span class="op">(</span><span class="op">-</span><span class="fl">40</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] NaN</span>

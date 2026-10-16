@@ -21,7 +21,7 @@ cross-validation and the combinations of a kinked path's product grid."><meta pr
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -164,7 +164,7 @@ are 1. It returns its argument invisibly.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># The default is sequential, and says so.</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># The default is sequential, and the printed policy shows it.</span></span></span>
 <span class="r-in"><span><span class="fu">n_threads</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $threads</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
@@ -175,7 +175,8 @@ are 1. It returns its argument invisibly.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> attr(,"class")</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "n_threads"</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Threads within a fit, worker processes across folds, or both.</span></span></span>
+<span class="r-in"><span><span class="co"># A policy can set threads within a fit, worker processes across folds, or</span></span></span>
+<span class="r-in"><span><span class="co"># both.</span></span></span>
 <span class="r-in"><span><span class="fu">n_threads</span><span class="op">(</span><span class="fl">4</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $threads</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4</span>

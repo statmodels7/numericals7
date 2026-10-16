@@ -82,7 +82,7 @@ log_bessel_k(1000, 2.5)
 log_bessel_k(1, 500)
 #> [1] 2950.996
 
-# Even in the order, exactly.
+# The function is even in the order, exactly.
 log_bessel_k(1, 2.5) - log_bessel_k(1, -2.5)
 #> [1] 0
 ```

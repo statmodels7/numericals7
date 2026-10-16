@@ -60,8 +60,8 @@ for the ordered sums.
 ## Examples
 
 ``` r
-# Second-order tuples of three variables: the diagonal first, then the
-# off-diagonal pairs. A Hessian consumer indexes in this order.
+# The second-order tuples of three variables list the diagonal first, then
+# the off-diagonal pairs. A Hessian consumer indexes in this order.
 tuple_indices(3, 2)
 #> [[1]]
 #> [1] 1 1

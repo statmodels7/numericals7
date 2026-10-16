@@ -98,7 +98,8 @@ log_bessel_i(1e6, 2)
 log_bessel_i(0.001, 500)
 #> [1] -6411.782
 
-# The two boundary values, and an argument outside the domain.
+# The example evaluates the two boundary values and an argument outside the
+# domain.
 log_bessel_i(c(0, 0, -1), c(0, 2, 0))
 #> [1]    0 -Inf   NA
 ```

@@ -1,5 +1,11 @@
 # Changelog
 
+## numericals7 0.23.2
+
+- Comments of the examples: captions without a verb, contact clauses,
+  absolute constructions and personified descriptions of the code
+  rewritten as plain clauses. No change to the code.
+
 ## numericals7 0.23.1
 
 - Documentation and messages: relative clauses without a relative

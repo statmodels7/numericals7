@@ -70,7 +70,7 @@ smoother_deriv(sm, 0, order = 0)
 sqrt(0.09)
 #> [1] 0.3
 
-# And resolving from a spacing squares it for you.
+# And resolving from a spacing squares it.
 smoother_width(smooth_hyperbolic(), 0.3)
 #> [1] 0.09
 

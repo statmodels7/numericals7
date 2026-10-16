@@ -99,13 +99,13 @@ for all three assembled.
 ## Examples
 
 ``` r
-# Three points for a first or second derivative, five for a third or fourth.
+# A first or second derivative uses three points, a third or fourth uses five.
 fd_offsets(1)$central
 #> [1] -1  0  1
 fd_offsets(4)$central
 #> [1] -2 -1  0  1  2
 
-# Accuracy four buys two more nodes for a first derivative.
+# Accuracy four costs two more nodes for a first derivative.
 fd_offsets(1, accuracy = 4)$central
 #> [1] -2 -1  0  1  2
 

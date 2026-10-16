@@ -76,7 +76,7 @@ c(kronrod = sum(r$wk), gauss = sum(r$wg))
 sum(r$wg == 0)
 #> [1] 8
 
-# Its defining property: exact on polynomials to degree 13.
+# Its defining property is that it is exact on polynomials to degree 13.
 p <- function(x, d) x^d
 vapply(c(13, 14), function(d) {
   exact <- if (d %% 2 == 0) 2 / (d + 1) else 0

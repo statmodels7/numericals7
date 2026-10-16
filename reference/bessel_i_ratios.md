@@ -65,7 +65,8 @@ for the functions themselves.
 ## Examples
 
 ``` r
-# Four ratios at two concentrations, one row each.
+# The example computes four ratios at two concentrations, one row per
+# concentration.
 r <- bessel_i_ratios(c(1, 5), 4)
 round(r, 6)
 #>          [,1]     [,2]     [,3]     [,4]

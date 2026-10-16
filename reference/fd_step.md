@@ -79,11 +79,11 @@ for the reach by which the clamp divides.
 ## Examples
 
 ``` r
-# Magnitude-scaled: absolute near zero, relative far from it.
+# The step is scaled by magnitude: absolute near zero, relative far from it.
 fd_step(c(0.5, 1000), 2)
 #> [1] 0.0001220703 0.1220703125
 
-# A higher order wants a larger step, rounding being what dominates.
+# A higher order needs a larger step, because rounding dominates.
 c(order2 = fd_step(1, 2), order4 = fd_step(1, 4))
 #>       order2       order4 
 #> 0.0001220703 0.0024607833 
@@ -92,7 +92,7 @@ c(order2 = fd_step(1, 2), order4 = fd_step(1, 4))
 fd_step(0.01, 2, bounds = c(0, Inf))
 #> [1] 0.0001220703
 
-# On the boundary the step is zero, which no stencil can use.
+# On the boundary the step is zero, which a stencil cannot use.
 fd_step(0, 2, bounds = c(0, Inf))
 #> [1] 0
 ```

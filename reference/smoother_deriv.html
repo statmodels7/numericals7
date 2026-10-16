@@ -11,7 +11,7 @@ that resolved the width at build evaluates without mutating the object."><meta p
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,11 +94,11 @@ resolving a width, <code><a href="check_abs_smoother.html">check_abs_smoother()<
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># The smooth sign: odd, bounded by one, and passing through zero.</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># The smooth sign is odd, bounded by one, and passes through zero.</span></span></span>
 <span class="r-in"><span><span class="fu">smoother_deriv</span><span class="op">(</span><span class="fu"><a href="smooth_hyperbolic.html">smooth_hyperbolic</a></span><span class="op">(</span>c <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, <span class="fl">0</span><span class="op">:</span><span class="fl">3</span>, order <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.0000000 0.7071068 0.8944272 0.9486833</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># A per-point width, as a per-group smoother supplies.</span></span></span>
+<span class="r-in"><span><span class="co"># A width can be given per point, as a per-group smoother supplies it.</span></span></span>
 <span class="r-in"><span><span class="fu">smoother_deriv</span><span class="op">(</span><span class="fu"><a href="smooth_probit.html">smooth_probit</a></span><span class="op">(</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, width <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.1</span>, <span class="fl">0.5</span>, <span class="fl">1</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>               order <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1.0000000 0.3989423 1.1666309</span>

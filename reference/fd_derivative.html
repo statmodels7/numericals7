@@ -15,7 +15,7 @@ step with fd_step()."><meta property="og:image" content="https://statmodels7.git
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -145,15 +145,16 @@ that this function assembles.</p></div>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         acc2         acc4 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 3.798628e-12 1.665335e-14 </span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># At a boundary, a one-sided stencil with a step that keeps the nodes</span></span></span>
-<span class="r-in"><span><span class="co"># inside the domain.</span></span></span>
+<span class="r-in"><span><span class="co"># At a boundary the function uses a one-sided stencil with a step that keeps</span></span></span>
+<span class="r-in"><span><span class="co"># the nodes inside the domain.</span></span></span>
 <span class="r-in"><span><span class="fu">fd_derivative</span><span class="op">(</span><span class="va">sqrt</span>, <span class="fl">1e-4</span>, order <span class="op">=</span> <span class="fl">1</span>, side <span class="op">=</span> <span class="st">"forward"</span>,</span></span>
 <span class="r-in"><span>              h <span class="op">=</span> <span class="fu"><a href="fd_step.html">fd_step</a></span><span class="op">(</span><span class="fl">1e-4</span>, <span class="fl">1</span>, bounds <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="cn">Inf</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 49.9589</span>
 <span class="r-in"><span><span class="fl">0.5</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fl">1e-4</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 50</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Vectorized in the point: one call per node, not one per point.</span></span></span>
+<span class="r-in"><span><span class="co"># The function is vectorized in the point: one call per node, not one per</span></span></span>
+<span class="r-in"><span><span class="co"># point.</span></span></span>
 <span class="r-in"><span><span class="fu">fd_derivative</span><span class="op">(</span><span class="va">sin</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">pi</span> <span class="op">/</span> <span class="fl">4</span>, <span class="va">pi</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span>, order <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">pi</span> <span class="op">/</span> <span class="fl">4</span>, <span class="va">pi</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] -6.111445e-12 -7.690515e-12 -6.123234e-17</span>
 <span class="r-in"><span></span></span>

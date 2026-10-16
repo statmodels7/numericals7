@@ -70,7 +70,7 @@ k <- bessel_i_ratio_inverse(0.7)
 bessel_i_ratio_inverse_d1(k) - 1 / bessel_i_ratio_d1(k)
 #> [1] 0
 
-# The second against a central difference of the first in rho.
+# The second is compared with a central difference of the first in rho.
 h <- 1e-5
 c(bessel_i_ratio_inverse_d2(k),
   (bessel_i_ratio_inverse_d1(bessel_i_ratio_inverse(0.7 + h)) -

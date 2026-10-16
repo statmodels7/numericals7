@@ -62,11 +62,11 @@ for verifying the derivatives.
 ## Examples
 
 ``` r
-# The smooth sign: odd, bounded by one, and passing through zero.
+# The smooth sign is odd, bounded by one, and passes through zero.
 smoother_deriv(smooth_hyperbolic(c = 1), 0:3, order = 1)
 #> [1] 0.0000000 0.7071068 0.8944272 0.9486833
 
-# A per-point width, as a per-group smoother supplies.
+# A width can be given per point, as a per-group smoother supplies it.
 smoother_deriv(smooth_probit(), c(-1, 0, 1), width = c(0.1, 0.5, 1),
                order = 0)
 #> [1] 1.0000000 0.3989423 1.1666309

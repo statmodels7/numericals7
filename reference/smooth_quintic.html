@@ -15,7 +15,7 @@ one that is not analytic."><meta property="og:image" content="https://statmodels
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -146,8 +146,8 @@ recommended default, <code><a href="smooth_hyperbolic.html">smooth_hyperbolic()<
 <span class="r-in"><span><span class="fl">5</span> <span class="op">*</span> <span class="fl">0.5</span> <span class="op">/</span> <span class="fl">16</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.15625</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># The second derivative vanishes to second order at the seam, which is</span></span></span>
-<span class="r-in"><span><span class="co"># what makes it C^3 there.</span></span></span>
+<span class="r-in"><span><span class="co"># The second derivative vanishes to second order at the seam, and this</span></span></span>
+<span class="r-in"><span><span class="co"># makes the smoother C^3 there.</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="smoother_deriv.html">smoother_deriv</a></span><span class="op">(</span><span class="va">sm</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.4</span>, <span class="fl">0.49</span>, <span class="fl">0.5</span>, <span class="fl">0.51</span><span class="op">)</span>, order <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.4860000 0.0058806 0.0000000 0.0000000</span>
 <span class="r-in"><span></span></span>

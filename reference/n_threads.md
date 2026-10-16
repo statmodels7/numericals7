@@ -135,7 +135,7 @@ to apply one for the duration of a fit.
 ## Examples
 
 ``` r
-# The default is sequential, and says so.
+# The default is sequential, and the printed policy shows it.
 n_threads()
 #> $threads
 #> [1] 1
@@ -146,7 +146,8 @@ n_threads()
 #> attr(,"class")
 #> [1] "n_threads"
 
-# Threads within a fit, worker processes across folds, or both.
+# A policy can set threads within a fit, worker processes across folds, or
+# both.
 n_threads(4)
 #> $threads
 #> [1] 4

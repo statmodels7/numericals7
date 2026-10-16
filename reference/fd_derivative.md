@@ -109,15 +109,16 @@ c(acc2 = fd_derivative(sin, 0.7, 1) - cos(0.7),
 #>         acc2         acc4 
 #> 3.798628e-12 1.665335e-14 
 
-# At a boundary, a one-sided stencil with a step that keeps the nodes
-# inside the domain.
+# At a boundary the function uses a one-sided stencil with a step that keeps
+# the nodes inside the domain.
 fd_derivative(sqrt, 1e-4, order = 1, side = "forward",
               h = fd_step(1e-4, 1, bounds = c(0, Inf)))
 #> [1] 49.9589
 0.5 / sqrt(1e-4)
 #> [1] 50
 
-# Vectorized in the point: one call per node, not one per point.
+# The function is vectorized in the point: one call per node, not one per
+# point.
 fd_derivative(sin, c(0, pi / 4, pi / 2), order = 1) - cos(c(0, pi / 4, pi / 2))
 #> [1] -6.111445e-12 -7.690515e-12 -6.123234e-17
 ```

@@ -13,7 +13,7 @@ is read as sequential across folds."><meta property="og:image" content="https://
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,7 +78,7 @@ component.</p>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 4</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># A policy stored before workers existed still reads as sequential across</span></span></span>
-<span class="r-in"><span><span class="co"># folds. Only the readers tolerate one; print() on it throws.</span></span></span>
+<span class="r-in"><span><span class="co"># folds. Only the readers accept one; print() on it signals an error.</span></span></span>
 <span class="r-in"><span><span class="fu">worker_count</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/structure.html" class="external-link">structure</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>threads <span class="op">=</span> <span class="fl">3L</span><span class="op">)</span>, class <span class="op">=</span> <span class="st">"n_threads"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
 <span class="r-in"><span></span></span>

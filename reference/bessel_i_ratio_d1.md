@@ -75,7 +75,8 @@ for the derivatives of the inverse map.
 bessel_i_ratio_d1(c(0.1, 1, 100))
 #> [1] 4.981302e-01 3.543460e-01 5.025383e-05
 
-# The first derivative satisfies the identity the others are built from.
+# The first derivative satisfies the identity from which the others are
+# built.
 k <- 2
 bessel_i_ratio_d1(k) - (1 - bessel_i_ratio(k) / k - bessel_i_ratio(k)^2)
 #> [1] 0

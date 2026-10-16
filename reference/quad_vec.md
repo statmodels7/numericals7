@@ -162,10 +162,10 @@ f <- function(x, i) dgamma(x, shape = shp[i], rate = 1)
 range(quad_vec(f, lower = 0, upper = rep(Inf, 30)) - 1)
 #> [1] -4.344779e-09  4.634610e-10
 
-# Their means, against the closed form.
+# Their means are compared with the closed form.
 g <- function(x, i) x * dgamma(x, shape = shp[i], rate = 1)
 range(quad_vec(g, 0, rep(Inf, 30)) - shp)
-#> [1] -1.889511e-11  2.317305e-10
+#> [1] -1.889533e-11  2.317305e-10
 
 # A shape below one puts an integrable singularity at the origin. The
 # sum-judged budget reaches shape 0.5 at the default depth, and a harsher
@@ -180,12 +180,12 @@ quad_vec(function(x, i) dgamma(x, shape = 0.2, rate = 1), 0, Inf,
 quad_vec(function(x, i) dnorm(x), c(-Inf, -1, 0), c(0, 1, Inf))
 #> [1] 0.5000000 0.6826895 0.5000000
 
-# A divergent integral is refused, not estimated.
+# A divergent integral is rejected, not estimated.
 suppressWarnings(quad_vec(function(x, i) 1 / x, 0, 1))
 #> [1] NA
 
 # A relative budget below the floor of the rule cannot be met, and with no
-# absolute budget beside it the call is refused before anything is evaluated.
+# absolute budget beside it the call is rejected before anything is evaluated.
 try(quad_vec(function(x, i) matrix(1, nrow(x), ncol(x)), 0, 1,
              atol = 0, rtol = 1e-17))
 #> Error : quad_vec: rtol = 1e-17 is below the floor of the quadrature rule, 2.22e-16,

@@ -69,7 +69,8 @@ x <- c(0.01, 0.5, 3, 40)
 identical(bessel_k(x, nu = 1.5), besselK(x, nu = 1.5))
 #> [1] TRUE
 
-# the scaled function at a large argument, where K itself underflows
+# the scaled function stays finite at a large argument, where K itself
+# underflows
 bessel_k(1000, nu = 2, expon.scaled = TRUE)
 #> [1] 0.03970762
 ```

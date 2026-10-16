@@ -69,7 +69,7 @@ for the ordered sums.
 ## Examples
 
 ``` r
-# The five partitions of {1, 2, 3}.
+# The set {1, 2, 3} has five partitions.
 set_partitions(3)
 #> [[1]]
 #> [[1]][[1]]
@@ -116,9 +116,9 @@ set_partitions(3)
 lengths(lapply(1:6, set_partitions))
 #> [1]   1   2   5  15  52 203
 
-# Every partition covers 1:n exactly once, the blocks being disjoint. The
+# Every partition covers 1:n exactly once, because the blocks are disjoint. The
 # comparison is `identical()` because the blocks are integer however `n` was
-# given, which is the convention all three enumerations follow.
+# given, which is the convention that the enumerations follow.
 all(vapply(set_partitions(4), function(p) identical(sort(unlist(p)), 1:4),
            logical(1)))
 #> [1] TRUE

@@ -64,10 +64,10 @@ which reads these declarations.
 
 ``` r
 f <- function(x) x$a^3 * exp(x$b)
-# the gradient, declared by its order
+# the gradient is declared by its order
 g <- fd_known(function(x) list(3 * x$a^2 * exp(x$b), x$a^3 * exp(x$b)),
               order = 1)
-# the same quantity, declared by its multi-indices
+# the same quantity is declared by its multi-indices
 g2 <- fd_known(function(x) cbind(3 * x$a^2 * exp(x$b), x$a^3 * exp(x$b)),
                indices = rbind(c(1, 0), c(0, 1)))
 g2@indices
