@@ -19,7 +19,7 @@ count is
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.22.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -68,13 +68,11 @@ count is
 <dd><p>The number of variables, a non-negative whole number. Zero gives an
 empty list. A negative value signals an error: at orders one and two it
 comes from <code><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len()</a></code> and concerns coercion to a non-negative integer,
-and at orders three and four it comes from <code><a href="https://rdrr.io/r/utils/combn.html" class="external-link">utils::combn()</a></code>.</p></dd>
+and from order three on it comes from <code><a href="https://rdrr.io/r/utils/combn.html" class="external-link">utils::combn()</a></code>.</p></dd>
 
 
 <dt id="arg-order">order<a class="anchor" aria-label="anchor" href="#arg-order"></a></dt>
-<dd><p>The derivative order \(k\), one of <code>1</code>, <code>2</code>, <code>3</code> or <code>4</code>.
-Any other value signals an error, because the enumeration is written out
-only to order four.</p></dd>
+<dd><p>The derivative order \(k\), a single positive whole number.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -86,7 +84,7 @@ only to order four.</p></dd>
     <h2 id="the-ordering">The ordering<a class="anchor" aria-label="anchor" href="#the-ordering"></a></h2>
     <p>At order two the diagonal comes first, \((1,1), (2,2), \dots, (d,d)\), and
 the off-diagonal pairs follow in lexicographic order, which is the order
-used to index a Hessian. At orders three and four the enumeration is plain
+used to index a Hessian. From order three on the enumeration is plain
 lexicographic over non-decreasing tuples.</p>
 <p>Every object in the toolkit holding derivatives over \(d\) variables keys
 its components by this enumeration, so two such objects can be combined

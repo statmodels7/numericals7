@@ -17,7 +17,7 @@ pays its overhead once per value."><meta property="og:image" content="https://st
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.22.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -197,7 +197,7 @@ the default rule.</p></div>
 <span class="r-in"><span><span class="co"># Their means, against the closed form.</span></span></span>
 <span class="r-in"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">i</span><span class="op">)</span> <span class="va">x</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/GammaDist.html" class="external-link">dgamma</a></span><span class="op">(</span><span class="va">x</span>, shape <span class="op">=</span> <span class="va">shp</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, rate <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="fu">quad_vec</span><span class="op">(</span><span class="va">g</span>, <span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">Inf</span>, <span class="fl">30</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="va">shp</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -1.889511e-11  2.317305e-10</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -1.889533e-11  2.317305e-10</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># A shape below one puts an integrable singularity at the origin. The</span></span></span>
 <span class="r-in"><span><span class="co"># sum-judged budget reaches shape 0.5 at the default depth, and a harsher</span></span></span>

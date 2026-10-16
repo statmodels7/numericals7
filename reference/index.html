@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.22.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,7 +64,7 @@
       </dl></div><div class="section level2">
       <h2 id="finite-differences">Finite differences<a class="anchor" aria-label="anchor" href="#finite-differences"></a></h2>
 
-      <div class="section-desc"><p>Finite-difference stencils: weights from the Vandermonde system, offsets sized from the order and the accuracy, a step that balances truncation against rounding, and an applicator that never composes lower-order differences.</p></div>
+      <div class="section-desc"><p>Finite-difference stencils: weights from the Vandermonde system, offsets sized from the order and the accuracy, a step that balances truncation against rounding, an applicator that never composes lower-order differences, and a tensor-product stencil for partial derivatives of any order taken from the highest analytic quantity available.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -98,6 +98,20 @@
 
         </dt>
         <dd>One Stencil, Applied</dd>
+
+        <dt>
+
+          <code><a href="fd_tensor.html">fd_tensor()</a></code>
+
+        </dt>
+        <dd>Partial Derivatives by One Tensor-Product Stencil per Component</dd>
+
+        <dt>
+
+          <code><a href="fd_known.html">fd_known()</a></code>
+
+        </dt>
+        <dd>An Analytic Quantity Declared to a Tensor Stencil</dd>
       </dl></div><div class="section level2">
       <h2 id="quadrature-and-series">Quadrature and series<a class="anchor" aria-label="anchor" href="#quadrature-and-series"></a></h2>
 

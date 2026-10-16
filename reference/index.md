@@ -16,8 +16,9 @@ defined once so that every package uses the same ordering.
 
 Finite-difference stencils: weights from the Vandermonde system, offsets
 sized from the order and the accuracy, a step that balances truncation
-against rounding, and an applicator that never composes lower-order
-differences.
+against rounding, an applicator that never composes lower-order
+differences, and a tensor-product stencil for partial derivatives of any
+order taken from the highest analytic quantity available.
 
 - [`fd_weights()`](https://statmodels7.github.io/numericals7/reference/fd_weights.md)
   : Finite-Difference Weights for Any Stencil
@@ -27,6 +28,10 @@ differences.
   : A Step Size for One Stencil
 - [`fd_derivative()`](https://statmodels7.github.io/numericals7/reference/fd_derivative.md)
   : One Stencil, Applied
+- [`fd_tensor()`](https://statmodels7.github.io/numericals7/reference/fd_tensor.md)
+  : Partial Derivatives by One Tensor-Product Stencil per Component
+- [`fd_known()`](https://statmodels7.github.io/numericals7/reference/fd_known.md)
+  : An Analytic Quantity Declared to a Tensor Stencil
 
 ## Quadrature and series
 

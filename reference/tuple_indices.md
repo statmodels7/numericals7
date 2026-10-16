@@ -20,15 +20,12 @@ tuple_indices(d, order = 2L)
   The number of variables, a non-negative whole number. Zero gives an
   empty list. A negative value signals an error: at orders one and two
   it comes from [`seq_len()`](https://rdrr.io/r/base/seq.html) and
-  concerns coercion to a non-negative integer, and at orders three and
-  four it comes from
-  [`utils::combn()`](https://rdrr.io/r/utils/combn.html).
+  concerns coercion to a non-negative integer, and from order three on
+  it comes from [`utils::combn()`](https://rdrr.io/r/utils/combn.html).
 
 - order:
 
-  The derivative order \\k\\, one of `1`, `2`, `3` or `4`. Any other
-  value signals an error, because the enumeration is written out only to
-  order four.
+  The derivative order \\k\\, a single positive whole number.
 
 ## Value
 
@@ -39,8 +36,8 @@ A list of \\\binom{d + k - 1}{k}\\ integer vectors, each of length
 
 At order two the diagonal comes first, \\(1,1), (2,2), \dots, (d,d)\\,
 and the off-diagonal pairs follow in lexicographic order, which is the
-order used to index a Hessian. At orders three and four the enumeration
-is plain lexicographic over non-decreasing tuples.
+order used to index a Hessian. From order three on the enumeration is
+plain lexicographic over non-decreasing tuples.
 
 Every object in the toolkit holding derivatives over \\d\\ variables
 keys its components by this enumeration, so two such objects can be

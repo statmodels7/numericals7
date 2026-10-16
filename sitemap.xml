@@ -18,8 +18,11 @@
 <url><loc>https://statmodels7.github.io/numericals7/reference/dot-log_bessel_i_r.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/dot-log_bessel_k_r.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/fd_derivative.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/fd_known.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/fd_offsets.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/fd_step.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/fd_tensor.html</loc></url>
+<url><loc>https://statmodels7.github.io/numericals7/reference/fd_tensor_helpers.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/fd_weights.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/gauss_kronrod15.html</loc></url>
 <url><loc>https://statmodels7.github.io/numericals7/reference/index.html</loc></url>
