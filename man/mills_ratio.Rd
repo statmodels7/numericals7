@@ -35,8 +35,8 @@ quotient and using \eqn{\phi'(t) = -t\phi(t)}.
 \examples{
 mills_ratio(c(-5, 0, 3))$r
 
-# The point of the log-scale form. Written directly the ratio is 0/0 well
-# inside the range a skew normal reaches, while the true value is finite
+# The log-scale form avoids a failure: written directly, the ratio is 0/0
+# well inside the range that a skew normal reaches, while the true value is finite
 # and close to -t.
 dnorm(-40) / pnorm(-40)
 mills_ratio(-400)$r + (-400)

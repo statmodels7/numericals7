@@ -35,8 +35,8 @@ NULL
 #' @examples
 #' mills_ratio(c(-5, 0, 3))$r
 #'
-#' # The point of the log-scale form. Written directly the ratio is 0/0 well
-#' # inside the range a skew normal reaches, while the true value is finite
+#' # The log-scale form avoids a failure: written directly, the ratio is 0/0
+#' # well inside the range that a skew normal reaches, while the true value is finite
 #' # and close to -t.
 #' dnorm(-40) / pnorm(-40)
 #' mills_ratio(-400)$r + (-400)
@@ -118,13 +118,14 @@ mills_ratio <- function(t) {
 #' a <- c(0.5, 1, 4)
 #' max(abs(owen_t(0, a) - atan(a) / (2 * pi)))
 #'
-#' # Odd in the second argument, and the infinite case is a normal tail.
+#' # The function is odd in the second argument, and the infinite case is a
+#' # normal tail.
 #' owen_t(1, 2) + owen_t(1, -2)
 #' owen_t(1.3, Inf) - pnorm(-1.3) / 2
 #'
-#' # A steep slope, where the integrand sits within 1/h of zero: the skew
-#' # normal distribution function at alpha = 1000 against its limit
-#' # 2 Phi(z) - 1.
+#' # At a steep slope the integrand sits within 1/h of zero; the example
+#' # compares the skew normal distribution function at alpha = 1000 with its
+#' # limit 2 Phi(z) - 1.
 #' z <- 2.5
 #' (pnorm(z) - 2 * owen_t(z, 1000)) - (2 * pnorm(z) - 1)
 #'
@@ -272,7 +273,8 @@ bessel_i_ratio <- function(kappa, threads = 1L) {
 #'   the functions themselves.
 #'
 #' @examples
-#' # Four ratios at two concentrations, one row each.
+#' # The example computes four ratios at two concentrations, one row per
+#' # concentration.
 #' r <- bessel_i_ratios(c(1, 5), 4)
 #' round(r, 6)
 #'
@@ -362,7 +364,8 @@ bessel_i_ratios <- function(kappa, m) {
 #' @examples
 #' bessel_i_ratio_d1(c(0.1, 1, 100))
 #'
-#' # The first derivative satisfies the identity the others are built from.
+#' # The first derivative satisfies the identity from which the others are
+#' # built.
 #' k <- 2
 #' bessel_i_ratio_d1(k) - (1 - bessel_i_ratio(k) / k - bessel_i_ratio(k)^2)
 #'
@@ -442,7 +445,7 @@ bessel_i_ratio_d4 <- function(kappa, threads = 1L) {
 #' rho <- c(0.1, 0.5, 0.99)
 #' bessel_i_ratio(bessel_i_ratio_inverse(rho)) - rho
 #'
-#' # Outside the open unit interval, the endpoints included, the result is NA.
+#' # Outside the open unit interval, including the endpoints, the result is NA.
 #' bessel_i_ratio_inverse(c(0, 0.5, 1))
 #'
 #' @export
@@ -495,7 +498,7 @@ bessel_i_ratio_inverse <- function(rho, threads = 1L) {
 #' # The first derivative is the reciprocal of A', the inverse function rule.
 #' bessel_i_ratio_inverse_d1(k) - 1 / bessel_i_ratio_d1(k)
 #'
-#' # The second against a central difference of the first in rho.
+#' # The second is compared with a central difference of the first in rho.
 #' h <- 1e-5
 #' c(bessel_i_ratio_inverse_d2(k),
 #'   (bessel_i_ratio_inverse_d1(bessel_i_ratio_inverse(0.7 + h)) -

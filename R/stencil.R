@@ -97,7 +97,7 @@ NULL
 #' fd_weights(c(-1, 0, 1), 1)                 # -1/2, 0, 1/2
 #' fd_weights(c(-1, 0, 1), 2)                 #    1,  -2,  1
 #'
-#' # Five nodes, first derivative: the familiar (1, -8, 0, 8, -1)/12.
+#' # Five nodes give the familiar first-derivative weights (1, -8, 0, 8, -1)/12.
 #' fd_weights(-2:2, 1) * 12
 #'
 #' # The weights are for a unit step, so the caller divides by h^order.
@@ -115,7 +115,7 @@ NULL
 #' # That first failure is the error constant: -4/5! = -1/30.
 #' sum(w * s^5) / factorial(5)
 #'
-#' # Which predicts the error to three figures at a step of 0.05.
+#' # The constant predicts the error to three figures at a step of 0.05.
 #' sum(w * sin(0.7 + s * 0.05)) / 0.05 - cos(0.7)
 #' -1 / 30 * 0.05^4 * cos(0.7)
 #'
@@ -216,11 +216,11 @@ fd_weights <- function(offsets, order) {
 #'   step to pair with them, [fd_derivative()] for all three assembled.
 #'
 #' @examples
-#' # Three points for a first or second derivative, five for a third or fourth.
+#' # A first or second derivative uses three points, a third or fourth uses five.
 #' fd_offsets(1)$central
 #' fd_offsets(4)$central
 #'
-#' # Accuracy four buys two more nodes for a first derivative.
+#' # Accuracy four costs two more nodes for a first derivative.
 #' fd_offsets(1, accuracy = 4)$central
 #'
 #' # The one-sided sets are the same size, so a boundary costs no more.
@@ -296,16 +296,16 @@ fd_offsets <- function(order, accuracy = 2L) {
 #'   step, [fd_offsets()] for the reach by which the clamp divides.
 #'
 #' @examples
-#' # Magnitude-scaled: absolute near zero, relative far from it.
+#' # The step is scaled by magnitude: absolute near zero, relative far from it.
 #' fd_step(c(0.5, 1000), 2)
 #'
-#' # A higher order wants a larger step, rounding being what dominates.
+#' # A higher order needs a larger step, because rounding dominates.
 #' c(order2 = fd_step(1, 2), order4 = fd_step(1, 4))
 #'
 #' # Near a boundary the stencil is kept inside the domain.
 #' fd_step(0.01, 2, bounds = c(0, Inf))
 #'
-#' # On the boundary the step is zero, which no stencil can use.
+#' # On the boundary the step is zero, which a stencil cannot use.
 #' fd_step(0, 2, bounds = c(0, Inf))
 #'
 #' @export
@@ -384,13 +384,14 @@ fd_step <- function(x, order, accuracy = 2L, bounds = NULL) {
 #' c(acc2 = fd_derivative(sin, 0.7, 1) - cos(0.7),
 #'   acc4 = fd_derivative(sin, 0.7, 1, accuracy = 4) - cos(0.7))
 #'
-#' # At a boundary, a one-sided stencil with a step that keeps the nodes
-#' # inside the domain.
+#' # At a boundary the function uses a one-sided stencil with a step that keeps
+#' # the nodes inside the domain.
 #' fd_derivative(sqrt, 1e-4, order = 1, side = "forward",
 #'               h = fd_step(1e-4, 1, bounds = c(0, Inf)))
 #' 0.5 / sqrt(1e-4)
 #'
-#' # Vectorized in the point: one call per node, not one per point.
+#' # The function is vectorized in the point: one call per node, not one per
+#' # point.
 #' fd_derivative(sin, c(0, pi / 4, pi / 2), order = 1) - cos(c(0, pi / 4, pi / 2))
 #'
 #' @export

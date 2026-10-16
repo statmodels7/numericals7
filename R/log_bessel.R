@@ -214,7 +214,8 @@ NULL
 #' log_bessel_i(1e6, 2)
 #' log_bessel_i(0.001, 500)
 #'
-#' # The two boundary values, and an argument outside the domain.
+#' # The example evaluates the two boundary values and an argument outside the
+#' # domain.
 #' log_bessel_i(c(0, 0, -1), c(0, 2, 0))
 #'
 #' @export
@@ -339,7 +340,7 @@ log_bessel_i <- function(x, nu, threads = 1L) {
 #' log_bessel_k(1000, 2.5)
 #' log_bessel_k(1, 500)
 #'
-#' # Even in the order, exactly.
+#' # The function is even in the order, exactly.
 #' log_bessel_k(1, 2.5) - log_bessel_k(1, -2.5)
 #'
 #' @export
@@ -453,7 +454,7 @@ log_bessel_k <- function(x, nu) {
 #' # derivative has a closed form to check against.
 #' log_bessel_i_derivs(2, 0.5)$d1 - (1 / tanh(2) - 1 / (2 * 2))
 #'
-#' # Elsewhere, against one stencil on the value itself.
+#' # Elsewhere the derivative is compared with one stencil on the value itself.
 #' log_bessel_i_derivs(3, 2)$d1 -
 #'   fd_derivative(function(z) log_bessel_i(z, 2), 3, 1, accuracy = 4)
 #'
@@ -505,7 +506,7 @@ log_bessel_i_derivs <- function(x, nu) {
 #' # log K_{1/2}(x) is -1/(2x) - 1.
 #' log_bessel_k_derivs(2, 0.5)$d1 - (-1 / (2 * 2) - 1)
 #'
-#' # Elsewhere, against one stencil on the value itself.
+#' # Elsewhere the derivative is compared with one stencil on the value itself.
 #' log_bessel_k_derivs(3, 2)$d1 -
 #'   fd_derivative(function(z) log_bessel_k(z, 2), 3, 1, accuracy = 4)
 #'

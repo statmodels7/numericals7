@@ -46,8 +46,8 @@ the number of multisets of size \eqn{k} drawn from \eqn{d} symbols. At
 }
 
 \examples{
-# Second-order tuples of three variables: the diagonal first, then the
-# off-diagonal pairs. A Hessian consumer indexes in this order.
+# The second-order tuples of three variables list the diagonal first, then
+# the off-diagonal pairs. A Hessian consumer indexes in this order.
 tuple_indices(3, 2)
 
 # One tuple per distinct partial derivative, so the count is the number of

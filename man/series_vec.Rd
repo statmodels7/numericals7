@@ -106,7 +106,7 @@ are more).
 }
 
 \examples{
-# Four geometric series against the closed form.
+# Four geometric series are compared with the closed form.
 r <- c(0.1, 0.5, 0.9, 0.99)
 series_vec(function(k, i) r[i]^k, n = 4) - 1 / (1 - r)
 
@@ -115,7 +115,7 @@ lam <- c(0.5, 4, 60)
 series_vec(function(k, i) dpois(k, lam[i]), n = 3)
 
 # The first 64 terms of a Poisson at rate 300 sum to almost nothing and are
-# still rising, so the row does not retire there.
+# still rising, so the row does not stop there.
 sum(dpois(0:63, 300))
 series_vec(function(k, i) dpois(k, 300), n = 1)
 
@@ -123,12 +123,12 @@ series_vec(function(k, i) dpois(k, 300), n = 1)
 # continues past them.
 series_vec(function(k, i) dpois(k, 1e4), n = 1)
 
-# Series indexed from one, against their closed forms: a factorial decay
-# and a polynomial one.
+# Series indexed from one are compared with their closed forms: a factorial
+# decay and a polynomial one.
 series_vec(function(k, i) 1 / factorial(k), n = 1, from = 1L) - (exp(1) - 1)
 series_vec(function(k, i) 1 / k^4, n = 1, from = 1L) - pi^4 / 90
 
-# A divergent series is refused, not estimated.
+# A divergent series is rejected, not estimated.
 suppressWarnings(series_vec(function(k, i) 1 / (k + 1), n = 1,
                             max_terms = 500L))
 

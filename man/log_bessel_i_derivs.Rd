@@ -38,7 +38,7 @@ str(log_bessel_i_derivs(2, 0.5))
 # derivative has a closed form to check against.
 log_bessel_i_derivs(2, 0.5)$d1 - (1 / tanh(2) - 1 / (2 * 2))
 
-# Elsewhere, against one stencil on the value itself.
+# Elsewhere the derivative is compared with one stencil on the value itself.
 log_bessel_i_derivs(3, 2)$d1 -
   fd_derivative(function(z) log_bessel_i(z, 2), 3, 1, accuracy = 4)
 

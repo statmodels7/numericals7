@@ -66,11 +66,11 @@ accuracy is used as given.
 }
 
 \examples{
-# Three points for a first or second derivative, five for a third or fourth.
+# A first or second derivative uses three points, a third or fourth uses five.
 fd_offsets(1)$central
 fd_offsets(4)$central
 
-# Accuracy four buys two more nodes for a first derivative.
+# Accuracy four costs two more nodes for a first derivative.
 fd_offsets(1, accuracy = 4)$central
 
 # The one-sided sets are the same size, so a boundary costs no more.

@@ -135,7 +135,7 @@ shp <- seq(0.5, 15, length.out = 30)
 f <- function(x, i) dgamma(x, shape = shp[i], rate = 1)
 range(quad_vec(f, lower = 0, upper = rep(Inf, 30)) - 1)
 
-# Their means, against the closed form.
+# Their means are compared with the closed form.
 g <- function(x, i) x * dgamma(x, shape = shp[i], rate = 1)
 range(quad_vec(g, 0, rep(Inf, 30)) - shp)
 
@@ -149,11 +149,11 @@ quad_vec(function(x, i) dgamma(x, shape = 0.2, rate = 1), 0, Inf,
 # Endpoints of different kinds share a call.
 quad_vec(function(x, i) dnorm(x), c(-Inf, -1, 0), c(0, 1, Inf))
 
-# A divergent integral is refused, not estimated.
+# A divergent integral is rejected, not estimated.
 suppressWarnings(quad_vec(function(x, i) 1 / x, 0, 1))
 
 # A relative budget below the floor of the rule cannot be met, and with no
-# absolute budget beside it the call is refused before anything is evaluated.
+# absolute budget beside it the call is rejected before anything is evaluated.
 try(quad_vec(function(x, i) matrix(1, nrow(x), ncol(x)), 0, 1,
              atol = 0, rtol = 1e-17))
 

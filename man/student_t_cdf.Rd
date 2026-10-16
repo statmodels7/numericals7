@@ -46,7 +46,7 @@ process.
 q <- c(-40, -2, 0, 1.5, 30)
 identical(student_t_cdf(q, df = 3.5), pt(q, df = 3.5))
 
-# the far left tail, on the log scale
+# the far left tail is computed on the log scale
 student_t_cdf(-1e6, df = 2.5, log.p = TRUE)
 
 }

@@ -53,7 +53,7 @@ exactly, where a continuous family would need a quadrature.
 }
 
 \examples{
-# The four ways to split 3 into two ordered non-negative parts.
+# There are four ways to split 3 into two ordered non-negative parts.
 compositions(3, 2)
 
 # Every row sums to the total, and the row count is the divider formula.

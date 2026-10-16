@@ -41,11 +41,12 @@ scaling floor of the break-point schedule rests on the same argument.
 }
 
 \examples{
-# A length-parametrized smoother: sqrt(eps) times the range.
+# For a length-parametrized smoother the floor is sqrt(eps) times the range.
 smoother_width_floor(smooth_probit(), scale = 10)
 sqrt(.Machine$double.eps) * 10
 
-# The hyperbolic's floor is the square of that, its parameter being one.
+# The floor of the hyperbolic is the square of that, because its parameter
+# is a squared length.
 smoother_width_floor(smooth_hyperbolic(), scale = 10)
 
 # A consumer takes the larger of the data's spacing and the floor.

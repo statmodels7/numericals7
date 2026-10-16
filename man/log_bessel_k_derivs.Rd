@@ -37,7 +37,7 @@ str(log_bessel_k_derivs(2, 0.5))
 # log K_{1/2}(x) is -1/(2x) - 1.
 log_bessel_k_derivs(2, 0.5)$d1 - (-1 / (2 * 2) - 1)
 
-# Elsewhere, against one stencil on the value itself.
+# Elsewhere the derivative is compared with one stencil on the value itself.
 log_bessel_k_derivs(3, 2)$d1 -
   fd_derivative(function(z) log_bessel_k(z, 2), 3, 1, accuracy = 4)
 

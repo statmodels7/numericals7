@@ -68,13 +68,14 @@ order \eqn{10^{-15}}.
 a <- c(0.5, 1, 4)
 max(abs(owen_t(0, a) - atan(a) / (2 * pi)))
 
-# Odd in the second argument, and the infinite case is a normal tail.
+# The function is odd in the second argument, and the infinite case is a
+# normal tail.
 owen_t(1, 2) + owen_t(1, -2)
 owen_t(1.3, Inf) - pnorm(-1.3) / 2
 
-# A steep slope, where the integrand sits within 1/h of zero: the skew
-# normal distribution function at alpha = 1000 against its limit
-# 2 Phi(z) - 1.
+# At a steep slope the integrand sits within 1/h of zero; the example
+# compares the skew normal distribution function at alpha = 1000 with its
+# limit 2 Phi(z) - 1.
 z <- 2.5
 (pnorm(z) - 2 * owen_t(z, 1000)) - (2 * pnorm(z) - 1)
 

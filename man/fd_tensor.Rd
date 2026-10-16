@@ -121,7 +121,7 @@ d3g <- fd_tensor(f, x, order = 3, known = g)
 attr(d3g, "fd_source")
 rbind(d3g$a_a_b, 6 * x$a * exp(x$b))
 
-# one component only, at second-order accuracy
+# only one component is computed, at second-order accuracy
 fd_tensor(f, x, components = rbind(c(2, 1)), accuracy = 2)
 }
 \seealso{

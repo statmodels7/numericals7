@@ -91,7 +91,7 @@ returned by this function.
 fd_weights(c(-1, 0, 1), 1)                 # -1/2, 0, 1/2
 fd_weights(c(-1, 0, 1), 2)                 #    1,  -2,  1
 
-# Five nodes, first derivative: the familiar (1, -8, 0, 8, -1)/12.
+# Five nodes give the familiar first-derivative weights (1, -8, 0, 8, -1)/12.
 fd_weights(-2:2, 1) * 12
 
 # The weights are for a unit step, so the caller divides by h^order.
@@ -109,7 +109,7 @@ vapply(0:5, function(m) sum(w * s^m), numeric(1))
 # That first failure is the error constant: -4/5! = -1/30.
 sum(w * s^5) / factorial(5)
 
-# Which predicts the error to three figures at a step of 0.05.
+# The constant predicts the error to three figures at a step of 0.05.
 sum(w * sin(0.7 + s * 0.05)) / 0.05 - cos(0.7)
 -1 / 30 * 0.05^4 * cos(0.7)
 

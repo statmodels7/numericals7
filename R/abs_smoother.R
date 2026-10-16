@@ -219,7 +219,7 @@ abs_smoother <- S7::new_class(
 #' u <- c(0, 0.3, 1, 3)
 #' smoother_deriv(sm, u, order = 0) - abs(u)
 #'
-#' # The scale correction it declares, applied to an apparent tau.
+#' # The smoother applies the scale correction that it declares to an apparent tau.
 #' sm@tau_correction(0.5, 0.231)
 #' sqrt(0.5^2 - 0.231^2)
 #'
@@ -300,7 +300,7 @@ smooth_probit <- function(h = NULL, per_group = FALSE) {
 #' smoother_deriv(sm, 0, order = 0)
 #' sqrt(0.09)
 #'
-#' # And resolving from a spacing squares it for you.
+#' # And resolving from a spacing squares it.
 #' smoother_width(smooth_hyperbolic(), 0.3)
 #'
 #' # The excess over |u| is still there three units out.
@@ -420,8 +420,8 @@ smooth_hyperbolic <- function(c = NULL) {
 #' smoother_deriv(sm, 0, order = 0)
 #' 5 * 0.5 / 16
 #'
-#' # The second derivative vanishes to second order at the seam, which is
-#' # what makes it C^3 there.
+#' # The second derivative vanishes to second order at the seam, and this
+#' # makes the smoother C^3 there.
 #' smoother_deriv(sm, c(0.4, 0.49, 0.5, 0.51), order = 2)
 #'
 #' @seealso [abs_smoother()] for the class, [smooth_probit()] for the
@@ -495,10 +495,10 @@ smooth_quintic <- function(h = NULL) {
 #' @return A numeric vector as long as `u`.
 #'
 #' @examples
-#' # The smooth sign: odd, bounded by one, and passing through zero.
+#' # The smooth sign is odd, bounded by one, and passes through zero.
 #' smoother_deriv(smooth_hyperbolic(c = 1), 0:3, order = 1)
 #'
-#' # A per-point width, as a per-group smoother supplies.
+#' # A width can be given per point, as a per-group smoother supplies it.
 #' smoother_deriv(smooth_probit(), c(-1, 0, 1), width = c(0.1, 0.5, 1),
 #'                order = 0)
 #'
@@ -581,7 +581,7 @@ smoother_deriv <- function(smoother, u, width = NULL, order = 0L) {
 #' # A smoother that carries a width keeps it, whatever the spacing.
 #' smoother_width(smooth_probit(h = 0.5), 0.3)
 #'
-#' # One width per group.
+#' # Each group has its own width.
 #' smoother_width(smooth_probit(per_group = TRUE), c(0.2, 0.4, 0.35))
 #'
 #' # The quintic is raised to 0.55 times a large gap; the probit is not.
@@ -653,11 +653,12 @@ smoother_width <- function(smoother, spacing, max_gap = NULL) {
 #' @return A single number, on the smoother's own width scale.
 #'
 #' @examples
-#' # A length-parametrized smoother: sqrt(eps) times the range.
+#' # For a length-parametrized smoother the floor is sqrt(eps) times the range.
 #' smoother_width_floor(smooth_probit(), scale = 10)
 #' sqrt(.Machine$double.eps) * 10
 #'
-#' # The hyperbolic's floor is the square of that, its parameter being one.
+#' # The floor of the hyperbolic is the square of that, because its parameter
+#' # is a squared length.
 #' smoother_width_floor(smooth_hyperbolic(), scale = 10)
 #'
 #' # A consumer takes the larger of the data's spacing and the floor.
@@ -803,12 +804,13 @@ S7::method(print, abs_smoother) <- function(x, ...) {
 #' res <- check_abs_smoother(smooth_probit(h = 0.3))
 #' all(res$status == "OK")
 #'
-#' # Ten rows for a smoother with no scale correction, twelve with one.
+#' # The table has ten rows for a smoother with no scale correction and twelve
+#' # for a smoother with one.
 #' nrow(check_abs_smoother(smooth_quintic(h = 0.3), verbose = FALSE))
 #' nrow(check_abs_smoother(smooth_probit(h = 0.3), verbose = FALSE))
 #'
-#' # The error this caught while the quintic was being written: its own
-#' # third derivative with a 4 in the denominator where the algebra gives 2.
+#' # The validator caught this error while the quintic was being written: the
+#' # third derivative had a 4 in the denominator where the algebra gives 2.
 #' broken <- smooth_quintic(h = 0.3)
 #' fns <- broken@s
 #' fns[[4]] <- function(u, width) {

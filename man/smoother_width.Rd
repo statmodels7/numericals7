@@ -65,7 +65,7 @@ smoother_width(smooth_hyperbolic(), 0.3)
 # A smoother that carries a width keeps it, whatever the spacing.
 smoother_width(smooth_probit(h = 0.5), 0.3)
 
-# One width per group.
+# Each group has its own width.
 smoother_width(smooth_probit(per_group = TRUE), c(0.2, 0.4, 0.35))
 
 # The quintic is raised to 0.55 times a large gap; the probit is not.

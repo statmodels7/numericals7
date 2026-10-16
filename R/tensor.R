@@ -48,10 +48,10 @@ NULL
 #'
 #' @examples
 #' f <- function(x) x$a^3 * exp(x$b)
-#' # the gradient, declared by its order
+#' # the gradient is declared by its order
 #' g <- fd_known(function(x) list(3 * x$a^2 * exp(x$b), x$a^3 * exp(x$b)),
 #'               order = 1)
-#' # the same quantity, declared by its multi-indices
+#' # the same quantity is declared by its multi-indices
 #' g2 <- fd_known(function(x) cbind(3 * x$a^2 * exp(x$b), x$a^3 * exp(x$b)),
 #'                indices = rbind(c(1, 0), c(0, 1)))
 #' g2@indices
@@ -185,7 +185,7 @@ fd_known <- S7::new_class(
 #' attr(d3g, "fd_source")
 #' rbind(d3g$a_a_b, 6 * x$a * exp(x$b))
 #'
-#' # one component only, at second-order accuracy
+#' # only one component is computed, at second-order accuracy
 #' fd_tensor(f, x, components = rbind(c(2, 1)), accuracy = 2)
 #' @export
 fd_tensor <- function(f, x, order = NULL, components = NULL, known = list(),

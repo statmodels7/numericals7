@@ -65,7 +65,7 @@ smoother_deriv(sm, 0, order = 0)
 u <- c(0, 0.3, 1, 3)
 smoother_deriv(sm, u, order = 0) - abs(u)
 
-# The scale correction it declares, applied to an apparent tau.
+# The smoother applies the scale correction that it declares to an apparent tau.
 sm@tau_correction(0.5, 0.231)
 sqrt(0.5^2 - 0.231^2)
 

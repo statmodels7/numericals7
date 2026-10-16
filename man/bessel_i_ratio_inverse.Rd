@@ -49,7 +49,7 @@ ratio is the double \code{rho}, to the last bits, at any concentration.
 rho <- c(0.1, 0.5, 0.99)
 bessel_i_ratio(bessel_i_ratio_inverse(rho)) - rho
 
-# Outside the open unit interval, the endpoints included, the result is NA.
+# Outside the open unit interval, including the endpoints, the result is NA.
 bessel_i_ratio_inverse(c(0, 0.5, 1))
 
 }

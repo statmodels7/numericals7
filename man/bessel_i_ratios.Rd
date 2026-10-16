@@ -50,7 +50,8 @@ ratios does not converge in a useful number of terms.
 }
 
 \examples{
-# Four ratios at two concentrations, one row each.
+# The example computes four ratios at two concentrations, one row per
+# concentration.
 r <- bessel_i_ratios(c(1, 5), 4)
 round(r, 6)
 

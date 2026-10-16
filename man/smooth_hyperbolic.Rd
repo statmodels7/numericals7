@@ -48,7 +48,7 @@ sm <- smooth_hyperbolic(c = 0.09)
 smoother_deriv(sm, 0, order = 0)
 sqrt(0.09)
 
-# And resolving from a spacing squares it for you.
+# And resolving from a spacing squares it.
 smoother_width(smooth_hyperbolic(), 0.3)
 
 # The excess over |u| is still there three units out.

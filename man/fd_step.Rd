@@ -59,16 +59,16 @@ step.
 }
 
 \examples{
-# Magnitude-scaled: absolute near zero, relative far from it.
+# The step is scaled by magnitude: absolute near zero, relative far from it.
 fd_step(c(0.5, 1000), 2)
 
-# A higher order wants a larger step, rounding being what dominates.
+# A higher order needs a larger step, because rounding dominates.
 c(order2 = fd_step(1, 2), order4 = fd_step(1, 4))
 
 # Near a boundary the stencil is kept inside the domain.
 fd_step(0.01, 2, bounds = c(0, Inf))
 
-# On the boundary the step is zero, which no stencil can use.
+# On the boundary the step is zero, which a stencil cannot use.
 fd_step(0, 2, bounds = c(0, Inf))
 
 }

@@ -90,12 +90,13 @@ function stops when it is not installed.
 res <- check_abs_smoother(smooth_probit(h = 0.3))
 all(res$status == "OK")
 
-# Ten rows for a smoother with no scale correction, twelve with one.
+# The table has ten rows for a smoother with no scale correction and twelve
+# for a smoother with one.
 nrow(check_abs_smoother(smooth_quintic(h = 0.3), verbose = FALSE))
 nrow(check_abs_smoother(smooth_probit(h = 0.3), verbose = FALSE))
 
-# The error this caught while the quintic was being written: its own
-# third derivative with a 4 in the denominator where the algebra gives 2.
+# The validator caught this error while the quintic was being written: the
+# third derivative had a 4 in the denominator where the algebra gives 2.
 broken <- smooth_quintic(h = 0.3)
 fns <- broken@s
 fns[[4]] <- function(u, width) {
