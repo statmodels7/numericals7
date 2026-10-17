@@ -1,3 +1,11 @@
+# numericals7 0.23.3
+
+* The plans of `fd_tensor()` are cached under keys held in a character
+  vector, not as the names of an environment. A request with many
+  components produced a key longer than the 10000 bytes allowed for a
+  variable name and stopped with an error (the fifth derivative of a
+  multivariate gaussian in three dimensions, 1287 components).
+
 # numericals7 0.23.2
 
 * Comments of the examples: captions without a verb, contact clauses,

@@ -234,3 +234,22 @@ test_that("malformed requests are rejected", {
   expect_error(fd_known(f, order = 1, indices = 1), "exactly one of")
   expect_error(fd_known(f, indices = c(-1, 0)), "non-negative")
 })
+
+test_that("a request whose key exceeds the length of a symbol is planned", {
+  # 715 components over ten coordinates give a key of about 14 kB, more than
+  # the 10000 bytes R allows a variable name.
+  a <- seq(0.1, 1, length.out = 10)
+  nm <- paste0("x", 1:10)
+  x <- stats::setNames(as.list(seq(-0.5, 0.4, by = 0.1)), nm)
+  f <- function(x) exp(sum(a * unlist(x)))
+  comp <- numericals7:::counts_of_order(10L, 4L)
+  k3 <- numericals7:::counts_of_order(10L, 3L)
+  d3 <- fd_known(function(x) {
+    v <- f(x)
+    lapply(seq_len(nrow(k3)), function(r) prod(a^k3[r, ]) * v)
+  }, indices = k3)
+  got <- fd_tensor(f, x, components = comp, known = d3)
+  want <- apply(comp, 1L, function(m) prod(a^m)) * f(x)
+  expect_equal(unname(unlist(got)), want, tolerance = 1e-8)
+  expect_identical(fd_tensor(f, x, components = comp, known = d3), got)
+})

@@ -347,7 +347,11 @@ fd_tensor <- function(f, x, order = NULL, components = NULL, known = list(),
 }
 
 # The plans of the session, keyed by the integer structure of the request.
+# The keys are kept in a character vector rather than as the names of an
+# environment, because a key can exceed the 10000 bytes R allows a symbol.
 .fd_tensor_plans <- new.env(parent = emptyenv())
+.fd_tensor_plans$keys <- character(0)
+.fd_tensor_plans$plans <- list()
 
 #' Helpers of the Tensor Stencil
 #'
@@ -385,11 +389,11 @@ NULL
 
 #' @rdname fd_tensor_helpers
 tensor_plan <- function(key, comp, kidx, accuracy) {
-  plan <- .fd_tensor_plans[[key]]
-  if (is.null(plan)) {
-    plan <- fd_tensor_plan_cpp(comp, kidx, accuracy)
-    assign(key, plan, envir = .fd_tensor_plans)
-  }
+  i <- match(key, .fd_tensor_plans$keys)
+  if (!is.na(i)) return(.fd_tensor_plans$plans[[i]])
+  plan <- fd_tensor_plan_cpp(comp, kidx, accuracy)
+  .fd_tensor_plans$keys <- c(.fd_tensor_plans$keys, key)
+  .fd_tensor_plans$plans <- c(.fd_tensor_plans$plans, list(plan))
   plan
 }
 
