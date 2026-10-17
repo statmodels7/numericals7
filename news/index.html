@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,6 +32,10 @@
       <small>Source: <a href="https://github.com/statmodels7/numericals7/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.23.3" id="numericals7-0233">numericals7 0.23.3<a class="anchor" aria-label="anchor" href="#numericals7-0233"></a></h2>
+<ul><li>The plans of <code><a href="../reference/fd_tensor.html">fd_tensor()</a></code> are cached under keys held in a character vector, not as the names of an environment. A request with many components produced a key longer than the 10000 bytes allowed for a variable name and stopped with an error (the fifth derivative of a multivariate gaussian in three dimensions, 1287 components).</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.23.2" id="numericals7-0232">numericals7 0.23.2<a class="anchor" aria-label="anchor" href="#numericals7-0232"></a></h2>
 <ul><li>Comments of the examples: captions without a verb, contact clauses, absolute constructions and personified descriptions of the code rewritten as plain clauses. No change to the code.</li>
