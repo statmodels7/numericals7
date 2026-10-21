@@ -1,3 +1,8 @@
+# numericals7 0.23.4
+
+* The package description writes out the relative pronoun of a relative
+  clause ("the enumerations on which a higher-order chain rule rests").
+
 # numericals7 0.23.3
 
 * The plans of `fd_tensor()` are cached under keys held in a character
