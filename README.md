@@ -79,6 +79,27 @@ fd_derivative(exp, 1, order = 3L, accuracy = 4L) - exp(1)
 #> [1] 3.076484e-09
 ```
 
+`fd_tensor()` extends the same rule to partial derivatives of any order
+in several variables. It differentiates the highest quantity that the
+caller declares with `fd_known()`, so each component takes one stencil
+of the order that remains, and the attribute `"fd_source"` records which
+quantity each component came from.
+
+``` r
+f <- function(x) x$a^3 * exp(x$b)
+x <- list(a = c(0.5, 1, 2), b = 0.3)
+# The third derivative in a, a and b is computed from the function alone.
+fd_tensor(f, x, order = 3)$a_a_b
+#> [1]  4.049576  8.099153 16.198306
+# With the analytic gradient declared, the same component is one second difference.
+g <- fd_known(function(x) list(3 * x$a^2 * exp(x$b), x$a^3 * exp(x$b)),
+              order = 1)
+fd_tensor(f, x, order = 3, known = g)$a_a_b
+#> [1]  4.049576  8.099153 16.198306
+6 * x$a * exp(x$b)   # the exact value
+#> [1]  4.049576  8.099153 16.198306
+```
+
 ## Quadrature and series, vectorized over the parameters
 
 A regression model gives every observation its own parameter value, so
@@ -144,6 +165,27 @@ bessel_i_ratio(1000)      # the unscaled ratio overflows past 700
 #> [1] 0.9994999
 bessel_i_ratio(bessel_i_ratio_inverse(0.7))
 #> [1] 0.7
+```
+
+## Functions for worker threads
+
+`student_t_cdf()` and `bessel_k()` return the values of `stats::pt()`
+and `base::besselK()` from compiled code that never calls the R API, so
+the compiled kernels of the toolkit can call them from a worker thread.
+Each one is also available to C code through `R_GetCCallable()`.
+`n_threads()` builds the policy with which a fit such as
+`distributions7::fit_distrib()` or `statmodels7::statmod()` uses threads
+and worker processes. The default of one thread and one process takes
+the sequential code path, and the compiled kernels return the same
+values at any number of threads (`?n_threads` describes the one
+exception).
+
+``` r
+# The values are those of pt() and besselK().
+student_t_cdf(c(-2, 0, 3), df = 2.5) - pt(c(-2, 0, 3), df = 2.5)
+#> [1] 0 0 0
+bessel_k(c(0.5, 10), nu = 1.5) - besselK(c(0.5, 10), 1.5)
+#> [1] 0 0
 ```
 
 ## Smoothers of the absolute value

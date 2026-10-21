@@ -1,3 +1,9 @@
+# numericals7 0.23.5
+
+* The README describes `fd_tensor()` and `fd_known()`, and the functions
+  that the compiled kernels can call from a worker thread
+  (`student_t_cdf()`, `bessel_k()`) with the thread policy `n_threads()`.
+
 # numericals7 0.23.4
 
 * The package description writes out the relative pronoun of a relative
