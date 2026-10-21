@@ -1,5 +1,18 @@
 # Changelog
 
+## numericals7 0.23.5
+
+- The README describes
+  [`fd_tensor()`](https://statmodels7.github.io/numericals7/reference/fd_tensor.md)
+  and
+  [`fd_known()`](https://statmodels7.github.io/numericals7/reference/fd_known.md),
+  and the functions that the compiled kernels can call from a worker
+  thread
+  ([`student_t_cdf()`](https://statmodels7.github.io/numericals7/reference/student_t_cdf.md),
+  [`bessel_k()`](https://statmodels7.github.io/numericals7/reference/bessel_k.md))
+  with the thread policy
+  [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md).
+
 ## numericals7 0.23.4
 
 - The package description writes out the relative pronoun of a relative
