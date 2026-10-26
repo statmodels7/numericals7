@@ -50,15 +50,18 @@ an error.
 ## Details
 
 The algorithm follows Plesner, Sørensen and Hauberg (2024): the
-truncated power series with its terms carried as logarithms and summed
-by the log-sum-exp anchored at the largest term, the large-argument
-asymptotic expansion, and the large-order uniform asymptotic expansion
-in the \\u_k(t)\\ polynomials, selected by the input-range table of that
-paper. Two switching guards are tightened relative to the paper,
-measured on the Wronskian identity \\I\_\nu K\_{\nu+1} + I\_{\nu+1}
-K\_\nu = 1/x\\: the large-argument expansions are used only where their
-truncation error is below \\10^{-11}\\, and the uniform expansion is
-used otherwise.
+truncated power series, the large-argument asymptotic expansion, and the
+large-order uniform asymptotic expansion in the \\u_k(t)\\ polynomials,
+selected by the input-range table of that paper. The series is summed by
+the ratio of consecutive terms, \\t_k = t\_{k-1} (x^2/4) / (k (k +
+\nu))\\, and scaled by \\(x/2)^\nu / \Gamma(\nu + 1)\\; on the region
+where the table selects it (\\x \le 30\\) the sum is below \\10^{12}\\,
+so it is not carried on the log scale. Each \\u_k(t)\\ is evaluated by
+Horner's scheme in \\t^2\\. Two switching guards are tightened relative
+to the paper, measured on the Wronskian identity \\I\_\nu K\_{\nu+1} +
+I\_{\nu+1} K\_\nu = 1/x\\: the large-argument expansions are used only
+where their truncation error is below \\10^{-11}\\, and the uniform
+expansion is used otherwise.
 
 The compiled kernel never calls the R API. It is also registered as the
 C entry point `n7_log_bessel_i`, resolved with

@@ -1,5 +1,25 @@
 # Changelog
 
+## numericals7 0.24.0
+
+- [`log_bessel_i()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i.md)
+  sums its ascending series by the ratio of consecutive terms, with one
+  call to [`lgamma()`](https://rdrr.io/r/base/Special.html) per element
+  instead of two per term, and stops the sum at the first term past the
+  largest one that leaves it unchanged. On the region where the series
+  is used the result agrees with the previous version to a few units in
+  the last place and with mpmath at 50 digits to the same accuracy, and
+  the function is 59 to 98 times faster where that region dominates.
+- The polynomials of the uniform asymptotic expansion, used by
+  [`log_bessel_i()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i.md)
+  and
+  [`log_bessel_k()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md)
+  at a large order, are evaluated by Horner’s scheme instead of one
+  power per coefficient, which makes both functions about twice as fast
+  there.
+- A test compares the four log-Bessel functions with a stored mpmath
+  reference and with the values of version 0.23.5.
+
 ## numericals7 0.23.5
 
 - The README describes

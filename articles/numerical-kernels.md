@@ -28,7 +28,7 @@ solves it and returns the weights.
 fd_weights(-1:1, order = 1)     # the textbook central difference
 #> [1] -0.5  0.0  0.5
 fd_weights(-2:2, order = 1)     # five points, accurate two orders further
-#> [1]  0.08333333 -0.66666667  0.00000000  0.66666667 -0.08333333
+#> [1]  8.333333e-02 -6.666667e-01 -2.379049e-16  6.666667e-01 -8.333333e-02
 ```
 
 [`fd_derivative()`](https://statmodels7.github.io/numericals7/reference/fd_derivative.md)
@@ -43,7 +43,7 @@ d1 <- function(x) -x * exp(-x^2 / 2)          # the closed form, for comparison
 
 sapply(c(2, 4, 6), function(a)
   abs(fd_derivative(f, 0.7, order = 1, accuracy = a) - d1(0.7)))
-#> [1] 7.842615e-12 1.512124e-13 8.881784e-15
+#> [1] 7.842615e-12 7.616130e-14 3.108624e-15
 ```
 
 The step depends on the order $`k`$. The rounding error of a stencil for

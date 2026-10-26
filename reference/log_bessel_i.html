@@ -19,7 +19,7 @@ scaled form underflows or loses its precision."><meta property="og:image" conten
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.24.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -96,10 +96,14 @@ signal an error.</p>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The algorithm follows Plesner, Sørensen and Hauberg (2024): the truncated
-power series with its terms carried as logarithms and summed by the
-log-sum-exp anchored at the largest term, the large-argument asymptotic
-expansion, and the large-order uniform asymptotic expansion in the
-\(u_k(t)\) polynomials, selected by the input-range table of that paper.
+power series, the large-argument asymptotic expansion, and the large-order
+uniform asymptotic expansion in the \(u_k(t)\) polynomials, selected by
+the input-range table of that paper. The series is summed by the ratio of
+consecutive terms, \(t_k = t_{k-1} (x^2/4) / (k (k + \nu))\), and scaled
+by \((x/2)^\nu / \Gamma(\nu + 1)\); on the region where the table selects
+it (\(x \le 30\)) the sum is below \(10^{12}\), so it is not carried
+on the log scale. Each \(u_k(t)\) is evaluated by Horner's scheme in
+\(t^2\).
 Two switching guards are tightened relative to the paper, measured on the
 Wronskian identity \(I_\nu K_{\nu+1} + I_{\nu+1} K_\nu = 1/x\): the
 large-argument expansions are used only where their truncation error is

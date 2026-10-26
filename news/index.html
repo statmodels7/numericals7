@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.23.5</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.24.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,6 +32,13 @@
       <small>Source: <a href="https://github.com/statmodels7/numericals7/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.24.0" id="numericals7-0240">numericals7 0.24.0<a class="anchor" aria-label="anchor" href="#numericals7-0240"></a></h2>
+<ul><li>
+<code><a href="../reference/log_bessel_i.html">log_bessel_i()</a></code> sums its ascending series by the ratio of consecutive terms, with one call to <code><a href="https://rdrr.io/r/base/Special.html" class="external-link">lgamma()</a></code> per element instead of two per term, and stops the sum at the first term past the largest one that leaves it unchanged. On the region where the series is used the result agrees with the previous version to a few units in the last place and with mpmath at 50 digits to the same accuracy, and the function is 59 to 98 times faster where that region dominates.</li>
+<li>The polynomials of the uniform asymptotic expansion, used by <code><a href="../reference/log_bessel_i.html">log_bessel_i()</a></code> and <code><a href="../reference/log_bessel_k.html">log_bessel_k()</a></code> at a large order, are evaluated by Horner’s scheme instead of one power per coefficient, which makes both functions about twice as fast there.</li>
+<li>A test compares the four log-Bessel functions with a stored mpmath reference and with the values of version 0.23.5.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.23.5" id="numericals7-0235">numericals7 0.23.5<a class="anchor" aria-label="anchor" href="#numericals7-0235"></a></h2>
 <ul><li>The README describes <code><a href="../reference/fd_tensor.html">fd_tensor()</a></code> and <code><a href="../reference/fd_known.html">fd_known()</a></code>, and the functions that the compiled kernels can call from a worker thread (<code><a href="../reference/student_t_cdf.html">student_t_cdf()</a></code>, <code><a href="../reference/bessel_k.html">bessel_k()</a></code>) with the thread policy <code><a href="../reference/n_threads.html">n_threads()</a></code>.</li>
