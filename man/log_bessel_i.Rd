@@ -40,10 +40,14 @@ scaled form underflows or loses its precision.
 }
 \details{
 The algorithm follows Plesner, Sørensen and Hauberg (2024): the truncated
-power series with its terms carried as logarithms and summed by the
-log-sum-exp anchored at the largest term, the large-argument asymptotic
-expansion, and the large-order uniform asymptotic expansion in the
-\eqn{u_k(t)} polynomials, selected by the input-range table of that paper.
+power series, the large-argument asymptotic expansion, and the large-order
+uniform asymptotic expansion in the \eqn{u_k(t)} polynomials, selected by
+the input-range table of that paper. The series is summed by the ratio of
+consecutive terms, \eqn{t_k = t_{k-1} (x^2/4) / (k (k + \nu))}, and scaled
+by \eqn{(x/2)^\nu / \Gamma(\nu + 1)}; on the region where the table selects
+it (\eqn{x \le 30}) the sum is below \eqn{10^{12}}, so it is not carried
+on the log scale. Each \eqn{u_k(t)} is evaluated by Horner's scheme in
+\eqn{t^2}.
 Two switching guards are tightened relative to the paper, measured on the
 Wronskian identity \eqn{I_\nu K_{\nu+1} + I_{\nu+1} K_\nu = 1/x}: the
 large-argument expansions are used only where their truncation error is

@@ -9,16 +9,23 @@
 using namespace Rcpp;
 
 static const int UK_MAX = 13;
-// u_k polynomial coefficients, filled from R once via lb_set_uk_cpp()
-static std::vector<std::vector<double>> UK_E, UK_C;
+// u_k polynomial coefficients, filled from R once via lb_set_uk_cpp(). The
+// exponents of u_k are k, k + 2, ..., 3k, so only the coefficients are kept
+// and lb_u_sum() evaluates u_k(t) = t^k P_k(t^2) by Horner; the setter
+// checks the exponents, so a table of another shape fails at load.
+static std::vector<std::vector<double>> UK_C;
 
 // [[Rcpp::export]]
 void lb_set_uk_cpp(List uk) {
-  UK_E.clear(); UK_C.clear();
+  UK_C.clear();
   for (int k = 0; k < uk.size(); ++k) {
     List el = uk[k];
     NumericVector e = el["e"], c = el["c"];
-    UK_E.push_back(std::vector<double>(e.begin(), e.end()));
+    if (e.size() != c.size()) stop("u_%d: exponents and coefficients differ in length", k + 1);
+    for (R_xlen_t j = 0; j < e.size(); ++j) {
+      if (e[j] != (double) (k + 1 + 2 * j)) stop("u_%d: exponent %d is not %d", k + 1,
+                                                 (int) j + 1, (int) (k + 1 + 2 * j));
+    }
     UK_C.push_back(std::vector<double>(c.begin(), c.end()));
   }
 }
@@ -46,29 +53,35 @@ static double lb_mu(double x, double v, int K, double sign) {
 }
 
 static double lb_u_sum(double t, double v, int K, double sign) {
-  double s = 1.0, vk = 1.0;
+  double s = 1.0, vk = 1.0, t2 = t * t, tk = 1.0;
   for (int k = 1; k <= K; ++k) {
     vk *= sign / v;
-    double uk = 0.0;
-    const std::vector<double>& E = UK_E[k - 1];
+    tk *= t;
     const std::vector<double>& C = UK_C[k - 1];
-    for (size_t j = 0; j < E.size(); ++j) uk += C[j] * std::pow(t, E[j]);
-    s += vk * uk;
+    double p = C.back();
+    for (int j = (int) C.size() - 2; j >= 0; --j) p = p * t2 + C[j];
+    s += vk * (tk * p);
   }
   return std::log(std::fabs(s));
 }
 
+// log I by its ascending series, sum_k t_k with t_0 = 1 and
+// t_k = t_{k-1} q / (k (k + v)), q = x^2 / 4, scaled by (x/2)^v / Gamma(v + 1).
+// The sum is 0F1(; v + 1; q), which decreases in v, so on this branch
+// (x <= 30) it is at most I_0(30) < 1e12 and needs no log scale. Past the
+// peak (q < k (k + v)) every term is smaller than the one before, so the
+// first term that leaves the sum unchanged ends the loop with the bits that
+// all 90 terms would give.
 static double lbi_series(double x, double v) {
   const int nmax = 90;
-  double l2 = 2 * std::log(x) - std::log(4.0);
-  double best = -1e308, la[nmax + 1];
-  for (int k = 0; k <= nmax; ++k) {
-    la[k] = k * l2 - std::lgamma(k + 1.0) - std::lgamma(k + v + 1.0);
-    if (la[k] > best) best = la[k];
+  double q = 0.25 * x * x, t = 1.0, s = 1.0;
+  for (int k = 1; k <= nmax; ++k) {
+    double den = k * (k + v);
+    t *= q / den;
+    if (q < den && s + t == s) break;
+    s += t;
   }
-  double s = 0.0;
-  for (int k = 0; k <= nmax; ++k) s += std::exp(la[k] - best);
-  return v * std::log(x / 2) + best + std::log(s);
+  return v * std::log(x / 2) - std::lgamma(v + 1.0) + std::log(s);
 }
 
 static double lbi_one(double x, double v);
@@ -152,9 +165,11 @@ static double lbk_one(double x, double v) {
 
 // Every branch of lbi_one() is this file's own arithmetic -- a series or a
 // uniform asymptotic expansion -- with no call into Rmath, which is what
-// makes the body admissible inside a worker. Its dearest branch is several
-// microseconds an element (measured 167 ms over 20000 points at small
-// argument), so the region pays from a very small count.
+// makes the body admissible inside a worker. Since 0.24.0 every branch costs
+// about 0.2 microseconds an element (3 to 4 ms over 20000 points), and the
+// threaded region pays from about 500 elements (measured: 0.5x at 128,
+// 1.2x at 512, 2.6x at 2048 on 16 threads). The kernel still takes the
+// shared threshold kMinCostly (128), which was set for the earlier cost.
 // [[Rcpp::export]]
 NumericVector log_bessel_i_cpp(NumericVector x, NumericVector nu,
                                int threads = 1) {
@@ -198,9 +213,9 @@ void n7_register_log_bessel(DllInfo* dll) {
 
 // This one is NOT threaded and takes no count: lbk_one()'s hybrid branch
 // calls R::bessel_k, which can raise a warning, and a warning from a worker
-// thread kills the process (n7_par.h). It is also the cheap one of the pair
-// -- 8 to 10 ms over 20000 points against log I's 167 -- so what the
-// restriction costs is small and stating it is better than an argument that
+// thread kills the process (n7_par.h). It costs 4 to 7 ms over 20000 points,
+// against log I's 3 to 4, so what the restriction costs is small, and
+// stating it is better than an argument that
 // would be read by nobody.
 // [[Rcpp::export]]
 NumericVector log_bessel_k_cpp(NumericVector x, NumericVector nu) {

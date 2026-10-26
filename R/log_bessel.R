@@ -33,18 +33,21 @@ NULL
 }
 
 # ---- the series for log I (moderate x and v) --------------------------------
-# log a_k = k log(x^2/4) - lgamma(k+1) - lgamma(k+v+1), summed by the
-# log-sum-exp anchored at the largest term. The number of relevant terms
-# grows like 9.2 sqrt(x) (Plesner et al.), so the truncation adapts to the
-# chunk instead of always paying the worst case.
+# sum_k t_k with t_0 = 1 and t_k = t_{k-1} (x^2/4) / (k (k + v)), scaled by
+# (x/2)^v / Gamma(v + 1). The sum is 0F1(; v + 1; x^2/4), which decreases in
+# v, so on this branch (x <= 30) it is at most I_0(30) < 1e12 and needs no
+# log scale. The number of relevant terms grows like 9.2 sqrt(x) (Plesner et
+# al.), so the truncation adapts to the chunk instead of always paying the
+# worst case.
 .lbi_series <- function(x, v) {
   nmax <- min(120L, as.integer(ceiling(9.2 * sqrt(max(x))) + 20L))
-  k <- 0:nmax
-  la <- outer(2 * log(x) - log(4), k) -
-    rep(lgamma(k + 1), each = length(x)) -
-    lgamma(outer(v, k, "+") + 1)
-  m <- apply(la, 1L, max)
-  v * log(x / 2) + m + log(rowSums(exp(la - m)))
+  q <- x * x / 4
+  t <- s <- rep(1, length(x))
+  for (k in seq_len(nmax)) {
+    t <- t * q / (k * (k + v))
+    s <- s + t
+  }
+  v * log(x / 2) - lgamma(v + 1) + log(s)
 }
 
 # ---- the mu_K expansion (large argument) ------------------------------------
@@ -62,17 +65,20 @@ NULL
 }
 
 # ---- the U_K uniform expansion (large order) --------------------------------
-# sign is +1 for I and -1 for K
+# sign is +1 for I and -1 for K. The exponents of u_k are k, k + 2, ..., 3k,
+# so u_k(t) = t^k P_k(t^2) is evaluated by Horner in t^2.
 .lb_u_sum <- function(t, v, K, sign) {
   s <- rep(1, length(t))
   vk <- rep(1, length(t))
+  tk <- rep(1, length(t))
+  t2 <- t * t
   for (k in seq_len(K)) {
     vk <- vk * (sign / v)
-    ek <- .bessel_uk[[k]]$e
+    tk <- tk * t
     ck <- .bessel_uk[[k]]$c
-    uk <- rep(0, length(t))
-    for (j in seq_along(ek)) uk <- uk + ck[j] * t^ek[j]
-    s <- s + vk * uk
+    p <- rep(ck[length(ck)], length(t))
+    for (j in rev(seq_len(length(ck) - 1L))) p <- p * t2 + ck[j]
+    s <- s + vk * (tk * p)
   }
   log(abs(s))
 }
@@ -158,10 +164,14 @@ NULL
 #'
 #' @details
 #' The algorithm follows Plesner, Sørensen and Hauberg (2024): the truncated
-#' power series with its terms carried as logarithms and summed by the
-#' log-sum-exp anchored at the largest term, the large-argument asymptotic
-#' expansion, and the large-order uniform asymptotic expansion in the
-#' \eqn{u_k(t)} polynomials, selected by the input-range table of that paper.
+#' power series, the large-argument asymptotic expansion, and the large-order
+#' uniform asymptotic expansion in the \eqn{u_k(t)} polynomials, selected by
+#' the input-range table of that paper. The series is summed by the ratio of
+#' consecutive terms, \eqn{t_k = t_{k-1} (x^2/4) / (k (k + \nu))}, and scaled
+#' by \eqn{(x/2)^\nu / \Gamma(\nu + 1)}; on the region where the table selects
+#' it (\eqn{x \le 30}) the sum is below \eqn{10^{12}}, so it is not carried
+#' on the log scale. Each \eqn{u_k(t)} is evaluated by Horner's scheme in
+#' \eqn{t^2}.
 #' Two switching guards are tightened relative to the paper, measured on the
 #' Wronskian identity \eqn{I_\nu K_{\nu+1} + I_{\nu+1} K_\nu = 1/x}: the
 #' large-argument expansions are used only where their truncation error is

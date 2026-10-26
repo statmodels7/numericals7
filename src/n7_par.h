@@ -57,10 +57,10 @@ inline void par_for(std::size_t n, int threads, std::size_t threshold,
   }
 }
 
-// log I is a series or a uniform asymptotic expansion per element, several
-// microseconds of transcendental arithmetic in its dearest branch, so it is
-// in the same cost class as distributions7' full-transcendental bodies and
-// takes their threshold.
+// The threshold of the kernels with a full transcendental body per element,
+// the one distributions7 uses for its own. It was set for log I when its
+// series cost several microseconds an element; since 0.24.0 log I costs
+// about 0.2 and pays from about 500 elements (log_bessel.cpp).
 constexpr std::size_t kMinCostly = 128;
 
 } // namespace n7
