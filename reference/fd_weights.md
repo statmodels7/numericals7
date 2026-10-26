@@ -116,7 +116,7 @@ fd_weights(c(-1, 0, 1), 2)                 #    1,  -2,  1
 
 # Five nodes give the familiar first-derivative weights (1, -8, 0, 8, -1)/12.
 fd_weights(-2:2, 1) * 12
-#> [1]  1.000000e+00 -8.000000e+00 -2.854859e-15  8.000000e+00 -1.000000e+00
+#> [1]  1 -8  0  8 -1
 
 # The weights are for a unit step, so the caller divides by h^order.
 h <- 1e-3
@@ -131,8 +131,7 @@ exp(1)
 s <- -2:2
 w <- fd_weights(s, 1)
 vapply(0:5, function(m) sum(w * s^m), numeric(1))
-#> [1] -2.976135e-17  1.000000e+00  1.665335e-16  1.110223e-16  0.000000e+00
-#> [6] -4.000000e+00
+#> [1]  0  1  0  0  0 -4
 
 # That first failure is the error constant: -4/5! = -1/30.
 sum(w * s^5) / factorial(5)

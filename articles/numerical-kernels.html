@@ -89,7 +89,7 @@ allow. <code><a href="../reference/fd_weights.html">fd_weights()</a></code> solv
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/fd_weights.html">fd_weights</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="fl">1</span>, order <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>     <span class="co"># the textbook central difference</span></span>
 <span><span class="co">#&gt; [1] -0.5  0.0  0.5</span></span>
 <span><span class="fu"><a href="../reference/fd_weights.html">fd_weights</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span><span class="op">:</span><span class="fl">2</span>, order <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>     <span class="co"># five points, accurate two orders further</span></span>
-<span><span class="co">#&gt; [1]  8.333333e-02 -6.666667e-01 -2.379049e-16  6.666667e-01 -8.333333e-02</span></span></code></pre></div>
+<span><span class="co">#&gt; [1]  0.08333333 -0.66666667  0.00000000  0.66666667 -0.08333333</span></span></code></pre></div>
 <p><code><a href="../reference/fd_derivative.html">fd_derivative()</a></code> applies one to a function.
 <code>accuracy</code> is the order of the truncation error, and a higher
 accuracy costs only more evaluations of the function:</p>
@@ -99,7 +99,7 @@ accuracy costs only more evaluations of the function:</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span>, <span class="fl">6</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">a</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="fu"><a href="../reference/fd_derivative.html">fd_derivative</a></span><span class="op">(</span><span class="va">f</span>, <span class="fl">0.7</span>, order <span class="op">=</span> <span class="fl">1</span>, accuracy <span class="op">=</span> <span class="va">a</span><span class="op">)</span> <span class="op">-</span> <span class="fu">d1</span><span class="op">(</span><span class="fl">0.7</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 7.842615e-12 7.616130e-14 3.108624e-15</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 7.842615e-12 1.512124e-13 8.881784e-15</span></span></code></pre></div>
 <p>The step depends on the order
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>.
 The rounding error of a stencil for a derivative of order
