@@ -1,3 +1,10 @@
+# numericals7 0.25.0
+
+* Renamed for readability: the argument `h_rel` of `fd_tensor()` is
+  `rel_step`; the elements `wk` and `wg` of `gauss_kronrod15()` are
+  `kronrod_weights` and `gauss_weights`, and `quad_vec()` reads them under
+  these names; the element `reach` of `fd_offsets()` is `half_width`.
+
 # numericals7 0.24.0
 
 * `log_bessel_i()` sums its ascending series by the ratio of consecutive

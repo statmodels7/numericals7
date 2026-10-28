@@ -123,7 +123,7 @@ fd_known <- S7::new_class(
 #' A component of residual order \eqn{r} uses, in direction \eqn{j}, the step
 #' \eqn{h_j = \varepsilon^{1/(r + a)}\max(1, |x_j|)}, with \eqn{a} the
 #' accuracy: rounding grows as \eqn{\varepsilon / h^r} and the truncation as
-#' \eqn{h^a}, and the two balance there. `h_rel` replaces
+#' \eqn{h^a}, and the two balance there. `rel_step` replaces
 #' \eqn{\varepsilon^{1/(r + a)}}. Where `bounds` gives a finite bound, the
 #' step is reduced to \eqn{0.49\,d / R_j}, with \eqn{d} the distance to the
 #' bound and \eqn{R_j} the largest offset that the stencils of that residual
@@ -156,7 +156,7 @@ fd_known <- S7::new_class(
 #'   positive even whole number. The default, 4, makes the truncation error
 #'   of order \eqn{h^4}; 2 uses fewer nodes in each direction, and the number
 #'   of evaluations falls by a factor of two to four.
-#' @param h_rel `NULL` for the step above, or a single positive number that
+#' @param rel_step `NULL` for the step above, or a single positive number that
 #'   replaces \eqn{\varepsilon^{1/(r + a)}}.
 #'
 #' @return A named list of numeric vectors of length \eqn{n}, one per
@@ -189,7 +189,7 @@ fd_known <- S7::new_class(
 #' fd_tensor(f, x, components = rbind(c(2, 1)), accuracy = 2)
 #' @export
 fd_tensor <- function(f, x, order = NULL, components = NULL, known = list(),
-                      bounds = NULL, accuracy = 4L, h_rel = NULL) {
+                      bounds = NULL, accuracy = 4L, rel_step = NULL) {
   if (!is.function(f)) stop("'f' must be a function.", call. = FALSE)
   nm <- names(x)
   if (!is.list(x) || !length(x) || is.null(nm) || anyNA(nm) ||
@@ -211,9 +211,9 @@ fd_tensor <- function(f, x, order = NULL, components = NULL, known = list(),
     stop("'accuracy' must be a positive even whole number.", call. = FALSE)
   }
   accuracy <- as.integer(accuracy)
-  if (!is.null(h_rel) && (!is.numeric(h_rel) || length(h_rel) != 1L ||
-                          !is.finite(h_rel) || h_rel <= 0)) {
-    stop("'h_rel' must be NULL or a single positive number.", call. = FALSE)
+  if (!is.null(rel_step) && (!is.numeric(rel_step) || length(rel_step) != 1L ||
+                          !is.finite(rel_step) || rel_step <= 0)) {
+    stop("'rel_step' must be NULL or a single positive number.", call. = FALSE)
   }
 
   if (is.null(order) == is.null(components)) {
@@ -277,9 +277,9 @@ fd_tensor <- function(f, x, order = NULL, components = NULL, known = list(),
   # one step per residual order and direction, reduced to keep the widest
   # stencil of that order inside the bounds
   steps <- lapply(seq_along(plan$r_val), function(k) {
-    hr <- if (is.null(h_rel)) {
+    hr <- if (is.null(rel_step)) {
       .Machine$double.eps^(1 / (plan$r_val[k] + accuracy))
-    } else h_rel
+    } else rel_step
     lapply(seq_len(p), function(j) {
       reach <- plan$r_reach[k, j]
       if (reach == 0L) return(NULL)

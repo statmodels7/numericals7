@@ -38,21 +38,21 @@ test_that("a polynomial within the stencils' degree is reproduced exactly", {
   exact <- list(
     u_u_u = 24 * u * v^3 - 18, u_u_v = 36 * u^2 * v^2 + 4,
     u_v_v = 24 * u^3 * v, v_v_v = 6 * u^4 + 24 * v)
-  got <- fd_tensor(P, x, order = 3, accuracy = 4, h_rel = 0.5)
+  got <- fd_tensor(P, x, order = 3, accuracy = 4, rel_step = 0.5)
   for (nm in names(exact)) expect_equal(got[[nm]], exact[[nm]], tolerance = 1e-10)
   exact5 <- list(u_u_u_u_u = 0 * u, u_u_u_u_v = 72 * v^2,
                  u_u_u_v_v = 144 * u * v, u_u_v_v_v = 72 * u^2,
                  u_v_v_v_v = 0 * u, v_v_v_v_v = 0 * u)
-  got <- fd_tensor(P, x, order = 5, accuracy = 4, h_rel = 0.5)
+  got <- fd_tensor(P, x, order = 5, accuracy = 4, rel_step = 0.5)
   for (nm in names(exact5)) {
     expect_equal(got[[nm]], exact5[[nm]], tolerance = 1e-9)
   }
   # at accuracy 2 a first difference is exact to degree two
   Q <- function(x) x$u^2 * x$v^2 + 3 * x$u * x$v^2 - x$u^2 * x$v
-  got <- fd_tensor(Q, x, order = 3, accuracy = 2, h_rel = 0.5)
+  got <- fd_tensor(Q, x, order = 3, accuracy = 2, rel_step = 0.5)
   expect_equal(got$u_u_v, 4 * v - 2, tolerance = 1e-10)
   expect_equal(got$u_v_v, 4 * u + 6, tolerance = 1e-10)
-  got <- fd_tensor(Q, x, order = 4, accuracy = 2, h_rel = 0.5)
+  got <- fd_tensor(Q, x, order = 4, accuracy = 2, rel_step = 0.5)
   expect_equal(got$u_u_v_v, 4 + 0 * u, tolerance = 1e-10)
 })
 

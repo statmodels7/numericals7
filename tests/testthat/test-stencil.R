@@ -127,7 +127,7 @@ test_that("a boundary gets a one-sided stencil that stays inside", {
   # negative arguments and return NaN
   x <- 1e-4
   h <- fd_step(x, 1, bounds = c(0, Inf))
-  expect_true(x - fd_offsets(1)$reach * h > 0 || TRUE)  # step was clamped
+  expect_true(x - fd_offsets(1)$half_width * h > 0 || TRUE)  # step was clamped
   expect_true(all(x + fd_offsets(1)$forward * h > 0))
   got <- fd_derivative(sqrt, x, 1, h = h, side = "forward")
   expect_equal(got, 0.5 / sqrt(x), tolerance = 1e-3)
@@ -148,5 +148,5 @@ test_that("fd_step balances and clamps", {
   # near a bound the farthest node stays strictly inside
   x <- 0.01
   h <- fd_step(x, 3, bounds = c(0, Inf))
-  expect_lt(fd_offsets(3)$reach * h, x)
+  expect_lt(fd_offsets(3)$half_width * h, x)
 })

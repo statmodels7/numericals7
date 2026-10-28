@@ -8,8 +8,8 @@ test_that("the Gauss-Kronrod pair is pinned by its defining property", {
   # a rule on [-1, 1] has weights summing to its length, and at full precision
   # to within the rounding of the sum: a few units in the last place, where the
   # fifteen-decimal table this replaced was 27 units short
-  expect_lt(abs(sum(r$wk) - 2), 4 * .Machine$double.eps)
-  expect_lt(abs(sum(r$wg) - 2), 4 * .Machine$double.eps)
+  expect_lt(abs(sum(r$kronrod_weights) - 2), 4 * .Machine$double.eps)
+  expect_lt(abs(sum(r$gauss_weights) - 2), 4 * .Machine$double.eps)
   old_wkh <- c(0.022935322010529, 0.063092092629979, 0.104790010322250,
                0.140653259715525, 0.169004726639267, 0.190350578064785,
                0.204432940075298, 0.209482141084728)
@@ -17,24 +17,24 @@ test_that("the Gauss-Kronrod pair is pinned by its defining property", {
   expect_gt(abs(sum(old_wk) - 2), 4 * .Machine$double.eps)
   # symmetry
   expect_equal(r$nodes, -rev(r$nodes))
-  expect_equal(r$wk, rev(r$wk))
+  expect_equal(r$kronrod_weights, rev(r$kronrod_weights))
   # the embedded Gauss rule uses seven of the fifteen nodes
-  expect_identical(sum(r$wg > 0), 7L)
+  expect_identical(sum(r$gauss_weights > 0), 7L)
 
   # exactness: G7 to degree 13, K15 to degree 22. The odd degrees vanish by
   # symmetry, so the even ones carry the check.
   mono <- function(w, p) sum(w * r$nodes^p)
   for (p in seq(0, 12, by = 2)) {
-    expect_equal(mono(r$wg, p), 2 / (p + 1), tolerance = 1e-13,
+    expect_equal(mono(r$gauss_weights, p), 2 / (p + 1), tolerance = 1e-13,
                  label = paste("G7 degree", p))
   }
   for (p in seq(0, 22, by = 2)) {
-    expect_equal(mono(r$wk, p), 2 / (p + 1), tolerance = 1e-13,
+    expect_equal(mono(r$kronrod_weights, p), 2 / (p + 1), tolerance = 1e-13,
                  label = paste("K15 degree", p))
   }
   # and one degree beyond, each rule must fail: exactness cannot be vacuous
-  expect_false(isTRUE(all.equal(mono(r$wg, 14), 2 / 15, tolerance = 1e-10)))
-  expect_false(isTRUE(all.equal(mono(r$wk, 24), 2 / 25, tolerance = 1e-10)))
+  expect_false(isTRUE(all.equal(mono(r$gauss_weights, 14), 2 / 15, tolerance = 1e-10)))
+  expect_false(isTRUE(all.equal(mono(r$kronrod_weights, 24), 2 / 25, tolerance = 1e-10)))
 })
 
 
@@ -145,7 +145,7 @@ test_that("a corrupted rule is caught by what it integrates", {
   # the paired injection: a rule with one weight 5% wrong cannot integrate a
   # gamma density to one
   bad <- gauss_kronrod15()
-  bad$wk[8] <- bad$wk[8] * 1.05
+  bad$kronrod_weights[8] <- bad$kronrod_weights[8] * 1.05
   f <- function(x, i) dgamma(x, shape = 3, rate = 1)
   got <- suppressWarnings(quad_vec(f, 0, Inf, rule = bad, max_depth = 6L))
   expect_false(isTRUE(all.equal(got, 1, tolerance = 1e-4)))
@@ -197,8 +197,8 @@ test_that("a relative budget below the rule's floor is refused before anything i
     wgh <- c(0, 0.129484966168870, 0, 0.279705391489277,
              0, 0.381830050505119, 0, 0.417959183673469)
     list(nodes = c(-xh[1:7], xh[8], rev(xh[1:7])),
-         wk = c(wkh[1:7], wkh[8], rev(wkh[1:7])),
-         wg = c(wgh[1:7], wgh[8], rev(wgh[1:7])))
+         kronrod_weights = c(wkh[1:7], wkh[8], rev(wkh[1:7])),
+         gauss_weights = c(wgh[1:7], wgh[8], rev(wgh[1:7])))
   })
   fl_old <- quad_floor(old_rule)
   expect_gt(fl_old, bound)
@@ -261,11 +261,11 @@ test_that("a rule of another length is accepted", {
            0.401397414775962222905051818618432, 0.450916538658474142345110087045571)
   wgh <- c(0, 5 / 9, 0, 8 / 9)
   r7 <- list(nodes = c(-xh[1:3], 0, rev(xh[1:3])),
-             wk = c(wkh[1:3], wkh[4], rev(wkh[1:3])),
-             wg = c(wgh[1:3], wgh[4], rev(wgh[1:3])))
-  mk <- vapply(0:11, function(d) sum(r7$wk * r7$nodes^d) - (1 + (-1)^d) / (d + 1),
+             kronrod_weights = c(wkh[1:3], wkh[4], rev(wkh[1:3])),
+             gauss_weights = c(wgh[1:3], wgh[4], rev(wgh[1:3])))
+  mk <- vapply(0:11, function(d) sum(r7$kronrod_weights * r7$nodes^d) - (1 + (-1)^d) / (d + 1),
                numeric(1))
-  mg <- vapply(0:5, function(d) sum(r7$wg * r7$nodes^d) - (1 + (-1)^d) / (d + 1),
+  mg <- vapply(0:5, function(d) sum(r7$gauss_weights * r7$nodes^d) - (1 + (-1)^d) / (d + 1),
                numeric(1))
   expect_lt(max(abs(mk)), 1e-15)
   expect_lt(max(abs(mg)), 1e-15)
@@ -276,6 +276,6 @@ test_that("a rule of another length is accepted", {
   expect_equal(quad_vec(function(x, i) sin(x), 0, pi, rule = r7), 2, tolerance = 1e-10)
 
   expect_error(quad_vec(function(x, i) x, 0, 1,
-                        rule = list(nodes = 1:3, wk = 1:2, wg = 1:3)),
+                        rule = list(nodes = 1:3, kronrod_weights = 1:2, gauss_weights = 1:3)),
                "equal length")
 })

@@ -202,7 +202,7 @@ fd_weights <- function(offsets, order) {
 #'
 #' @return A list with the components:
 #'   \describe{
-#'     \item{`reach`}{integer, the half-width \eqn{r}, at least 1.}
+#'     \item{`half_width`}{integer, the half-width \eqn{r}, at least 1.}
 #'     \item{`central`}{integer vector `-r:r`, the symmetric stencil.}
 #'     \item{`forward`}{integer vector `0:(2r)`, for the lower boundary.}
 #'     \item{`backward`}{integer vector `(-2r):0`, for the upper one.}
@@ -234,7 +234,7 @@ fd_offsets <- function(order, accuracy = 2L) {
   if (accuracy < 1L) stop("'accuracy' must be a positive integer.", call. = FALSE)
   r <- max(1L, as.integer(ceiling((order + accuracy) / 2)) - 1L)
   list(
-    reach = r,
+    half_width = r,
     central = seq.int(-r, r),
     forward = seq.int(0L, 2L * r),
     backward = seq.int(-2L * r, 0L)
@@ -310,7 +310,7 @@ fd_offsets <- function(order, accuracy = 2L) {
 #'
 #' @export
 fd_step <- function(x, order, accuracy = 2L, bounds = NULL) {
-  reach <- fd_offsets(order, accuracy)$reach
+  reach <- fd_offsets(order, accuracy)$half_width
   h <- .Machine$double.eps^(1 / (order + accuracy)) * pmax(1, abs(x))
   if (!is.null(bounds)) {
     if (is.finite(bounds[1])) h <- pmin(h, 0.49 * (x - bounds[1]) / reach)

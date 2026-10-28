@@ -11,8 +11,8 @@ A list of three numeric vectors, each of length 15:
 \describe{
 \item{\code{nodes}}{the abscissae on \eqn{[-1, 1]}, ascending and symmetric
 about zero.}
-\item{\code{wk}}{the Kronrod weights, all positive.}
-\item{\code{wg}}{the embedded Gauss weights, zero at the eight
+\item{\code{kronrod_weights}}{the Kronrod weights, all positive.}
+\item{\code{gauss_weights}}{the embedded Gauss weights, zero at the eight
 Kronrod-only nodes.}
 }
 }
@@ -45,17 +45,17 @@ and pin the two sums to a few units in the last place.
 r <- gauss_kronrod15()
 
 # The weights of a rule sum to the length of its interval.
-c(kronrod = sum(r$wk), gauss = sum(r$wg))
+c(kronrod = sum(r$kronrod_weights), gauss = sum(r$gauss_weights))
 
 # The Gauss rule uses seven of the fifteen nodes (the other eight carry a
 # Gauss weight of zero), so both rules come from one set of function values.
-sum(r$wg == 0)
+sum(r$gauss_weights == 0)
 
 # Its defining property is that it is exact on polynomials to degree 13.
 p <- function(x, d) x^d
 vapply(c(13, 14), function(d) {
   exact <- if (d \%\% 2 == 0) 2 / (d + 1) else 0
-  sum(r$wg * p(r$nodes, d)) - exact
+  sum(r$gauss_weights * p(r$nodes, d)) - exact
 }, numeric(1))
 
 }

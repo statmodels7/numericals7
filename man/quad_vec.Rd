@@ -44,7 +44,7 @@ interval, which needs between 2048 and 4096 panels. The count is per row,
 so a row's result does not depend on the other rows of the call.}
 
 \item{rule}{The embedded quadrature pair, \code{\link[=gauss_kronrod15]{gauss_kronrod15()}} by default: a
-list of \code{nodes} on \eqn{[-1, 1]} and the weights \code{wk} and \code{wg} of the two
+list of \code{nodes} on \eqn{[-1, 1]} and the weights \code{kronrod_weights} and \code{gauss_weights} of the two
 rules at those nodes, three numeric vectors of equal length.}
 }
 \value{

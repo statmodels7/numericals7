@@ -12,7 +12,7 @@ fd_tensor(
   known = list(),
   bounds = NULL,
   accuracy = 4L,
-  h_rel = NULL
+  rel_step = NULL
 )
 }
 \arguments{
@@ -42,7 +42,7 @@ positive even whole number. The default, 4, makes the truncation error
 of order \eqn{h^4}; 2 uses fewer nodes in each direction, and the number
 of evaluations falls by a factor of two to four.}
 
-\item{h_rel}{\code{NULL} for the step above, or a single positive number that
+\item{rel_step}{\code{NULL} for the step above, or a single positive number that
 replaces \eqn{\varepsilon^{1/(r + a)}}.}
 }
 \value{
@@ -92,7 +92,7 @@ nonzero weight. A node shared by several components is evaluated once.
 A component of residual order \eqn{r} uses, in direction \eqn{j}, the step
 \eqn{h_j = \varepsilon^{1/(r + a)}\max(1, |x_j|)}, with \eqn{a} the
 accuracy: rounding grows as \eqn{\varepsilon / h^r} and the truncation as
-\eqn{h^a}, and the two balance there. \code{h_rel} replaces
+\eqn{h^a}, and the two balance there. \code{rel_step} replaces
 \eqn{\varepsilon^{1/(r + a)}}. Where \code{bounds} gives a finite bound, the
 step is reduced to \eqn{0.49\,d / R_j}, with \eqn{d} the distance to the
 bound and \eqn{R_j} the largest offset that the stencils of that residual

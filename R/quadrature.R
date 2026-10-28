@@ -39,8 +39,8 @@ NULL
 #'   \describe{
 #'     \item{`nodes`}{the abscissae on \eqn{[-1, 1]}, ascending and symmetric
 #'       about zero.}
-#'     \item{`wk`}{the Kronrod weights, all positive.}
-#'     \item{`wg`}{the embedded Gauss weights, zero at the eight
+#'     \item{`kronrod_weights`}{the Kronrod weights, all positive.}
+#'     \item{`gauss_weights`}{the embedded Gauss weights, zero at the eight
 #'       Kronrod-only nodes.}
 #'   }
 #'
@@ -58,17 +58,17 @@ NULL
 #' r <- gauss_kronrod15()
 #'
 #' # The weights of a rule sum to the length of its interval.
-#' c(kronrod = sum(r$wk), gauss = sum(r$wg))
+#' c(kronrod = sum(r$kronrod_weights), gauss = sum(r$gauss_weights))
 #'
 #' # The Gauss rule uses seven of the fifteen nodes (the other eight carry a
 #' # Gauss weight of zero), so both rules come from one set of function values.
-#' sum(r$wg == 0)
+#' sum(r$gauss_weights == 0)
 #'
 #' # Its defining property is that it is exact on polynomials to degree 13.
 #' p <- function(x, d) x^d
 #' vapply(c(13, 14), function(d) {
 #'   exact <- if (d %% 2 == 0) 2 / (d + 1) else 0
-#'   sum(r$wg * p(r$nodes, d)) - exact
+#'   sum(r$gauss_weights * p(r$nodes, d)) - exact
 #' }, numeric(1))
 #'
 #' @export
@@ -88,8 +88,8 @@ gauss_kronrod15 <- function() {
            0, 0.417959183673469387755102040816327)
   list(
     nodes = c(-xh[1:7], xh[8], rev(xh[1:7])),
-    wk = c(wkh[1:7], wkh[8], rev(wkh[1:7])),
-    wg = c(wgh[1:7], wgh[8], rev(wgh[1:7]))
+    kronrod_weights = c(wkh[1:7], wkh[8], rev(wkh[1:7])),
+    gauss_weights = c(wgh[1:7], wgh[8], rev(wgh[1:7]))
   )
 }
 
@@ -197,7 +197,7 @@ gauss_kronrod15 <- function() {
 #'   interval, which needs between 2048 and 4096 panels. The count is per row,
 #'   so a row's result does not depend on the other rows of the call.
 #' @param rule The embedded quadrature pair, [gauss_kronrod15()] by default: a
-#'   list of `nodes` on \eqn{[-1, 1]} and the weights `wk` and `wg` of the two
+#'   list of `nodes` on \eqn{[-1, 1]} and the weights `kronrod_weights` and `gauss_weights` of the two
 #'   rules at those nodes, three numeric vectors of equal length.
 #'
 #' @return A numeric vector of integrals, one per row, of the recycled length of
@@ -248,8 +248,8 @@ quad_vec <- function(f, lower, upper, atol = 1e-10, rtol = 1e-8,
   # with no absolute budget to stop at instead the row would refine until it
   # met the cap. It is refused here, before the integrand is evaluated.
   m <- length(rule$nodes)
-  if (!m || length(rule$wk) != m || length(rule$wg) != m) {
-    stop("'rule' must be a list of 'nodes', 'wk' and 'wg' of equal length.",
+  if (!m || length(rule$kronrod_weights) != m || length(rule$gauss_weights) != m) {
+    stop("'rule' must be a list of 'nodes', 'kronrod_weights' and 'gauss_weights' of equal length.",
          call. = FALSE)
   }
   fl <- quad_floor(rule)
@@ -307,8 +307,8 @@ quad_vec <- function(f, lower, upper, atol = 1e-10, rtol = 1e-8,
     }
     Fv <- f(X, orig)
     Fm <- matrix(as.numeric(Fv), nrow(Tm), m) * J
-    K <- half * as.numeric(Fm %*% rule$wk)
-    G <- half * as.numeric(Fm %*% rule$wg)
+    K <- half * as.numeric(Fm %*% rule$kronrod_weights)
+    G <- half * as.numeric(Fm %*% rule$gauss_weights)
     list(K = K, err = abs(K - G))
   }
 
@@ -455,7 +455,7 @@ quad_vec <- function(f, lower, upper, atol = 1e-10, rtol = 1e-8,
 #' for macOS. With the Kronrod weights rounded to fifteen decimals it would be
 #' \eqn{3.7 \times 10^{-15}}.
 #'
-#' @param rule An embedded pair: a list of `nodes`, `wk` and `wg` of equal
+#' @param rule An embedded pair: a list of `nodes`, `kronrod_weights` and `gauss_weights` of equal
 #'   length, as [gauss_kronrod15()] returns.
 #'
 #' @return A single positive number.
@@ -464,5 +464,5 @@ quad_vec <- function(f, lower, upper, atol = 1e-10, rtol = 1e-8,
 #'
 #' @keywords internal
 quad_floor <- function(rule) {
-  abs(sum(rule$wk) - sum(rule$wg)) / 2 + .Machine$double.eps
+  abs(sum(rule$kronrod_weights) - sum(rule$gauss_weights)) / 2 + .Machine$double.eps
 }

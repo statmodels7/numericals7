@@ -7,7 +7,7 @@
 quad_floor(rule)
 }
 \arguments{
-\item{rule}{An embedded pair: a list of \code{nodes}, \code{wk} and \code{wg} of equal
+\item{rule}{An embedded pair: a list of \code{nodes}, \code{kronrod_weights} and \code{gauss_weights} of equal
 length, as \code{\link[=gauss_kronrod15]{gauss_kronrod15()}} returns.}
 }
 \value{

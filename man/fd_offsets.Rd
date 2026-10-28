@@ -18,7 +18,7 @@ accuracy describes the treatment of an odd value.}
 \value{
 A list with the components:
 \describe{
-\item{\code{reach}}{integer, the half-width \eqn{r}, at least 1.}
+\item{\code{half_width}}{integer, the half-width \eqn{r}, at least 1.}
 \item{\code{central}}{integer vector \code{-r:r}, the symmetric stencil.}
 \item{\code{forward}}{integer vector \verb{0:(2r)}, for the lower boundary.}
 \item{\code{backward}}{integer vector \verb{(-2r):0}, for the upper one.}
