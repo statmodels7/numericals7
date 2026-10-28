@@ -17,7 +17,7 @@ of a difference."><meta property="og:image" content="https://statmodels7.github.
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.24.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.25.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,7 +62,7 @@ of a difference.</p>
 <span>  known <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  bounds <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  accuracy <span class="op">=</span> <span class="fl">4L</span>,</span>
-<span>  h_rel <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  rel_step <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -110,7 +110,7 @@ of order \(h^4\); 2 uses fewer nodes in each direction, and the number
 of evaluations falls by a factor of two to four.</p></dd>
 
 
-<dt id="arg-h-rel">h_rel<a class="anchor" aria-label="anchor" href="#arg-h-rel"></a></dt>
+<dt id="arg-rel-step">rel_step<a class="anchor" aria-label="anchor" href="#arg-rel-step"></a></dt>
 <dd><p><code>NULL</code> for the step above, or a single positive number that
 replaces \(\varepsilon^{1/(r + a)}\).</p></dd>
 
@@ -156,7 +156,7 @@ nonzero weight. A node shared by several components is evaluated once.</p>
     <p>A component of residual order \(r\) uses, in direction \(j\), the step
 \(h_j = \varepsilon^{1/(r + a)}\max(1, |x_j|)\), with \(a\) the
 accuracy: rounding grows as \(\varepsilon / h^r\) and the truncation as
-\(h^a\), and the two balance there. <code>h_rel</code> replaces
+\(h^a\), and the two balance there. <code>rel_step</code> replaces
 \(\varepsilon^{1/(r + a)}\). Where <code>bounds</code> gives a finite bound, the
 step is reduced to \(0.49\,d / R_j\), with \(d\) the distance to the
 bound and \(R_j\) the largest offset that the stencils of that residual

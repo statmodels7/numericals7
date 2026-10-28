@@ -20,7 +20,7 @@ fd_tensor(
   known = list(),
   bounds = NULL,
   accuracy = 4L,
-  h_rel = NULL
+  rel_step = NULL
 )
 ```
 
@@ -69,7 +69,7 @@ fd_tensor(
   \\h^4\\; 2 uses fewer nodes in each direction, and the number of
   evaluations falls by a factor of two to four.
 
-- h_rel:
+- rel_step:
 
   `NULL` for the step above, or a single positive number that replaces
   \\\varepsilon^{1/(r + a)}\\.
@@ -115,7 +115,7 @@ components is evaluated once.
 A component of residual order \\r\\ uses, in direction \\j\\, the step
 \\h_j = \varepsilon^{1/(r + a)}\max(1, \|x_j\|)\\, with \\a\\ the
 accuracy: rounding grows as \\\varepsilon / h^r\\ and the truncation as
-\\h^a\\, and the two balance there. `h_rel` replaces
+\\h^a\\, and the two balance there. `rel_step` replaces
 \\\varepsilon^{1/(r + a)}\\. Where `bounds` gives a finite bound, the
 step is reduced to \\0.49\\d / R_j\\, with \\d\\ the distance to the
 bound and \\R_j\\ the largest offset that the stencils of that residual

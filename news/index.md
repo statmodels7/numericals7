@@ -1,5 +1,17 @@
 # Changelog
 
+## numericals7 0.25.0
+
+- Renamed for readability: the argument `h_rel` of
+  [`fd_tensor()`](https://statmodels7.github.io/numericals7/reference/fd_tensor.md)
+  is `rel_step`; the elements `wk` and `wg` of
+  [`gauss_kronrod15()`](https://statmodels7.github.io/numericals7/reference/gauss_kronrod15.md)
+  are `kronrod_weights` and `gauss_weights`, and
+  [`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)
+  reads them under these names; the element `reach` of
+  [`fd_offsets()`](https://statmodels7.github.io/numericals7/reference/fd_offsets.md)
+  is `half_width`.
+
 ## numericals7 0.24.0
 
 - [`log_bessel_i()`](https://statmodels7.github.io/numericals7/reference/log_bessel_i.md)

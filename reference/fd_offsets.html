@@ -15,7 +15,7 @@ fd_derivative() to apply the whole thing."><meta property="og:image" content="ht
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.24.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.25.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,7 +72,7 @@ accuracy describes the treatment of an odd value.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A list with the components:</p><dl><dt><code>reach</code></dt>
+    <p>A list with the components:</p><dl><dt><code>half_width</code></dt>
 <dd><p>integer, the half-width \(r\), at least 1.</p></dd>
 
 <dt><code>central</code></dt>
@@ -131,10 +131,10 @@ step to pair with them, <code><a href="fd_derivative.html">fd_derivative()</a></
 <span class="r-in"><span><span class="co"># The one-sided sets are the same size, so a boundary costs no more.</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="fu">fd_offsets</span><span class="op">(</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> List of 4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ reach   : int 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ central : int [1:3] -1 0 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ forward : int [1:3] 0 1 2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  $ backward: int [1:3] -2 -1 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ half_width: int 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ central   : int [1:3] -1 0 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ forward   : int [1:3] 0 1 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ backward  : int [1:3] -2 -1 0</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Accuracy must be positive.</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span><span class="fu">fd_offsets</span><span class="op">(</span><span class="fl">2</span>, accuracy <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span></span>

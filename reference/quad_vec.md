@@ -66,9 +66,9 @@ quad_vec(
 
   The embedded quadrature pair,
   [`gauss_kronrod15()`](https://statmodels7.github.io/numericals7/reference/gauss_kronrod15.md)
-  by default: a list of `nodes` on \\\[-1, 1\]\\ and the weights `wk`
-  and `wg` of the two rules at those nodes, three numeric vectors of
-  equal length.
+  by default: a list of `nodes` on \\\[-1, 1\]\\ and the weights
+  `kronrod_weights` and `gauss_weights` of the two rules at those nodes,
+  three numeric vectors of equal length.
 
 ## Value
 

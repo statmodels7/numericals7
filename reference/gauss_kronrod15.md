@@ -22,11 +22,11 @@ A list of three numeric vectors, each of length 15:
 
   the abscissae on \\\[-1, 1\]\\, ascending and symmetric about zero.
 
-- `wk`:
+- `kronrod_weights`:
 
   the Kronrod weights, all positive.
 
-- `wg`:
+- `gauss_weights`:
 
   the embedded Gauss weights, zero at the eight Kronrod-only nodes.
 
@@ -67,20 +67,20 @@ which integrates with this pair by default.
 r <- gauss_kronrod15()
 
 # The weights of a rule sum to the length of its interval.
-c(kronrod = sum(r$wk), gauss = sum(r$wg))
+c(kronrod = sum(r$kronrod_weights), gauss = sum(r$gauss_weights))
 #> kronrod   gauss 
 #>       2       2 
 
 # The Gauss rule uses seven of the fifteen nodes (the other eight carry a
 # Gauss weight of zero), so both rules come from one set of function values.
-sum(r$wg == 0)
+sum(r$gauss_weights == 0)
 #> [1] 8
 
 # Its defining property is that it is exact on polynomials to degree 13.
 p <- function(x, d) x^d
 vapply(c(13, 14), function(d) {
   exact <- if (d %% 2 == 0) 2 / (d + 1) else 0
-  sum(r$wg * p(r$nodes, d)) - exact
+  sum(r$gauss_weights * p(r$nodes, d)) - exact
 }, numeric(1))
 #> [1]  0.0000000000 -0.0001854659
 ```

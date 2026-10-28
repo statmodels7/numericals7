@@ -17,7 +17,7 @@ error requires no evaluations of the integrand beyond those of the estimate."><m
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.24.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.25.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -63,10 +63,10 @@ error requires no evaluations of the integrand beyond those of the estimate.</p>
 <dd><p>the abscissae on \([-1, 1]\), ascending and symmetric
 about zero.</p></dd>
 
-<dt><code>wk</code></dt>
+<dt><code>kronrod_weights</code></dt>
 <dd><p>the Kronrod weights, all positive.</p></dd>
 
-<dt><code>wg</code></dt>
+<dt><code>gauss_weights</code></dt>
 <dd><p>the embedded Gauss weights, zero at the eight
 Kronrod-only nodes.</p></dd>
 
@@ -107,20 +107,20 @@ Springer.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">r</span> <span class="op">&lt;-</span> <span class="fu">gauss_kronrod15</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># The weights of a rule sum to the length of its interval.</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>kronrod <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">r</span><span class="op">$</span><span class="va">wk</span><span class="op">)</span>, gauss <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">r</span><span class="op">$</span><span class="va">wg</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>kronrod <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">r</span><span class="op">$</span><span class="va">kronrod_weights</span><span class="op">)</span>, gauss <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">r</span><span class="op">$</span><span class="va">gauss_weights</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> kronrod   gauss </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       2       2 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># The Gauss rule uses seven of the fifteen nodes (the other eight carry a</span></span></span>
 <span class="r-in"><span><span class="co"># Gauss weight of zero), so both rules come from one set of function values.</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">r</span><span class="op">$</span><span class="va">wg</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">r</span><span class="op">$</span><span class="va">gauss_weights</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 8</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Its defining property is that it is exact on polynomials to degree 13.</span></span></span>
 <span class="r-in"><span><span class="va">p</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">d</span><span class="op">)</span> <span class="va">x</span><span class="op">^</span><span class="va">d</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">13</span>, <span class="fl">14</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">d</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="va">exact</span> <span class="op">&lt;-</span> <span class="kw">if</span> <span class="op">(</span><span class="va">d</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html" class="external-link">%%</a></span> <span class="fl">2</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="fl">2</span> <span class="op">/</span> <span class="op">(</span><span class="va">d</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span> <span class="kw">else</span> <span class="fl">0</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">r</span><span class="op">$</span><span class="va">wg</span> <span class="op">*</span> <span class="fu">p</span><span class="op">(</span><span class="va">r</span><span class="op">$</span><span class="va">nodes</span>, <span class="va">d</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="va">exact</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span><span class="va">r</span><span class="op">$</span><span class="va">gauss_weights</span> <span class="op">*</span> <span class="fu">p</span><span class="op">(</span><span class="va">r</span><span class="op">$</span><span class="va">nodes</span>, <span class="va">d</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="va">exact</span></span></span>
 <span class="r-in"><span><span class="op">}</span>, <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1]  0.0000000000 -0.0001854659</span>
 <span class="r-in"><span></span></span>

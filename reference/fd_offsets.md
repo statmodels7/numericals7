@@ -34,7 +34,7 @@ fd_offsets(order, accuracy = 2L)
 
 A list with the components:
 
-- `reach`:
+- `half_width`:
 
   integer, the half-width \\r\\, at least 1.
 
@@ -112,10 +112,10 @@ fd_offsets(1, accuracy = 4)$central
 # The one-sided sets are the same size, so a boundary costs no more.
 str(fd_offsets(2))
 #> List of 4
-#>  $ reach   : int 1
-#>  $ central : int [1:3] -1 0 1
-#>  $ forward : int [1:3] 0 1 2
-#>  $ backward: int [1:3] -2 -1 0
+#>  $ half_width: int 1
+#>  $ central   : int [1:3] -1 0 1
+#>  $ forward   : int [1:3] 0 1 2
+#>  $ backward  : int [1:3] -2 -1 0
 
 # Accuracy must be positive.
 try(fd_offsets(2, accuracy = 0))

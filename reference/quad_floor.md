@@ -18,7 +18,8 @@ quad_floor(rule)
 
 - rule:
 
-  An embedded pair: a list of `nodes`, `wk` and `wg` of equal length, as
+  An embedded pair: a list of `nodes`, `kronrod_weights` and
+  `gauss_weights` of equal length, as
   [`gauss_kronrod15()`](https://statmodels7.github.io/numericals7/reference/gauss_kronrod15.md)
   returns.
 
