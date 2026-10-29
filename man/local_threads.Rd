@@ -2,13 +2,17 @@
 % Please edit documentation in R/threads.R
 \name{local_threads}
 \alias{local_threads}
-\title{Apply a Thread Policy for the Duration of One Fit}
+\title{Apply a Thread Count for the Duration of One Fit}
 \usage{
-local_threads(x, frame = parent.frame())
+local_threads(threads = 1, frame = parent.frame())
 }
 \arguments{
-\item{x}{An object returned by \code{\link[=n_threads]{n_threads()}}. Any other value signals an
-error through \code{\link[=thread_count]{thread_count()}}.}
+\item{threads}{A single whole number, at least 1, and the default is \code{1}.
+The count is passed to the compiled kernels unchanged, and a kernel still
+runs sequentially on an input below its internal threshold. Any other
+value signals an error: a value below 1, a fractional value, \code{Inf}, \code{NA},
+a character string and a vector of length other than one are all rejected
+with the same message.}
 
 \item{frame}{The environment whose exit restores the previous setting,
 defaulting to the caller's. Pass an outer frame to hold the setting for
@@ -18,31 +22,77 @@ longer than one call.}
 The thread count, invisibly: a single integer, at least 1.
 }
 \description{
-Sets \pkg{RcppParallel}'s thread count to the policy's for the calling
-frame's lifetime and restores the previous process state when that frame
-exits. An entry point calls it once at the start of a fit; the count itself
-still travels
-to each kernel as an argument, and this call only sizes the worker pool from
-which the parallel regions draw.
+Validates a \code{threads} argument and sets \pkg{RcppParallel}'s thread count to
+it for the calling frame's lifetime, restoring the previous process state
+when that frame exits. An entry point such as \code{statmodels7::statmod()} or
+\code{distributions7::fit_distrib()} calls it once at the start of a fit; the count
+itself still travels to each kernel as an argument, and this call only sizes
+the worker pool from which the parallel regions draw.
 }
-\details{
+\section{Threads and cores}{
+\code{threads} is multithreading inside one R process: the compiled
+per-observation kernels and the dense assembly products run on several
+threads that share memory. It is distinct from \code{cores}, the argument of the
+functions that distribute independent fits over separate R processes (the
+folds of a cross-validation, the replicates of a bootstrap, the starts of
+\code{optimizers7::multistart()}). The two counts are independent, except that
+a fit running inside a separate R process is sequential by construction, so
+\code{cores = 4} opens up to four processes and each of them fits on one thread;
+it never opens \code{4 * threads} of them.
+}
+
+\section{Results independent of the thread count}{
+Every parallel region in the toolkit decomposes its work over the elements
+of its output. Each accumulated value is therefore summed in full by one
+thread, reductions are never split across threads, and a kernel returns the
+same bits at any count.
+
+This holds because of two properties of the drivers, and not of the
+kernels. A worker installs the calling thread's floating-point
+environment before running its chunk, because without it some of the
+platform's own math routines (among them R's \code{psigamma} at higher orders,
+\code{bessel_k}, and \code{pgamma} and \code{pbeta} on the log scale) can return results
+that differ in the last bits between threads. The sequential branch also
+runs through the same compiled function as the parallel one, so a compiler
+cannot optimize the two differently.
+
+The dense assembly products of \pkg{statmodels7} are an exception. There,
+a count above 1 replaces a BLAS expression by a threaded kernel, which is a
+second implementation of the same sum. Its result is bit-exact against the
+reference BLAS shipped with R, and agrees within the rounding of one dot
+product with an optimized BLAS such as OpenBLAS or Accelerate, which
+accumulates in its own order.
+
+The guarantee is a design constraint on any kernel added later.
+}
+
+\section{The sequential path}{
+At \code{threads = 1} the code enters no parallel region and leaves the
+process-level thread setting unchanged. The code taken is the sequential one,
+not a parallel path running on a single thread.
+
+Each kernel carries an internal threshold as well, measured where the cost of
+opening a parallel region overtakes its gain. Below it the kernel stays
+sequential regardless of the count.
+}
+
+\section{Restoration}{
 \code{RcppParallel::setThreadOptions()} writes a process-level variable, so a fit
 that set it and returned would leave it moved for whatever runs next. The
 restoration is therefore registered with \code{on.exit} in the caller's frame,
 which runs however the fit exits, also on an error.
-
-At a count of 1 the function changes nothing, so the sequential path does not
-touch the parallel machinery.
 }
+
 \examples{
 f <- function() {
-  local_threads(n_threads(2))
+  local_threads(2)
   Sys.getenv("RCPP_PARALLEL_NUM_THREADS")
 }
 f()                                     # "2" inside the frame
 Sys.getenv("RCPP_PARALLEL_NUM_THREADS", unset = "unset")   # restored
 
-}
-\seealso{
-\code{\link[=n_threads]{n_threads()}}, \code{\link[=thread_count]{thread_count()}}
+# A count must be a single whole number of at least one.
+try(local_threads(0))
+try(local_threads(2.5))
+
 }

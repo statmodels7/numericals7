@@ -12,9 +12,8 @@ log_bessel_i(x, nu, threads = 1L)
 
 \item{nu}{A numeric vector of non-negative orders.}
 
-\item{threads}{How many threads the kernel may use, a plain integer, as
-\code{\link[=thread_count]{thread_count()}} reads it off an \code{\link[=n_threads]{n_threads()}}
-policy. Every branch of the kernel is this package's own arithmetic, so
+\item{threads}{How many threads the kernel may use, a plain integer,
+as in \code{\link[=local_threads]{local_threads()}}. Every branch of the kernel is this package's own arithmetic, so
 element \eqn{i} is computed and written by one thread and the result is
 bit-identical at any count; below an internal threshold the sequential
 path is taken regardless of the count. \code{\link[=log_bessel_k]{log_bessel_k()}} takes

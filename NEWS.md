@@ -1,3 +1,13 @@
+# numericals7 0.26.0
+
+* `n_threads()`, `thread_count()` and `worker_count()` are removed. `threads` is
+  a whole number, validated by `local_threads(threads)`, which now takes the
+  count directly and returns it invisibly. The worker-process count leaves
+  numericals7: the number of separate R processes is the `cores` argument of
+  each function that distributes independent fits. The documentation of
+  `local_threads()` states the difference between `threads` (threads inside one
+  R process) and `cores` (separate R processes).
+
 # numericals7 0.25.0
 
 * Renamed for readability: the argument `h_rel` of `fd_tensor()` is

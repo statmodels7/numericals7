@@ -185,9 +185,8 @@ NULL
 #' @param x A numeric vector of non-negative arguments, recycled against
 #'   `nu`.
 #' @param nu A numeric vector of non-negative orders.
-#' @param threads How many threads the kernel may use, a plain integer, as
-#'   [thread_count()] reads it off an [n_threads()]
-#'   policy. Every branch of the kernel is this package's own arithmetic, so
+#' @param threads How many threads the kernel may use, a plain integer,
+#'   as in [local_threads()]. Every branch of the kernel is this package's own arithmetic, so
 #'   element \eqn{i} is computed and written by one thread and the result is
 #'   bit-identical at any count; below an internal threshold the sequential
 #'   path is taken regardless of the count. [log_bessel_k()] takes

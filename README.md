@@ -173,12 +173,13 @@ bessel_i_ratio(bessel_i_ratio_inverse(0.7))
 and `base::besselK()` from compiled code that never calls the R API, so
 the compiled kernels of the toolkit can call them from a worker thread.
 Each one is also available to C code through `R_GetCCallable()`.
-`n_threads()` builds the policy with which a fit such as
-`distributions7::fit_distrib()` or `statmodels7::statmod()` uses threads
-and worker processes. The default of one thread and one process takes
-the sequential code path, and the compiled kernels return the same
-values at any number of threads (`?n_threads` describes the one
-exception).
+The `threads` argument of a fit such as
+`distributions7::fit_distrib()` or `statmodels7::statmod()` sets the number
+of threads inside one R process, which `local_threads()` applies. The default
+of one thread takes the sequential code path, and the compiled kernels return
+the same values at any number of threads (`?local_threads` describes the one
+exception). The number of separate R processes is the `cores` argument of the
+functions that distribute independent fits.
 
 ``` r
 # The values are those of pt() and besselK().

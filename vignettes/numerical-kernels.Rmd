@@ -224,16 +224,21 @@ rowSums(compositions(3, 2))
 
 ## Threads
 
-`n_threads()` carries the thread policy of the whole toolkit. It is an object
-passed as an argument from `statmod()` and `fit_distrib()` down to the kernels,
-so a package never reads a setting that lives in another package. `local_threads()` sizes the
-RcppParallel worker pool for the duration of a fit and restores the previous
-setting on exit. The object lives at the root of the dependency graph because
-the packages holding the kernels cannot import the one at the top.
+The `threads` argument of `statmod()` and `fit_distrib()` is a whole number
+passed down to the kernels, so a package never reads a setting that lives in
+another package. `local_threads()` validates it and sizes the RcppParallel
+worker pool for the duration of a fit, restoring the previous setting on exit.
+It lives at the root of the dependency graph because the packages holding the
+kernels cannot import the one at the top. `threads` counts threads inside one
+R process; the number of separate R processes is the `cores` argument of the
+functions that distribute independent fits.
 
 ```{r}
-th <- n_threads(threads = 4, workers = 2)
-c(threads = thread_count(th), workers = worker_count(th))
+f <- function() {
+  local_threads(4)
+  Sys.getenv("RCPP_PARALLEL_NUM_THREADS")
+}
+f()
 ```
 
 The guarantee on its page is that a kernel's result does not depend on the count
@@ -267,5 +272,5 @@ the process.
   `log_bessel_k_derivs()`).
 * Enumerations: `set_partitions()`, `tuple_indices()` and `compositions()`,
   one copy each for the packages of the toolkit.
-* Threads: `n_threads()` is passed as an argument, and a kernel's answer is
+* Threads: `threads` is passed as an argument, and a kernel's answer is
   bit-identical at any count.

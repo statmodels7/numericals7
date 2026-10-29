@@ -69,9 +69,6 @@ reference:
     the fit entry points down to the compiled kernels. Each kernel returns the
     same bits at any thread count.
   contents:
-  - n_threads
-  - thread_count
-  - worker_count
   - local_threads
 
 - title: Special functions
