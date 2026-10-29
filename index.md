@@ -183,15 +183,15 @@ return the values of [`stats::pt()`](https://rdrr.io/r/stats/TDist.html)
 and [`base::besselK()`](https://rdrr.io/r/base/Bessel.html) from
 compiled code that never calls the R API, so the compiled kernels of the
 toolkit can call them from a worker thread. Each one is also available
-to C code through `R_GetCCallable()`.
-[`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
-builds the policy with which a fit such as
-`distributions7::fit_distrib()` or `statmodels7::statmod()` uses threads
-and worker processes. The default of one thread and one process takes
-the sequential code path, and the compiled kernels return the same
-values at any number of threads
-([`?n_threads`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
-describes the one exception).
+to C code through `R_GetCCallable()`. The `threads` argument of a fit
+such as `distributions7::fit_distrib()` or `statmodels7::statmod()` sets
+the number of threads inside one R process, which
+[`local_threads()`](https://statmodels7.github.io/numericals7/reference/local_threads.md)
+applies. The default of one thread takes the sequential code path, and
+the compiled kernels return the same values at any number of threads
+([`?local_threads`](https://statmodels7.github.io/numericals7/reference/local_threads.md)
+describes the one exception). The number of separate R processes is the
+`cores` argument of the functions that distribute independent fits.
 
 ``` r
 

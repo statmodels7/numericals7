@@ -70,5 +70,5 @@ log_bessel_i_derivs(2, 0.5)$d1 - (1 / tanh(2) - 1 / (2 * 2))
 # Elsewhere the derivative is compared with one stencil on the value itself.
 log_bessel_i_derivs(3, 2)$d1 -
   fd_derivative(function(z) log_bessel_i(z, 2), 3, 1, accuracy = 4)
-#> [1] -3.552714e-15
+#> [1] 2.153833e-14
 ```

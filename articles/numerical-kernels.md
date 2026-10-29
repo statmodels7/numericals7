@@ -28,7 +28,7 @@ solves it and returns the weights.
 fd_weights(-1:1, order = 1)     # the textbook central difference
 #> [1] -0.5  0.0  0.5
 fd_weights(-2:2, order = 1)     # five points, accurate two orders further
-#> [1]  0.08333333 -0.66666667  0.00000000  0.66666667 -0.08333333
+#> [1]  8.333333e-02 -6.666667e-01 -2.379049e-16  6.666667e-01 -8.333333e-02
 ```
 
 [`fd_derivative()`](https://statmodels7.github.io/numericals7/reference/fd_derivative.md)
@@ -43,7 +43,7 @@ d1 <- function(x) -x * exp(-x^2 / 2)          # the closed form, for comparison
 
 sapply(c(2, 4, 6), function(a)
   abs(fd_derivative(f, 0.7, order = 1, accuracy = a) - d1(0.7)))
-#> [1] 7.842615e-12 1.512124e-13 8.881784e-15
+#> [1] 7.842615e-12 7.616130e-14 3.108624e-15
 ```
 
 The step depends on the order $`k`$. The rounding error of a stencil for
@@ -283,22 +283,25 @@ rowSums(compositions(3, 2))
 
 ## Threads
 
-[`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
-carries the thread policy of the whole toolkit. It is an object passed
-as an argument from `statmod()` and `fit_distrib()` down to the kernels,
-so a package never reads a setting that lives in another package.
+The `threads` argument of `statmod()` and `fit_distrib()` is a whole
+number passed down to the kernels, so a package never reads a setting
+that lives in another package.
 [`local_threads()`](https://statmodels7.github.io/numericals7/reference/local_threads.md)
-sizes the RcppParallel worker pool for the duration of a fit and
-restores the previous setting on exit. The object lives at the root of
+validates it and sizes the RcppParallel worker pool for the duration of
+a fit, restoring the previous setting on exit. It lives at the root of
 the dependency graph because the packages holding the kernels cannot
-import the one at the top.
+import the one at the top. `threads` counts threads inside one R
+process; the number of separate R processes is the `cores` argument of
+the functions that distribute independent fits.
 
 ``` r
 
-th <- n_threads(threads = 4, workers = 2)
-c(threads = thread_count(th), workers = worker_count(th))
-#> threads workers 
-#>       4       2
+f <- function() {
+  local_threads(4)
+  Sys.getenv("RCPP_PARALLEL_NUM_THREADS")
+}
+f()
+#> [1] "4"
 ```
 
 The guarantee on its page is that a kernel’s result does not depend on
@@ -362,7 +365,5 @@ the process.
   and
   [`compositions()`](https://statmodels7.github.io/numericals7/reference/compositions.md),
   one copy each for the packages of the toolkit.
-- Threads:
-  [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
-  is passed as an argument, and a kernel’s answer is bit-identical at
-  any count.
+- Threads: `threads` is passed as an argument, and a kernel’s answer is
+  bit-identical at any count.

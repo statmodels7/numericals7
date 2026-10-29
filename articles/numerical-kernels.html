@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.25.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.26.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -89,7 +89,7 @@ allow. <code><a href="../reference/fd_weights.html">fd_weights()</a></code> solv
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/fd_weights.html">fd_weights</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">:</span><span class="fl">1</span>, order <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>     <span class="co"># the textbook central difference</span></span>
 <span><span class="co">#&gt; [1] -0.5  0.0  0.5</span></span>
 <span><span class="fu"><a href="../reference/fd_weights.html">fd_weights</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span><span class="op">:</span><span class="fl">2</span>, order <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>     <span class="co"># five points, accurate two orders further</span></span>
-<span><span class="co">#&gt; [1]  0.08333333 -0.66666667  0.00000000  0.66666667 -0.08333333</span></span></code></pre></div>
+<span><span class="co">#&gt; [1]  8.333333e-02 -6.666667e-01 -2.379049e-16  6.666667e-01 -8.333333e-02</span></span></code></pre></div>
 <p><code><a href="../reference/fd_derivative.html">fd_derivative()</a></code> applies one to a function.
 <code>accuracy</code> is the order of the truncation error, and a higher
 accuracy costs only more evaluations of the function:</p>
@@ -99,7 +99,7 @@ accuracy costs only more evaluations of the function:</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span>, <span class="fl">6</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">a</span><span class="op">)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="fu"><a href="../reference/fd_derivative.html">fd_derivative</a></span><span class="op">(</span><span class="va">f</span>, <span class="fl">0.7</span>, order <span class="op">=</span> <span class="fl">1</span>, accuracy <span class="op">=</span> <span class="va">a</span><span class="op">)</span> <span class="op">-</span> <span class="fu">d1</span><span class="op">(</span><span class="fl">0.7</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 7.842615e-12 1.512124e-13 8.881784e-15</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 7.842615e-12 7.616130e-14 3.108624e-15</span></span></code></pre></div>
 <p>The step depends on the order
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math>.
 The rounding error of a stencil for a derivative of order
@@ -321,19 +321,23 @@ non-negative parts, one per row:</p>
 <div class="section level2">
 <h2 id="threads">Threads<a class="anchor" aria-label="anchor" href="#threads"></a>
 </h2>
-<p><code><a href="../reference/n_threads.html">n_threads()</a></code> carries the thread policy of the whole
-toolkit. It is an object passed as an argument from
-<code>statmod()</code> and <code>fit_distrib()</code> down to the
-kernels, so a package never reads a setting that lives in another
-package. <code><a href="../reference/local_threads.html">local_threads()</a></code> sizes the RcppParallel worker pool
-for the duration of a fit and restores the previous setting on exit. The
-object lives at the root of the dependency graph because the packages
-holding the kernels cannot import the one at the top.</p>
+<p>The <code>threads</code> argument of <code>statmod()</code> and
+<code>fit_distrib()</code> is a whole number passed down to the kernels,
+so a package never reads a setting that lives in another package.
+<code><a href="../reference/local_threads.html">local_threads()</a></code> validates it and sizes the RcppParallel
+worker pool for the duration of a fit, restoring the previous setting on
+exit. It lives at the root of the dependency graph because the packages
+holding the kernels cannot import the one at the top.
+<code>threads</code> counts threads inside one R process; the number of
+separate R processes is the <code>cores</code> argument of the functions
+that distribute independent fits.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">th</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/n_threads.html">n_threads</a></span><span class="op">(</span>threads <span class="op">=</span> <span class="fl">4</span>, workers <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>threads <span class="op">=</span> <span class="fu"><a href="../reference/thread_count.html">thread_count</a></span><span class="op">(</span><span class="va">th</span><span class="op">)</span>, workers <span class="op">=</span> <span class="fu"><a href="../reference/worker_count.html">worker_count</a></span><span class="op">(</span><span class="va">th</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; threads workers </span></span>
-<span><span class="co">#&gt;       4       2</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="../reference/local_threads.html">local_threads</a></span><span class="op">(</span><span class="fl">4</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"RCPP_PARALLEL_NUM_THREADS"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu">f</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "4"</span></span></code></pre></div>
 <p>The guarantee on its page is that a kernel’s result does not depend
 on the count bit for bit:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
@@ -373,7 +377,7 @@ derivatives of the Bessel functions are separate functions
 <li>Enumerations: <code><a href="../reference/set_partitions.html">set_partitions()</a></code>,
 <code><a href="../reference/tuple_indices.html">tuple_indices()</a></code> and <code><a href="../reference/compositions.html">compositions()</a></code>, one copy
 each for the packages of the toolkit.</li>
-<li>Threads: <code><a href="../reference/n_threads.html">n_threads()</a></code> is passed as an argument, and a
+<li>Threads: <code>threads</code> is passed as an argument, and a
 kernel’s answer is bit-identical at any count.</li>
 </ul>
 </div>

@@ -52,15 +52,8 @@ The thread policy of the toolkit, one object passed as an argument from
 the fit entry points down to the compiled kernels. Each kernel returns
 the same bits at any thread count.
 
-- [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
-  [`print(`*`<n_threads>`*`)`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
-  : How Many Threads and Worker Processes That a Fit May Use
-- [`thread_count()`](https://statmodels7.github.io/numericals7/reference/thread_count.md)
-  : Read the Thread Count Off a Policy
-- [`worker_count()`](https://statmodels7.github.io/numericals7/reference/worker_count.md)
-  : Read the Worker Count Off a Policy
 - [`local_threads()`](https://statmodels7.github.io/numericals7/reference/local_threads.md)
-  : Apply a Thread Policy for the Duration of One Fit
+  : Apply a Thread Count for the Duration of One Fit
 
 ## Special functions
 

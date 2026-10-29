@@ -183,15 +183,15 @@ return the values of [`stats::pt()`](https://rdrr.io/r/stats/TDist.html)
 and [`base::besselK()`](https://rdrr.io/r/base/Bessel.html) from
 compiled code that never calls the R API, so the compiled kernels of the
 toolkit can call them from a worker thread. Each one is also available
-to C code through `R_GetCCallable()`.
-[`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
-builds the policy with which a fit such as
-`distributions7::fit_distrib()` or `statmodels7::statmod()` uses threads
-and worker processes. The default of one thread and one process takes
-the sequential code path, and the compiled kernels return the same
-values at any number of threads
-([`?n_threads`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
-describes the one exception).
+to C code through `R_GetCCallable()`. The `threads` argument of a fit
+such as `distributions7::fit_distrib()` or `statmodels7::statmod()` sets
+the number of threads inside one R process, which
+[`local_threads()`](https://statmodels7.github.io/numericals7/reference/local_threads.md)
+applies. The default of one thread takes the sequential code path, and
+the compiled kernels return the same values at any number of threads
+([`?local_threads`](https://statmodels7.github.io/numericals7/reference/local_threads.md)
+describes the one exception). The number of separate R processes is the
+`cores` argument of the functions that distribute independent fits.
 
 ``` r
 
@@ -294,15 +294,8 @@ The thread policy of the toolkit, one object passed as an argument from
 the fit entry points down to the compiled kernels. Each kernel returns
 the same bits at any thread count.
 
-- [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
-  [`print(`*`<n_threads>`*`)`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
-  : How Many Threads and Worker Processes That a Fit May Use
-- [`thread_count()`](https://statmodels7.github.io/numericals7/reference/thread_count.md)
-  : Read the Thread Count Off a Policy
-- [`worker_count()`](https://statmodels7.github.io/numericals7/reference/worker_count.md)
-  : Read the Worker Count Off a Policy
 - [`local_threads()`](https://statmodels7.github.io/numericals7/reference/local_threads.md)
-  : Apply a Thread Policy for the Duration of One Fit
+  : Apply a Thread Count for the Duration of One Fit
 
 ## Special functions
 

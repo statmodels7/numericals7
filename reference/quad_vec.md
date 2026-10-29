@@ -165,7 +165,7 @@ range(quad_vec(f, lower = 0, upper = rep(Inf, 30)) - 1)
 # Their means are compared with the closed form.
 g <- function(x, i) x * dgamma(x, shape = shp[i], rate = 1)
 range(quad_vec(g, 0, rep(Inf, 30)) - shp)
-#> [1] -1.889533e-11  2.317305e-10
+#> [1] -1.889511e-11  2.317305e-10
 
 # A shape below one puts an integrable singularity at the origin. The
 # sum-judged budget reaches shape 0.5 at the default depth, and a harsher

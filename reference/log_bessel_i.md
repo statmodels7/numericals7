@@ -26,14 +26,12 @@ log_bessel_i(x, nu, threads = 1L)
 
 - threads:
 
-  How many threads the kernel may use, a plain integer, as
-  [`thread_count()`](https://statmodels7.github.io/numericals7/reference/thread_count.md)
-  reads it off an
-  [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
-  policy. Every branch of the kernel is this package's own arithmetic,
-  so element \\i\\ is computed and written by one thread and the result
-  is bit-identical at any count; below an internal threshold the
-  sequential path is taken regardless of the count.
+  How many threads the kernel may use, a plain integer, as in
+  [`local_threads()`](https://statmodels7.github.io/numericals7/reference/local_threads.md).
+  Every branch of the kernel is this package's own arithmetic, so
+  element \\i\\ is computed and written by one thread and the result is
+  bit-identical at any count; below an internal threshold the sequential
+  path is taken regardless of the count.
   [`log_bessel_k()`](https://statmodels7.github.io/numericals7/reference/log_bessel_k.md)
   takes no such argument: its hybrid branch calls R's own scaled
   `besselK`, which can raise a warning, and a warning from a worker

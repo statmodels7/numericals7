@@ -19,7 +19,7 @@ scaled form underflows or loses its precision."><meta property="og:image" conten
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.25.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.26.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,9 +74,8 @@ scaled form underflows or loses its precision.</p>
 
 
 <dt id="arg-threads">threads<a class="anchor" aria-label="anchor" href="#arg-threads"></a></dt>
-<dd><p>How many threads the kernel may use, a plain integer, as
-<code><a href="thread_count.html">thread_count()</a></code> reads it off an <code><a href="n_threads.html">n_threads()</a></code>
-policy. Every branch of the kernel is this package's own arithmetic, so
+<dd><p>How many threads the kernel may use, a plain integer,
+as in <code><a href="local_threads.html">local_threads()</a></code>. Every branch of the kernel is this package's own arithmetic, so
 element \(i\) is computed and written by one thread and the result is
 bit-identical at any count; below an internal threshold the sequential
 path is taken regardless of the count. <code><a href="log_bessel_k.html">log_bessel_k()</a></code> takes

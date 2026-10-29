@@ -1,5 +1,17 @@
 # Changelog
 
+## numericals7 0.26.0
+
+- `n_threads()`, `thread_count()` and `worker_count()` are removed.
+  `threads` is a whole number, validated by `local_threads(threads)`,
+  which now takes the count directly and returns it invisibly. The
+  worker-process count leaves numericals7: the number of separate R
+  processes is the `cores` argument of each function that distributes
+  independent fits. The documentation of
+  [`local_threads()`](https://statmodels7.github.io/numericals7/reference/local_threads.md)
+  states the difference between `threads` (threads inside one R process)
+  and `cores` (separate R processes).
+
 ## numericals7 0.25.0
 
 - Renamed for readability: the argument `h_rel` of
@@ -42,8 +54,7 @@
   thread
   ([`student_t_cdf()`](https://statmodels7.github.io/numericals7/reference/student_t_cdf.md),
   [`bessel_k()`](https://statmodels7.github.io/numericals7/reference/bessel_k.md))
-  with the thread policy
-  [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md).
+  with the thread policy `n_threads()`.
 
 ## numericals7 0.23.4
 
@@ -71,12 +82,9 @@
 - Documentation and messages: relative clauses without a relative
   pronoun, stranded prepositions, absolute constructions, sentences
   without a verb, emphasis in bold and personified descriptions of the
-  code rewritten as plain clauses. The error of
-  [`thread_count()`](https://statmodels7.github.io/numericals7/reference/thread_count.md)
-  and
-  [`worker_count()`](https://statmodels7.github.io/numericals7/reference/worker_count.md)
-  now reads “‘threads’ must be an object returned by n_threads()”, and
-  the error of
+  code rewritten as plain clauses. The error of `thread_count()` and
+  `worker_count()` now reads “‘threads’ must be an object returned by
+  n_threads()”, and the error of
   [`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)
   for an unreachable `rtol` is reworded. No change to the code.
 
@@ -566,53 +574,47 @@
 
 ## numericals7 0.9.3
 
-- The guarantee on the
-  [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
-  page states what holds now. The qualification for a kernel reading the
-  platform’s math routines is removed: those differences, measured again
-  on 2026-08-21, were neither deterministic nor unbindable, and a worker
-  that installs the calling thread’s floating-point environment
-  reproduces the sequential value exactly. The remaining qualification
-  is the one case where a thread count changes which implementation
-  runs, a threaded kernel in place of a BLAS call.
+- The guarantee on the `n_threads()` page states what holds now. The
+  qualification for a kernel reading the platform’s math routines is
+  removed: those differences, measured again on 2026-08-21, were neither
+  deterministic nor unbindable, and a worker that installs the calling
+  thread’s floating-point environment reproduces the sequential value
+  exactly. The remaining qualification is the one case where a thread
+  count changes which implementation runs, a threaded kernel in place of
+  a BLAS call.
 
 ## numericals7 0.9.2
 
-- A second qualification on the
-  [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
-  page: a kernel that calls into the platform’s own math routines per
-  element inherits that runtime’s per-thread behavior in the last bit
-  (one runtime returned one-ulp differences between the main thread and
-  a worker, deterministically), so bit-identity across counts is
-  promised for the arithmetic a kernel computes itself.
+- A second qualification on the `n_threads()` page: a kernel that calls
+  into the platform’s own math routines per element inherits that
+  runtime’s per-thread behavior in the last bit (one runtime returned
+  one-ulp differences between the main thread and a worker,
+  deterministically), so bit-identity across counts is promised for the
+  arithmetic a kernel computes itself.
 
 ## numericals7 0.9.1
 
-- The
-  [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
-  page qualifies its guarantee where a threaded kernel replaces a BLAS
-  expression: the count does not change what a kernel computes, and the
-  replacement is bit-exact against the reference BLAS shipped with R and
-  within the rounding of one dot product against an optimized one, whose
-  accumulation order is its own.
+- The `n_threads()` page qualifies its guarantee where a threaded kernel
+  replaces a BLAS expression: the count does not change what a kernel
+  computes, and the replacement is bit-exact against the reference BLAS
+  shipped with R and within the rounding of one dot product against an
+  optimized one, whose accumulation order is its own.
 
 ## numericals7 0.9.0
 
-- [`n_threads()`](https://statmodels7.github.io/numericals7/reference/n_threads.md)
-  gains `workers`, the number of R processes that the independent fits
-  of a cross-validation’s folds may use, read by
-  [`worker_count()`](https://statmodels7.github.io/numericals7/reference/worker_count.md).
-  The same object carries both levels of the toolkit’s parallelism; the
-  two do not nest (a fit inside a worker is sequential by construction),
-  and the result does not depend on either count, bit for bit.
+- `n_threads()` gains `workers`, the number of R processes that the
+  independent fits of a cross-validation’s folds may use, read by
+  `worker_count()`. The same object carries both levels of the toolkit’s
+  parallelism; the two do not nest (a fit inside a worker is sequential
+  by construction), and the result does not depend on either count, bit
+  for bit.
 
 ## numericals7 0.8.0
 
 - The thread policy of the toolkit is defined here, at the root, since
   this is the one package below every compiled kernel.
-  `n_threads(threads = 1)` constructs it,
-  [`thread_count()`](https://statmodels7.github.io/numericals7/reference/thread_count.md)
-  reads the count, and
+  `n_threads(threads = 1)` constructs it, `thread_count()` reads the
+  count, and
   [`local_threads()`](https://statmodels7.github.io/numericals7/reference/local_threads.md)
   applies it to RcppParallel’s process-level setting for one calling
   frame and restores the previous state on exit. The object is passed as
