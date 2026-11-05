@@ -347,9 +347,13 @@ quad_vec <- function(f, lower, upper, atol = 1e-10, rtol = 1e-8,
     te <- rowsum(err, orig, reorder = FALSE)
     rows <- as.integer(rownames(tot))
     budget <- pmax(atol, rtol * abs(tot[, 1L]))
-    # which() drops the NA a non-finite integrand puts into its row's budget;
-    # such a row keeps its Inf error and fails at max_depth instead
-    done_rows <- rows[which(te[, 1L] <= budget)]
+    # A row whose sum is not finite has an integrand that is NaN or +-Inf at
+    # some node. It is never accepted: its panels keep an Inf error and are
+    # split like any other, so a node on an integrable singularity moves off
+    # it at the next level, and a divergent integral fails at max_depth.
+    # Without is.finite() a +Inf sum gave te = budget = Inf and was accepted
+    # at the first pass (1/sqrt|x| on [-1, 1] returned Inf).
+    done_rows <- rows[which(is.finite(tot[, 1L]) & te[, 1L] <= budget)]
 
     if (length(done_rows)) {
       result[done_rows] <- tot[match(done_rows, rows), 1L]
@@ -382,7 +386,7 @@ quad_vec <- function(f, lower, upper, atol = 1e-10, rtol = 1e-8,
     # per pass.
     sp <- depth < max_depth
     g <- match(orig, rows)
-    irr <- rowsum(err * !sp, orig, reorder = FALSE)[, 1L]
+    irr <- rowsum(ifelse(sp, 0, err), orig, reorder = FALSE)[, 1L]
     nsp <- rowsum(sp + 0L, orig, reorder = FALSE)[, 1L]
     cnt <- rowsum(rep(1L, length(orig)), orig, reorder = FALSE)[, 1L]
     is_still <- rows %in% still

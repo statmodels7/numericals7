@@ -141,6 +141,20 @@ test_that("a row that cannot converge returns NA and is named", {
 })
 
 
+test_that("a row whose integrand is infinite at a node is split, not accepted", {
+  # The centre of [-1, 1] is a node of the rule, where 1/sqrt|x| is +Inf.
+  # The row is split like a NaN row; the integral is 4.
+  f <- function(x, i) 1 / sqrt(abs(x))
+  expect_equal(quad_vec(f, -1, 1), 4, tolerance = 1e-8)
+  # the same with a NaN at the node, the behaviour the +Inf case now shares
+  g <- function(x, i) ifelse(x == 0, NaN, 1)
+  expect_equal(quad_vec(g, -1, 1), 2, tolerance = 1e-12)
+  # a divergent integral fails its row instead of returning Inf
+  h <- function(x, i) 1 / abs(x)
+  expect_warning(got <- quad_vec(h, -1, 1), "rows 1")
+  expect_true(is.na(got))
+})
+
 test_that("a corrupted rule is caught by what it integrates", {
   # the paired injection: a rule with one weight 5% wrong cannot integrate a
   # gamma density to one

@@ -221,6 +221,86 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// n7_mean_probe
+double n7_mean_probe(Rcpp::NumericVector x);
+RcppExport SEXP _numericals7_n7_mean_probe(SEXP xSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type x(xSEXP);
+    rcpp_result_gen = Rcpp::wrap(n7_mean_probe(x));
+    return rcpp_result_gen;
+END_RCPP
+}
+// n7_fmod_probe
+Rcpp::NumericVector n7_fmod_probe(Rcpp::NumericVector x, double y);
+RcppExport SEXP _numericals7_n7_fmod_probe(SEXP xSEXP, SEXP ySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< double >::type y(ySEXP);
+    rcpp_result_gen = Rcpp::wrap(n7_fmod_probe(x, y));
+    return rcpp_result_gen;
+END_RCPP
+}
+// n7_series_steps_probe
+Rcpp::NumericVector n7_series_steps_probe();
+RcppExport SEXP _numericals7_n7_series_steps_probe() {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    rcpp_result_gen = Rcpp::wrap(n7_series_steps_probe());
+    return rcpp_result_gen;
+END_RCPP
+}
+// n7_quad_rows_probe
+Rcpp::NumericVector n7_quad_rows_probe(Rcpp::Function f, Rcpp::NumericVector lower, Rcpp::NumericVector upper, double atol, double rtol, int max_panels);
+RcppExport SEXP _numericals7_n7_quad_rows_probe(SEXP fSEXP, SEXP lowerSEXP, SEXP upperSEXP, SEXP atolSEXP, SEXP rtolSEXP, SEXP max_panelsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::Function >::type f(fSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type lower(lowerSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type upper(upperSEXP);
+    Rcpp::traits::input_parameter< double >::type atol(atolSEXP);
+    Rcpp::traits::input_parameter< double >::type rtol(rtolSEXP);
+    Rcpp::traits::input_parameter< int >::type max_panels(max_panelsSEXP);
+    rcpp_result_gen = Rcpp::wrap(n7_quad_rows_probe(f, lower, upper, atol, rtol, max_panels));
+    return rcpp_result_gen;
+END_RCPP
+}
+// n7_series_rows_probe
+Rcpp::NumericVector n7_series_rows_probe(Rcpp::Function term, int n, int from, double atol, double rtol, int max_terms);
+RcppExport SEXP _numericals7_n7_series_rows_probe(SEXP termSEXP, SEXP nSEXP, SEXP fromSEXP, SEXP atolSEXP, SEXP rtolSEXP, SEXP max_termsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::Function >::type term(termSEXP);
+    Rcpp::traits::input_parameter< int >::type n(nSEXP);
+    Rcpp::traits::input_parameter< int >::type from(fromSEXP);
+    Rcpp::traits::input_parameter< double >::type atol(atolSEXP);
+    Rcpp::traits::input_parameter< double >::type rtol(rtolSEXP);
+    Rcpp::traits::input_parameter< int >::type max_terms(max_termsSEXP);
+    rcpp_result_gen = Rcpp::wrap(n7_series_rows_probe(term, n, from, atol, rtol, max_terms));
+    return rcpp_result_gen;
+END_RCPP
+}
+// n7_uniroot_probe
+double n7_uniroot_probe(Rcpp::Function f, double lower, double upper, double tol, int maxiter);
+RcppExport SEXP _numericals7_n7_uniroot_probe(SEXP fSEXP, SEXP lowerSEXP, SEXP upperSEXP, SEXP tolSEXP, SEXP maxiterSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::Function >::type f(fSEXP);
+    Rcpp::traits::input_parameter< double >::type lower(lowerSEXP);
+    Rcpp::traits::input_parameter< double >::type upper(upperSEXP);
+    Rcpp::traits::input_parameter< double >::type tol(tolSEXP);
+    Rcpp::traits::input_parameter< int >::type maxiter(maxiterSEXP);
+    rcpp_result_gen = Rcpp::wrap(n7_uniroot_probe(f, lower, upper, tol, maxiter));
+    return rcpp_result_gen;
+END_RCPP
+}
 // student_t_cdf_cpp
 NumericVector student_t_cdf_cpp(NumericVector q, NumericVector df, bool lower_tail, bool log_p, int threads);
 RcppExport SEXP _numericals7_student_t_cdf_cpp(SEXP qSEXP, SEXP dfSEXP, SEXP lower_tailSEXP, SEXP log_pSEXP, SEXP threadsSEXP) {
@@ -255,6 +335,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_numericals7_log_bessel_i_cpp", (DL_FUNC) &_numericals7_log_bessel_i_cpp, 3},
     {"_numericals7_n7_log_bessel_i_probe", (DL_FUNC) &_numericals7_n7_log_bessel_i_probe, 2},
     {"_numericals7_log_bessel_k_cpp", (DL_FUNC) &_numericals7_log_bessel_k_cpp, 2},
+    {"_numericals7_n7_mean_probe", (DL_FUNC) &_numericals7_n7_mean_probe, 1},
+    {"_numericals7_n7_fmod_probe", (DL_FUNC) &_numericals7_n7_fmod_probe, 2},
+    {"_numericals7_n7_series_steps_probe", (DL_FUNC) &_numericals7_n7_series_steps_probe, 0},
+    {"_numericals7_n7_quad_rows_probe", (DL_FUNC) &_numericals7_n7_quad_rows_probe, 6},
+    {"_numericals7_n7_series_rows_probe", (DL_FUNC) &_numericals7_n7_series_rows_probe, 6},
+    {"_numericals7_n7_uniroot_probe", (DL_FUNC) &_numericals7_n7_uniroot_probe, 5},
     {"_numericals7_student_t_cdf_cpp", (DL_FUNC) &_numericals7_student_t_cdf_cpp, 5},
     {NULL, NULL, 0}
 };

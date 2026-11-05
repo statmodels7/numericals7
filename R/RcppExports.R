@@ -69,6 +69,30 @@ log_bessel_k_cpp <- function(x, nu) {
     .Call(`_numericals7_log_bessel_k_cpp`, x, nu)
 }
 
+n7_mean_probe <- function(x) {
+    .Call(`_numericals7_n7_mean_probe`, x)
+}
+
+n7_fmod_probe <- function(x, y) {
+    .Call(`_numericals7_n7_fmod_probe`, x, y)
+}
+
+n7_series_steps_probe <- function() {
+    .Call(`_numericals7_n7_series_steps_probe`)
+}
+
+n7_quad_rows_probe <- function(f, lower, upper, atol, rtol, max_panels) {
+    .Call(`_numericals7_n7_quad_rows_probe`, f, lower, upper, atol, rtol, max_panels)
+}
+
+n7_series_rows_probe <- function(term, n, from, atol, rtol, max_terms) {
+    .Call(`_numericals7_n7_series_rows_probe`, term, n, from, atol, rtol, max_terms)
+}
+
+n7_uniroot_probe <- function(f, lower, upper, tol, maxiter) {
+    .Call(`_numericals7_n7_uniroot_probe`, f, lower, upper, tol, maxiter)
+}
+
 student_t_cdf_cpp <- function(q, df, lower_tail, log_p, threads = 1L) {
     .Call(`_numericals7_student_t_cdf_cpp`, q, df, lower_tail, log_p, threads)
 }
