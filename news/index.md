@@ -1,5 +1,22 @@
 # Changelog
 
+## numericals7 0.27.0
+
+- [`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)
+  splits a row whose integrand is infinite at a node, as it splits a row
+  with a `NaN`; a convergent integral with an integrable singularity at
+  a node (`1/sqrt(abs(x))` on `[-1, 1]`) returns its value, and a
+  divergent one fails its row.
+- The header `inst/include/numericals7/n7_expect.h`, read through
+  `LinkingTo`, gives compiled code the operations of R’s
+  [`mean()`](https://rdrr.io/r/base/mean.html), `%%`, `^` and
+  [`pmax()`](https://rdrr.io/r/base/Extremes.html), Brent’s root finder
+  of [`uniroot()`](https://rdrr.io/r/stats/uniroot.html), and one row of
+  [`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)
+  and of
+  [`series_vec()`](https://statmodels7.github.io/numericals7/reference/series_vec.md),
+  with the same results as the R functions.
+
 ## numericals7 0.26.0
 
 - `n_threads()`, `thread_count()` and `worker_count()` are removed.

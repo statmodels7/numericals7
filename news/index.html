@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.26.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.27.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,6 +32,12 @@
       <small>Source: <a href="https://github.com/statmodels7/numericals7/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.27.0" id="numericals7-0270">numericals7 0.27.0<a class="anchor" aria-label="anchor" href="#numericals7-0270"></a></h2>
+<ul><li>
+<code><a href="../reference/quad_vec.html">quad_vec()</a></code> splits a row whose integrand is infinite at a node, as it splits a row with a <code>NaN</code>; a convergent integral with an integrable singularity at a node (<code>1/sqrt(abs(x))</code> on <code>[-1, 1]</code>) returns its value, and a divergent one fails its row.</li>
+<li>The header <code>inst/include/numericals7/n7_expect.h</code>, read through <code>LinkingTo</code>, gives compiled code the operations of R’s <code><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean()</a></code>, <code>%%</code>, <code>^</code> and <code><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax()</a></code>, Brent’s root finder of <code><a href="https://rdrr.io/r/stats/uniroot.html" class="external-link">uniroot()</a></code>, and one row of <code><a href="../reference/quad_vec.html">quad_vec()</a></code> and of <code><a href="../reference/series_vec.html">series_vec()</a></code>, with the same results as the R functions.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.26.0" id="numericals7-0260">numericals7 0.26.0<a class="anchor" aria-label="anchor" href="#numericals7-0260"></a></h2>
 <ul><li>
