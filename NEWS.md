@@ -1,3 +1,15 @@
+# numericals7 0.27.0
+
+* `quad_vec()` splits a row whose integrand is infinite at a node, as it
+  splits a row with a `NaN`; a convergent integral with an integrable
+  singularity at a node (`1/sqrt(abs(x))` on `[-1, 1]`) returns its value,
+  and a divergent one fails its row.
+* The header `inst/include/numericals7/n7_expect.h`, read through
+  `LinkingTo`, gives compiled code the operations of R's `mean()`, `%%`,
+  `^` and `pmax()`, Brent's root finder of `uniroot()`, and one row of
+  `quad_vec()` and of `series_vec()`, with the same results as the R
+  functions.
+
 # numericals7 0.26.0
 
 * `n_threads()`, `thread_count()` and `worker_count()` are removed. `threads` is
