@@ -1,5 +1,6 @@
 # Twins of inst/include/numericals7/n7_expect.h: the compiled routines
-# return the same doubles as the R functions they transcribe.
+# return the same doubles as the R functions they transcribe (the quadrature
+# row on the scale of quad_vec()'s values, see below).
 
 test_that("the compiled mean() is R's", {
   set.seed(1)
@@ -39,9 +40,20 @@ test_that("a compiled row of quad_vec() is quad_vec()'s row", {
                                        max_panels = pr[3]))
       got <- n7_quad_rows_probe(cs$f, rep_len(cs$lo, length(ref)), rep_len(cs$up, length(ref)),
                                 pr[1], pr[2], as.integer(pr[3]))
-      expect_identical(got, ref)
+      # quad_vec() sums the panels through the BLAS (Fm %*% w): OpenBLAS on
+      # ubuntu and FMA on arm64 macOS move the last bits
+      expect_agrees_on_scale(got, ref)
     }
   }
+})
+
+test_that("the quadrature comparison admits the platforms' last bits only", {
+  # the largest gap seen on CI (ubuntu OpenBLAS, arm64 macOS): 1.3e-15 on 4.83
+  ref <- c(3.99999997821883735, 4.82842707267350146)
+  expect_agrees_on_scale(ref + c(-1.3e-15, -8.9e-16), ref)
+  # a defect the size of the quadrature tolerance is rejected
+  expect_gt(scale_gap(ref * (1 + 1e-9), ref), 1e-12)
+  expect_identical(scale_gap(c(1, NaN), c(1, 2)), Inf)
 })
 
 test_that("a compiled row of series_vec() is series_vec()'s row", {

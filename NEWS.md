@@ -1,3 +1,10 @@
+# numericals7 0.27.1
+
+* Tests only: the compiled row of `quad_vec()` is compared with `quad_vec()`
+  on the scale of its values instead of with `identical()`. `quad_vec()` sums
+  the panels through the BLAS, which adds in another order with OpenBLAS on
+  ubuntu and with fused multiply-adds on arm64 macOS.
+
 # numericals7 0.27.0
 
 * `quad_vec()` splits a row whose integrand is infinite at a node, as it
