@@ -1,5 +1,17 @@
 # Changelog
 
+## numericals7 0.27.1
+
+- Tests only: the compiled row of
+  [`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)
+  is compared with
+  [`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)
+  on the scale of its values instead of with
+  [`identical()`](https://rdrr.io/r/base/identical.html).
+  [`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)
+  sums the panels through the BLAS, which adds in another order with
+  OpenBLAS on ubuntu and with fused multiply-adds on arm64 macOS.
+
 ## numericals7 0.27.0
 
 - [`quad_vec()`](https://statmodels7.github.io/numericals7/reference/quad_vec.md)

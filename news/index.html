@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">numericals7</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.27.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.27.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,6 +32,10 @@
       <small>Source: <a href="https://github.com/statmodels7/numericals7/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.27.1" id="numericals7-0271">numericals7 0.27.1<a class="anchor" aria-label="anchor" href="#numericals7-0271"></a></h2>
+<ul><li>Tests only: the compiled row of <code><a href="../reference/quad_vec.html">quad_vec()</a></code> is compared with <code><a href="../reference/quad_vec.html">quad_vec()</a></code> on the scale of its values instead of with <code><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical()</a></code>. <code><a href="../reference/quad_vec.html">quad_vec()</a></code> sums the panels through the BLAS, which adds in another order with OpenBLAS on ubuntu and with fused multiply-adds on arm64 macOS.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.27.0" id="numericals7-0270">numericals7 0.27.0<a class="anchor" aria-label="anchor" href="#numericals7-0270"></a></h2>
 <ul><li>
